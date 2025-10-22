@@ -1,0 +1,161 @@
+/* ==================== ListPage.css ==================== */
+
+/* Container */
+.listpage-container {
+  min-height: 100vh;
+  padding: 32px 16px;
+  background: linear-gradient(135deg, #CAF0F8, #ADE8F4);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Heading */
+.listpage-heading {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: #03045E;
+  margin-bottom: 24px;
+}
+
+/* Alert Message */
+.alert-message {
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.alert-message button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 4px;
+}
+
+/* Slot Badge */
+.slot-badge {
+  display: inline-block;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #03045E;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.slot-badge .clock-icon {
+  display: inline;
+  margin-right: 4px;
+}
+
+/* Loading Skeleton */
+.loading-skeleton div {
+  height: 60px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Table */
+.schedule-table,
+.instructor-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+.schedule-table th,
+.instructor-table th {
+  padding: 14px 12px;
+  font-weight: 700;
+  color: #03045E;
+  border-bottom: 2px solid #0096C7;
+}
+
+.schedule-table td,
+.instructor-table td {
+  padding: 12px;
+  color: #374151;
+}
+
+.schedule-table td span,
+.instructor-table td span {
+  background-color: #00c85133;
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-weight: 600;
+  color: green;
+  display: inline-block;
+}
+
+/* Section Card */
+.section-card {
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.section-card-header {
+  padding: 12px 16px;
+  font-weight: 700;
+  color: white;
+}
+
+.section-card-body {
+  padding: 16px;
+}
+
+/* Success / Warning / Danger colors for alerts */
+.alert-success { background: #d1fae5; border: 1px solid #10b981; color: #065f46; }
+.alert-warning { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; }
+.alert-danger  { background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; }
+.alert-info    { background: #CAF0F8; border: 1px solid #0096C7; color: #03045E; }
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .slot-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .listpage-heading {
+    font-size: 28px;
+  }
+
+  .schedule-table th,
+  .schedule-table td,
+  .instructor-table th,
+  .instructor-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+}

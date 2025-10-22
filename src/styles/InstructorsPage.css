@@ -1,0 +1,152 @@
+/* Global Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* InstructorsPage Styles */
+.custom-table thead {
+  background-color: #023E8A;
+  color: #ffffff;
+}
+
+.custom-table td, .custom-table th {
+  padding: 0.75rem;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+/* Button Styles */
+button {
+  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0077b6;
+}
+
+/* Form Styles */
+form .d-flex {
+  justify-content: space-between;
+}
+
+form .form-control, form .form-select {
+  max-width: 250px;
+  border-radius: 20px;
+}
+
+.rounded-pill {
+  border-radius: 50px;
+}
+
+/* Schedule Table */
+.schedule-table thead {
+  background-color: #0096C7;
+}
+
+.schedule-table tbody tr:hover {
+  background-color: #e0f7fa;
+}
+
+/* Alerts */
+.alert {
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.schedule-day-table {
+  margin-top: 10px;
+}
+
+.schedule-day-table th,
+.schedule-day-table td {
+  text-align: center;
+  vertical-align: top;
+  padding: 10px;
+}
+
+.highlighted-time {
+  display: inline-block;
+  background-color: #4caf50;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 4px 8px;
+  margin: 3px 0;
+  font-size: 13px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.text-muted {
+  color: #999 !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.custom-table {
+  font-size: 0.9rem;
+  text-align: center;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.custom-table thead th {
+  background-color: #0d6efd !important;
+  color: white !important;
+  text-transform: uppercase;
+}
+
+.schedule-grid {
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+
+.schedule-grid th,
+.schedule-grid td {
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid #dee2e6;
+}
+
+.time-cell {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  width: 120px;
+}
+
+.highlighted-cell {
+  background-color: #b3e5fc !important;
+  font-weight: bold;
+  color: #004085;
+  transition: background-color 0.3s ease;
+}
+
+.highlighted-cell:hover {
+  background-color: #80d4f6 !important;
+}
+
+.text-muted {
+  color: #aaa !important;
+}
+
+.rounded-pill {
+  border-radius: 50px !important;
+}
+
+.table-primary {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+}

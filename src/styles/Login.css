@@ -1,0 +1,172 @@
+/* === Container Layout === */
+.login-page .auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  padding: 20px;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Wrapper Box (fixed height 480px) */
+.login-page .auth-wrapper {
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  max-width: 850px;
+  width: 100%;
+  height: 480px; /* Fixed height */
+}
+
+/* === Left Section === */
+.login-page .auth-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 10px;
+}
+.login-page .auth-left img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* === Right Section === */
+.login-page .auth-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Card */
+.login-page .auth-card {
+  width: 100%;
+  max-width: 360px;
+  height: 100%; /* Fill parent */
+  text-align: center;
+  padding: 12px 20px;
+  border-radius: 16px;
+  background: rgba(173, 232, 244, 0.55);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title */
+.login-page .auth-title {
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+/* === Form === */
+.login-page .auth-form {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  overflow-y: auto; /* Scroll inside if needed */
+  padding-bottom: 8px;
+}
+
+.login-page .form-group {
+  position: relative;
+}
+
+.login-page .form-group input {
+  height: 35px;
+  font-size: 14px;
+  width: 100%;
+  padding: 6px 10px;
+}
+
+/* Password Toggle */
+.login-page .password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
+}
+
+/* Forgot Password */
+.login-page .forgot-link {
+  font-size: 12px;
+  color: #2563eb;
+  text-align: right;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* === Buttons === */
+.login-page .auth-btn {
+  padding: 8px;
+  font-size: 13px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-page .auth-btn.primary {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.login-page .auth-btn.google {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Divider */
+.login-page .divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  margin: 6px 0;
+  font-size: 12px;
+}
+.login-page .divider::before,
+.login-page .divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+  margin: 0 6px;
+}
+
+/* Footer */
+.login-page .auth-footer {
+  font-size: 12px;
+  color: #444;
+  margin-top: auto; /* Stick to bottom */
+  width: 100%;
+  text-align: center;
+  padding-top: 6px;
+}
+.login-page .auth-footer a {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+}
+.login-page .auth-footer a:hover {
+  text-decoration: underline;
+}

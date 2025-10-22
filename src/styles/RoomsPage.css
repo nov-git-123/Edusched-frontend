@@ -1,0 +1,142 @@
+/* Global Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f7f8fa;
+  color: #333;
+}
+
+/* Container */
+.container-fluid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+/* Header */
+h2 {
+  font-weight: 700;
+  font-size: 2rem;
+  color: #023e8a;
+  margin-bottom: 20px;
+}
+
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* Cards for Buildings */
+.building-card {
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Building Name Styling in the Card Header */
+.building-card .card-header {
+  background: linear-gradient(90deg, #4a90e2, #0096c7);
+  color: white;
+  font-weight: 600;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.building-card .card-header span {
+  font-size: 1.5rem; /* Increased font size for visibility */
+  color: white; /* Ensure text is visible */
+  font-weight: 700; /* Make text bold */
+  text-align: left; /* Align to the left for a clean look */
+}
+
+.building-card .card-body {
+  padding: 20px;
+  background-color: #f9f9f9; /* Light background for the body */
+}
+
+/* Card for Rooms */
+.room-card {
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+/* Modal */
+.modal-content {
+  border-radius: 8px;
+}
+
+.modal-header {
+  background: #023e8a;
+  color: white;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-footer {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Table */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  background: #f1f1f1;
+  color: #023e8a;
+  font-weight: 600;
+}
+
+.table td {
+  padding: 8px;
+  text-align: center;
+}
+
+.table-light {
+  background: #f9f9f9;
+}
+
+.table-hover tbody tr:hover {
+  background: #f1f1f1;
+  transition: background 0.3s ease;
+}
+
+/* Buttons */
+.addsubject-btn-primary {
+  background: linear-gradient(90deg, #0077B6, #0096C7);
+  border: none;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.addsubject-btn-primary:hover {
+  background: linear-gradient(90deg, #0096C7, #0077B6);
+}
+
+.addsubject-btn-danger {
+  background: #e63946;
+  color: white;
+}
+
+.addsubject-btn-danger:hover {
+  background: #c5001b;
+}
+
+/* Alert */
+.alert-info {
+  background-color: #d1e7fd;
+  border-color: #bfd9f6;
+  color: #1d6dd2;
+  border-radius: 8px;
+  padding: 15px;
+  font-weight: 500;
+}

@@ -1,0 +1,83 @@
+/* Colors from your palette */
+:root {
+  --primary-color: #03045E;
+  --secondary-color: #023E8A;
+  --accent-color: #00B4D8;
+  --light-blue: #90E0EF;
+  --lightest-blue: #CAF0F8;
+  --alert-danger: #ff4d4d;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+}
+
+.schedule-heading {
+  color: var(--primary-color);
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.schedule-table {
+  margin-top: 20px;
+  color: #333;
+}
+
+.schedule-table th {
+  background-color: var(--secondary-color);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: 500;
+}
+
+.schedule-table td {
+  text-align: center;
+  padding: 10px;
+}
+
+.schedule-table tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+.schedule-table tbody tr:nth-child(even) {
+  background-color: var(--lightest-blue);
+}
+
+.schedule-table tbody tr:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.error-alert {
+  background-color: var(--alert-danger);
+  color: white;
+  font-weight: 500;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 30px;
+}
+
+@media (max-width: 768px) {
+  .schedule-table th,
+  .schedule-table td {
+    font-size: 14px;
+    padding: 8px;
+  }
+}

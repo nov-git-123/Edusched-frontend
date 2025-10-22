@@ -1,0 +1,97 @@
+:root {
+  --primary: #0077B6;
+  --primary-light: #0096C7;
+  --bg-light: #f8fbff;
+  --text-dark: #023E8A;
+  --radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+.full-bg {
+  background: #f0f6fb;
+  min-height: 100vh;
+}
+
+/* Section Label + Horizontal Scroll */
+.addsubject-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.addsubject-section-label {
+  font-weight: 600;
+  color: #495057;
+  min-width: 140px;
+}
+
+/* Scroll Container for One-Line Layout */
+.scroll-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex: 1;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
+}
+
+/* Buttons */
+.addsubject-btn-year,
+.addsubject-btn-sem,
+.addsubject-btn-course {
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 10px 20px;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  background-color: #ffffff;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.addsubject-btn-year.active,
+.addsubject-btn-sem.active,
+.addsubject-btn-course.active,
+.addsubject-btn-year:hover,
+.addsubject-btn-sem:hover,
+.addsubject-btn-course:hover {
+  background-color: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(0, 119, 182, 0.25);
+}
+
+/* Add Subject Button */
+.addsubject-btn-primary {
+  border-radius: 40px;
+  padding: 12px 32px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border: none;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.addsubject-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 150, 199, 0.4);
+}
+
+/* Table */
+.addsubject-table-container {
+  margin-top: 30px;
+}
+.addsubject-table th {
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  font-weight: 600;
+}

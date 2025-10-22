@@ -1,0 +1,342 @@
+/* === Container Layout === */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  padding: 20px;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Wrapper Box (fixed height) */
+.auth-wrapper {
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  max-width: 850px;
+  width: 100%;
+  height: 480px; /* Keep the height fixed at 480px */
+}
+
+/* === Left Section (Illustration) === */
+.auth-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 10px;
+}
+
+.auth-left img {
+  max-width: 100%; /* Ensure the image scales to fit */
+  max-height: 100%; /* Prevent the image from overflowing */
+  object-fit: contain;
+}
+
+/* === Right Section (Login Card) === */
+.auth-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  overflow-y: hidden; /* Prevent overflow */
+}
+
+/* Auth card */
+.auth-card {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 16px;
+  background: rgba(173, 232, 244, 0.55);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  height: 100%; /* Allow card to fill available height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribute space evenly */
+  align-items: center;
+  gap: 10px;
+  overflow: hidden; /* Prevent scrolling */
+}
+/* shrink children if needed */
+.auth-card * {
+  flex-shrink: 1;
+}
+
+/* Special case for login */
+.login-card .divider {
+  margin: 2px 0; /* even tighter for login */
+}
+
+/* Title */
+.auth-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1px;
+  color: #03396c;
+}
+
+/* === Form === */
+.auth-form {
+  width: 100%;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+}
+
+/* Adjusting input fields and buttons for space */
+.form-group input {
+  height: 35px; /* Reduced height to fit better */
+  font-size: 14px;
+}
+
+.form-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Forgot password */
+.forgot-link {
+  display: block;
+  text-align: right;
+  font-size: 0.85rem;
+  margin: -2px 0 6px 0; /* tighter spacing */
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* === Buttons === */
+.auth-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.auth-form .auth-btn {
+  margin-bottom: 1px; /* small gap */
+}
+
+.auth-btn.primary {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.auth-btn.primary:hover {
+  background: #1e40af;
+}
+
+.auth-btn.google {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-btn.google img {
+  width: 18px;
+  height: 18px;
+}
+
+.auth-btn.google:hover {
+  background: #f3f4f6;
+}
+
+/* === Divider === */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  margin: 6px 0;
+  font-size: 12px;
+  width: 100%;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+
+.divider:not(:empty)::after {
+  margin-left: 8px;
+}
+
+/* === Footer === */
+.auth-footer {
+  font-size: 12.5px;
+  color: #444;
+  margin-top: 6px; /* ✅ tighter */
+}
+
+.auth-footer a {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .auth-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .auth-left {
+    height: 200px;
+  }
+
+  .auth-left img {
+    max-height: 180px;
+  }
+
+  .auth-card {
+    margin-top: 20px;
+  }
+
+  .custom-select {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .custom-select select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+  }
+
+  .selected-role {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #03396c;
+  }
+
+  /* Role dropdown styling */
+  .role-select select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    background: #fff;
+    color: #333;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    transition: border 0.3s ease;
+  }
+
+  .role-select select:focus {
+    border: 1px solid #0077B6;
+    box-shadow: 0 0 5px rgba(0, 119, 182, 0.4);
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #03045E;
+  }
+
+  select.form-control {
+    width: 100%;
+    height: 42px; /* same height as input */
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: 0.25s;
+    cursor: pointer;
+  }
+
+  select.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    outline: none;
+  }
+
+  /* Wrap to position arrow */
+  .custom-select-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Base select style (same as input) */
+  .custom-select {
+    appearance: none; /* remove default browser arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    height: 42px;
+    padding: 10px 40px 10px 12px; /* add right padding for arrow */
+    border: 1px solid #d1d5db;
+    border-radius: 50px; /* keep pill shape */
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: 0.25s;
+    cursor: pointer;
+  }
+
+  /* Custom arrow */
+  .custom-select-wrapper::after {
+    content: "▼";
+    font-size: 12px;
+    color: #555;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* let clicks go through */
+  }
+
+  /* Focus effect */
+  .custom-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    outline: none;
+  }
+}

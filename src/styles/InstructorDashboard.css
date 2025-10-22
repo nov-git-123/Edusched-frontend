@@ -1,0 +1,75 @@
+/* Dashboard Container */
+.instructor-dashboard {
+  background-color: #f9fafc;
+  min-height: 100vh;
+  font-family: "Inter", "Poppins", sans-serif;
+}
+
+/* Gradient Header */
+.dashboard-header {
+  background: linear-gradient(135deg, #0077b6, #00b4d8);
+  border-radius: 16px;
+}
+
+/* Section Titles */
+.section-title {
+  color: #03045e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Stat Cards */
+.stat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 119, 182, 0.15);
+}
+
+/* Action Cards */
+.action-card {
+  transition: all 0.3s ease;
+  border-radius: 16px;
+}
+
+.action-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Buttons */
+.btn {
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+}
+
+/* Text Colors */
+.text-primary {
+  color: #0077b6 !important;
+}
+.text-success {
+  color: #00a676 !important;
+}
+.text-warning {
+  color: #f9a825 !important;
+}
+.text-danger {
+  color: #ef233c !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .dashboard-header {
+    text-align: center;
+  }
+}

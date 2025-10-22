@@ -1,0 +1,186 @@
+/* ================= SchedulePage.css ================= */
+
+/* === General Page Spacing === */
+.schedule-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* === Summary Cards === */
+.summary-card {
+  border-radius: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.summary-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Label and Value */
+.summary-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.summary-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #000;
+}
+
+/* === Skeleton Loader === */
+.skeleton-loader {
+  background: linear-gradient(-90deg, #e0e0e0 0%, #f0f0f0 50%, #e0e0e0 100%);
+  background-size: 400% 400%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* === Cards === */
+.card {
+  border-radius: 0.75rem;
+}
+
+/* === Table Styling === */
+.table th,
+.table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table thead th {
+  background-color: #023e8a;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* Responsive Table Scroll */
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* === Modal Styling === */
+.modal-content {
+  border-radius: 0.75rem;
+}
+
+.modal-header {
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* === Toast Notification === */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 250px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.toast-success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.toast-danger {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.toast svg {
+  margin-right: 0.5rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Form Check Styling === */
+.form-check-input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.form-check-label {
+  font-size: 0.95rem;
+}
+
+/* === Buttons === */
+.btn {
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: transform 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* === Headings === */
+h5 {
+  font-weight: 600;
+}
+
+/* === Small Gaps for Cards === */
+.mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+/* === Section Header === */
+.card-header.bg-primary {
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+/* === Responsive Adjustments === */
+@media (max-width: 768px) {
+  .summary-card {
+    margin-bottom: 1rem;
+  }
+  .schedule-page .d-flex.gap-2 {
+    flex-direction: column;
+  }
+  .toast {
+    top: 80px;
+    right: 10px;
+    min-width: 200px;
+  }
+}
