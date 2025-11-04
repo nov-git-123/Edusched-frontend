@@ -654,8 +654,16 @@
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Search, ChevronDown, ChevronUp, RefreshCw, Calendar, User, Clock } from "lucide-react";
+// import { API } from '../../config/api';
+
 
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// const API_BASE =
+//   process.env.REACT_APP_API_URL ||
+//   (window.location.hostname === 'localhost'
+//     ? 'http://localhost:5000'
+//     : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+
 const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 // EduSched Color Palette

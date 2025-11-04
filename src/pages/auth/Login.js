@@ -914,6 +914,8 @@ import {
   CheckCircle, User, X, Loader
 } from 'lucide-react';
 
+
+
 // ==================== CONSTANTS ====================
 const COLORS = {
   primary: "#03045E",
@@ -924,7 +926,9 @@ const COLORS = {
   lightest: "#CAF0F8",
 };
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+ const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+
 
 // ==================== AUTH INPUT COMPONENT ====================
 const AuthInput = React.memo(({ 
@@ -1217,7 +1221,8 @@ export default function Login() {
    */
   const fetchUserRole = async (uid) => {
     try {
-      const res = await fetch(`${API_BASE}/api/users/${uid}`);
+      const res = await fetch(`${API}/api/users/${uid}`);
+
       if (!res.ok) return null;
       return await res.json();
     } catch (err) {
@@ -1231,7 +1236,7 @@ export default function Login() {
    */
   const fetchInstructorId = async (fullName) => {
     try {
-      const res = await fetch(`${API_BASE}/api/instructors`);
+      const res = await fetch(`${API}/api/instructors`);
       const instructors = await res.json();
       const match = instructors.find(i => 
         i.name.trim().toLowerCase() === fullName.trim().toLowerCase()
@@ -1417,7 +1422,7 @@ export default function Login() {
 
     try {
       // Save user role to backend
-      const response = await fetch(`${API_BASE}/api/users`, {
+      const response = await fetch(`${API}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

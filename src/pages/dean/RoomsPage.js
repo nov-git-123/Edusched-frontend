@@ -4196,6 +4196,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Card, Button, Modal, Form, Spinner, Badge, InputGroup } from "react-bootstrap";
 import { Building2, DoorOpen, Search, Plus, RotateCw, Trash2, Edit, AlertCircle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+// import { API } from '../../config/api';
 
 const RoomManagement = () => {
   // State management
@@ -4217,6 +4218,12 @@ const RoomManagement = () => {
   const [selectedBuildingForRoom, setSelectedBuildingForRoom] = useState(null);
 
   const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+  // const API_BASE =
+  // process.env.REACT_APP_API_URL ||
+  // (window.location.hostname === 'localhost'
+  //   ? 'http://localhost:5000'
+  //   : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+
   const COLORS = {
     primary: "#03045E",
     secondary: "#023E8A",

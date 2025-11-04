@@ -2708,8 +2708,15 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Clock, CheckCircle, XCircle, AlertCircle, Calendar, Save, RefreshCw, Trash2, Info } from "lucide-react";
+// import { API } from '../../config/api';
 
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// const API_BASE =
+//   process.env.REACT_APP_API_URL ||
+//   (window.location.hostname === 'localhost'
+//     ? 'http://localhost:5000'
+//     : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const COLORS = {

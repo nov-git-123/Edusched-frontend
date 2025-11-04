@@ -2098,14 +2098,22 @@
 //   );
 // }
 
+//DEFENSE
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { 
   Search, RefreshCw, Download, Calendar, Users, BookOpen, 
   Clock, ChevronDown, ChevronUp, Filter, FileText, X 
 } from "lucide-react";
+// import { API } from '../../config/api';
 
 // ==================== CONSTANTS ====================
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// const API_BASE =
+//   process.env.REACT_APP_API_URL ||
+//   (window.location.hostname === 'localhost'
+//     ? 'http://localhost:5000'
+//     : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+
 const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const COLORS = {
@@ -2235,7 +2243,7 @@ const ScheduleFilters = React.memo(({
             <option value="">Select Semester</option>
             <option value="1">1st Semester</option>
             <option value="2">2nd Semester</option>
-            <option value="Summer">Summer</option>
+            {/* <option value="Summer">Summer</option> */}
           </select>
         </div>
 
@@ -3624,3 +3632,4 @@ export default function ListPage() {
     </div>
   );
 }
+

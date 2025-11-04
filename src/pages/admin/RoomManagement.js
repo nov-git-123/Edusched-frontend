@@ -249,8 +249,16 @@ import {
   X,
   Home
 } from "lucide-react";
+// import { API } from '../../config/api';
+
 
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// const API_BASE =
+//   process.env.REACT_APP_API_URL ||
+//   (window.location.hostname === 'localhost'
+//     ? 'http://localhost:5000'
+//     : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+
 const COLORS = {
   primary: "#03045E",
   secondary: "#023E8A",

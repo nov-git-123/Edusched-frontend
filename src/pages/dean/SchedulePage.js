@@ -8330,7 +8330,2064 @@
 //     </main>
 //   );
 
+//defense
+// import React, { useEffect, useState, useMemo, useCallback } from 'react';
+// import { Calendar, Settings, CheckCircle, AlertTriangle, Clock, Users, BookOpen, Loader, Download, RefreshCw, Search, Filter, X, Plus, Building2, DoorOpen, ChevronDown, ChevronUp } from 'lucide-react';
+// // import { API } from '../../config/api';
 
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// // const API_BASE =
+// //   process.env.REACT_APP_API_URL ||
+// //   (window.location.hostname === 'localhost'
+// //     ? 'http://localhost:5000'
+// //     : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// // ============================================
+// // UTILITY FUNCTIONS
+// // ============================================
+
+// const formatTime = (time) => {
+//   const [hours, minutes] = time.split(':');
+//   const hour = parseInt(hours);
+//   const period = hour >= 12 ? 'PM' : 'AM';
+//   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+//   return `${displayHour}:${minutes} ${period}`;
+// };
+
+// const formatTimeRange = (startTime, endTime) => {
+//   return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+// };
+
+// const slotToTime = (slotIndex) => {
+//   const startHour = 7 + Number(slotIndex);
+//   const endHour = startHour + 1;
+//   const formatHour = (hour) => {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
+//     return `${adjusted}:00 ${period}`;
+//   };
+//   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+// };
+
+// // ============================================
+// // TOAST NOTIFICATION COMPONENT
+// // ============================================
+
+// const Toast = ({ message, type, onClose }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => {
+//       onClose();
+//     }, 5000);
+//     return () => clearTimeout(timer);
+//   }, [onClose]);
+
+//   return (
+//     <div className={`edusched-toast toast-${type}`}>
+//       <div className="toast-icon">
+//         {type === "success" ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+//       </div>
+//       <span className="toast-message">{message}</span>
+//       <button className="toast-close" onClick={onClose}>×</button>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // LOADING STATE COMPONENT
+// // ============================================
+
+// const LoadingState = ({ message = 'Loading...' }) => (
+//   <div style={{ textAlign: 'center', padding: '3rem' }}>
+//     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
+//     <p style={{ color: '#666', fontSize: '1rem' }}>{message}</p>
+//   </div>
+// );
+
+// // ============================================
+// // SCHEDULE FORM COMPONENT
+// // ============================================
+
+// const DeanScheduleForm = ({ 
+//   courses, 
+//   courseId, 
+//   setCourseId,
+//   yearLevel,
+//   setYearLevel,
+//   semester,
+//   setSemester,
+//   studentsCount,
+//   setStudentsCount,
+//   sectionCount,
+//   setSectionCount,
+//   considerAvailability,
+//   setConsiderAvailability,
+//   generating,
+//   availabilityLoaded,
+//   availabilityDataCount
+// }) => (
+//   <div className="config-card">
+//     <div className="config-card-header">
+//       <Settings size={20} />
+//       <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Schedule Configuration</h3>
+//     </div>
+//     <div className="config-card-body">
+//       <div className="form-grid">
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
+//             Course *
+//           </label>
+//           <select
+//             className="form-input-custom"
+//             value={courseId}
+//             onChange={e => setCourseId(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="">-- Select Course --</option>
+//             {courses.map(c => (
+//               <option key={c.id} value={c.id}>
+//                 {c.code} — {c.name}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Year Level *</label>
+//           <select
+//             className="form-input-custom"
+//             value={yearLevel}
+//             onChange={e => setYearLevel(Number(e.target.value))}
+//             disabled={generating}
+//           >
+//             {[1, 2, 3, 4].map(y => (
+//               <option key={y} value={y}>{y}</option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Semester *</label>
+//           <select
+//             className="form-input-custom"
+//             value={semester}
+//             onChange={e => setSemester(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="1">1st Semester</option>
+//             <option value="2">2nd Semester</option>
+//             {/* <option value="Summer">Summer</option> */}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <Users size={16} style={{ marginRight: '0.5rem' }} />
+//             Students per Section
+//           </label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             value={studentsCount}
+//             onChange={e => setStudentsCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Number of Sections</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             max="10"
+//             value={sectionCount}
+//             onChange={e => setSectionCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+//       </div>
+
+//       <div className="availability-section">
+//         <label className="checkbox-container">
+//           <input
+//             type="checkbox"
+//             checked={considerAvailability}
+//             onChange={e => setConsiderAvailability(e.target.checked)}
+//             disabled={generating}
+//           />
+//           <span className="checkbox-label">
+//             <strong>Consider Instructor Availability</strong>
+//             <br />
+//             <small style={{ color: '#666' }}>
+//               When enabled, only instructors with availability data will be scheduled.
+//               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+//             </small>
+//           </span>
+//         </label>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+// // ============================================
+// // SUBJECT LIST COMPONENT
+// // ============================================
+
+// const SubjectList = ({ 
+//   subjects, 
+//   selectedSubjects, 
+//   toggleSubject, 
+//   generating, 
+//   loading, 
+//   courseId 
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredSubjects = useMemo(() => {
+//     if (!searchTerm) return subjects;
+//     const term = searchTerm.toLowerCase();
+//     return subjects.filter(s => 
+//       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
+//       (s.description || '').toLowerCase().includes(term)
+//     );
+//   }, [subjects, searchTerm]);
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//           <BookOpen size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
+//           {subjects.length > 0 && (
+//             <span className="count-badge">
+//               {selectedSubjects.length} / {subjects.length}
+//             </span>
+//           )}
+//         </div>
+//         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//       </div>
+      
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {loading ? (
+//             <LoadingState message="Loading subjects..." />
+//           ) : !courseId ? (
+//             <div className="info-box">
+//               <AlertTriangle size={18} />
+//               <span>Please select a course first.</span>
+//             </div>
+//           ) : subjects.length === 0 ? (
+//             <div className="warning-box">
+//               No subjects available for this course, year, and semester.
+//             </div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search subjects..."
+//                   value={searchTerm}
+//                   onChange={e => setSearchTerm(e.target.value)}
+//                 />
+//                 {searchTerm && (
+//                   <button onClick={() => setSearchTerm('')} className="clear-btn">
+//                     <X size={16} />
+//                   </button>
+//                 )}
+//               </div>
+
+//               <div className="items-list">
+//                 {filteredSubjects.map(s => (
+//                   <label 
+//                     key={s.id} 
+//                     className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedSubjects.includes(s.id)}
+//                       onChange={() => toggleSubject(s.id)}
+//                       disabled={generating}
+//                     />
+//                     <div className="item-content">
+//                       <div>
+//                         <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+//                         <br />
+//                         <small style={{ color: '#666' }}>{s.description}</small>
+//                       </div>
+//                       <span className="units-badge">{s.units}u</span>
+//                     </div>
+//                   </label>
+//                 ))}
+//                 {filteredSubjects.length === 0 && (
+//                   <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
+//                     No subjects match your search
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // INSTRUCTOR LIST COMPONENT
+// // ============================================
+
+// const InstructorSubjectList = ({ 
+//   instructors, 
+//   selectedInstructorIds, 
+//   toggleInstructor, 
+//   selectAllInstructors,
+//   deselectAllInstructors,
+//   instructorAvailability,
+//   availabilityData,
+//   considerAvailability,
+//   generating, 
+//   courseId 
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredInstructors = useMemo(() => {
+//     if (!searchTerm) return instructors;
+//     const term = searchTerm.toLowerCase();
+//     return instructors.filter(i => 
+//       (i.name || i.instructor_name || '').toLowerCase().includes(term)
+//     );
+//   }, [instructors, searchTerm]);
+
+//   const getInstructorAvailabilityTimes = useCallback((instructor) => {
+//     const name = instructor.name || instructor.instructor_name;
+//     const slots = availabilityData[name] || [];
+//     const byDay = {};
+//     slots.forEach(slot => {
+//       const day = slot.day || 'Unknown';
+//       if (!byDay[day]) byDay[day] = [];
+//       byDay[day].push(`${slot.start_time} - ${slot.end_time}`);
+//     });
+//     return byDay;
+//   }, [availabilityData]);
+
+//   const getInstructorSlots = useCallback((instructor) => {
+//     const name = instructor.name || instructor.instructor_name;
+//     const slots = availabilityData[name] || [];
+//     return slots.length;
+//   }, [availabilityData]);
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+//           <Users size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Instructors *</h3>
+//           {considerAvailability && (
+//             <span className="warning-badge">Availability Enabled</span>
+//           )}
+//           {instructors.length > 0 && (
+//             <span className="count-badge" style={{ marginLeft: 'auto' }}>
+//               {selectedInstructorIds.length} / {instructors.length}
+//             </span>
+//           )}
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+//           {instructors.length > 0 && (
+//             <>
+//               <button 
+//                 className="small-btn" 
+//                 onClick={(e) => { e.stopPropagation(); selectAllInstructors(); }}
+//                 disabled={generating}
+//               >
+//                 Select All
+//               </button>
+//               <button 
+//                 className="small-btn" 
+//                 onClick={(e) => { e.stopPropagation(); deselectAllInstructors(); }}
+//                 disabled={generating}
+//               >
+//                 Clear
+//               </button>
+//             </>
+//           )}
+//           {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//         </div>
+//       </div>
+      
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {!courseId ? (
+//             <div className="info-box">
+//               <AlertTriangle size={18} />
+//               <span>Please select a course first.</span>
+//             </div>
+//           ) : instructors.length === 0 ? (
+//             <div className="warning-box">
+//               No instructors assigned to this course. Please assign instructors first.
+//             </div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search instructors..."
+//                   value={searchTerm}
+//                   onChange={e => setSearchTerm(e.target.value)}
+//                 />
+//                 {searchTerm && (
+//                   <button onClick={() => setSearchTerm('')} className="clear-btn">
+//                     <X size={16} />
+//                   </button>
+//                 )}
+//               </div>
+
+//               <div className="items-list">
+//                 {filteredInstructors.map(ins => (
+//                   <label 
+//                     key={ins.id} 
+//                     className={`item-checkbox ${selectedInstructorIds.includes(ins.id) ? 'selected' : ''}`}
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedInstructorIds.includes(ins.id)}
+//                       onChange={() => toggleInstructor(ins.id)}
+//                       disabled={generating}
+//                     />
+//                     <div className="item-content" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+//                       <strong style={{ color: COLORS.primary }}>{ins.name || ins.instructor_name}</strong>
+                      
+//                       {considerAvailability && (
+//                         <div style={{ marginTop: '0.5rem', width: '100%' }}>
+//                           {instructorAvailability[ins.id] ? (
+//                             <>
+//                               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+//                                 <CheckCircle size={14} style={{ color: '#10B981', marginRight: '0.5rem' }} />
+//                                 <small style={{ color: '#10B981', fontWeight: 600 }}>
+//                                   {getInstructorSlots(ins)} availability slots
+//                                 </small>
+//                               </div>
+//                               <div style={{ fontSize: '0.75rem', color: '#6B7280', paddingLeft: '1.5rem' }}>
+//                                 {Object.entries(getInstructorAvailabilityTimes(ins)).map(([day, times]) => (
+//                                   <div key={day} style={{ marginBottom: '0.25rem' }}>
+//                                     <strong>{day}:</strong>{' '}
+//                                     {times.map((t, idx) => {
+//                                       const [start, end] = t.split(' - ');
+//                                       return (
+//                                         <span key={idx}>
+//                                           {formatTimeRange(start, end)}
+//                                           {idx < times.length - 1 && ', '}
+//                                         </span>
+//                                       );
+//                                     })}
+//                                   </div>
+//                                 ))}
+//                               </div>
+//                             </>
+//                           ) : (
+//                             <div style={{ display: 'flex', alignItems: 'center' }}>
+//                               <AlertTriangle size={14} style={{ color: '#F59E0B', marginRight: '0.5rem' }} />
+//                               <small style={{ color: '#F59E0B' }}>No availability data</small>
+//                             </div>
+//                           )}
+//                         </div>
+//                       )}
+//                     </div>
+//                   </label>
+//                 ))}
+//                 {filteredInstructors.length === 0 && (
+//                   <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
+//                     No instructors match your search
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // SCHEDULE PREVIEW COMPONENT
+// // ============================================
+
+// const SchedulePreview = ({ 
+//   scheduleResult, 
+//   conflicts, 
+//   subjects, 
+//   instructors, 
+//   rooms, 
+//   onClear 
+// }) => {
+//   if (!scheduleResult?.assignments) return null;
+
+//   const grouped = {};
+//   scheduleResult.assignments.forEach(a => {
+//     if (!grouped[a.section_index]) grouped[a.section_index] = [];
+//     grouped[a.section_index].push(a);
+//   });
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   return (
+//     <div style={{ marginTop: '2rem' }}>
+//       {conflicts.length > 0 && (
+//         <div className="conflicts-box">
+//           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+//             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>
+//                 Schedule Conflicts Detected ({conflicts.length})
+//               </h4>
+//               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+//                 {conflicts.map((conflict, idx) => (
+//                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
+//                     <br />
+//                     <small style={{ color: '#666' }}>{conflict.details}</small>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="preview-header">
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//           <Calendar size={24} style={{ color: COLORS.accent }} />
+//           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>
+//             Generated Schedule
+//           </h3>
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+//           {scheduleResult.stats && (
+//             <>
+//               <span className="preview-badge success">
+//                 {scheduleResult.stats.totalAssignments} assignments
+//               </span>
+//               {conflicts.length === 0 ? (
+//                 <span className="preview-badge success">
+//                   <CheckCircle size={14} style={{ marginRight: '0.25rem' }} />
+//                   No Conflicts
+//                 </span>
+//               ) : (
+//                 <span className="preview-badge danger">
+//                   <AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />
+//                   {conflicts.length} Conflicts
+//                 </span>
+//               )}
+//             </>
+//           )}
+//           <button className="action-btn secondary" onClick={onClear}>
+//             <X size={16} />
+//             Clear
+//           </button>
+//         </div>
+//       </div>
+
+//       {Object.keys(grouped).map(secIdx => {
+//         const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+//         return (
+//           <div key={secIdx} className="section-card">
+//             <div className="section-header">
+//               <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Section {sectionLetter}</h4>
+//             </div>
+//             <div style={{ overflowX: 'auto' }}>
+//               <table className="schedule-table">
+//                 <thead>
+//                   <tr>
+//                     <th>Subject</th>
+//                     <th>Instructor</th>
+//                     <th>Room</th>
+//                     {days.map(d => (
+//                       <th key={d}>{d}</th>
+//                     ))}
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {grouped[secIdx].map((r, i) => {
+//                     const subject = subjects.find(s => s.id === r.subject_id);
+//                     const instructor = instructors.find(ins => ins.id === r.instructor_id);
+//                     const room = rooms.find(rm => rm.id === r.room_id);
+
+//                     return (
+//                       <tr key={i}>
+//                         <td>
+//                           <strong style={{ color: COLORS.accent }}>
+//                             {subject?.subject_code || r.subject_id}
+//                           </strong>
+//                           <br />
+//                           <small style={{ color: '#666' }}>{subject?.description}</small>
+//                         </td>
+//                         <td>{instructor?.name || instructor?.instructor_name || 'TBD'}</td>
+//                         <td>
+//                           <strong>{room?.name || 'TBD'}</strong>
+//                         </td>
+//                         {days.map(day => {
+//                           const matchingSlot = grouped[secIdx].find(
+//                             slot => slot.subject_id === r.subject_id && slot.day === day
+//                           );
+//                           return (
+//                             <td key={day}>
+//                               {matchingSlot ? (
+//                                 <span className="time-badge">
+//                                   <Clock size={12} />
+//                                   {slotToTime(matchingSlot.slot_index)}
+//                                 </span>
+//                               ) : (
+//                                 <span style={{ color: '#ccc' }}>—</span>
+//                               )}
+//                             </td>
+//                           );
+//                         })}
+//                       </tr>
+//                     );
+//                   })}
+//                 </tbody>
+//               </table>
+//             </div>
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // CONFIRMATION MODAL COMPONENT
+// // ============================================
+
+// const GenerateModal = ({ 
+//   show, 
+//   onHide, 
+//   onConfirm, 
+//   courses, 
+//   courseId, 
+//   yearLevel, 
+//   semester, 
+//   sectionCount, 
+//   studentsCount, 
+//   selectedSubjects, 
+//   selectedInstructorIds, 
+//   considerAvailability 
+// }) => {
+//   if (!show) return null;
+
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header-custom">
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <Settings size={24} />
+//             <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
+//               Confirm Schedule Generation
+//             </h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+//         <div className="modal-body-custom">
+//           <div className="modal-info-grid">
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Course:</strong>
+//               <p>{selectedCourse?.name || 'N/A'}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Year Level:</strong>
+//               <p>{yearLevel}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Semester:</strong>
+//               <p>{semester}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Sections:</strong>
+//               <p>{sectionCount}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Students/Section:</strong>
+//               <p>{studentsCount}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Subjects:</strong>
+//               <p>{selectedSubjects.length}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Instructors:</strong>
+//               <p>{selectedInstructorIds.length}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
+//               <p>
+//                 {considerAvailability ? (
+//                   <span className="modal-badge success">Enforced</span>
+//                 ) : (
+//                   <span className="modal-badge secondary">Ignored</span>
+//                 )}
+//               </p>
+//             </div>
+//           </div>
+//           <div className="modal-info-box">
+//             <AlertTriangle size={18} />
+//             <small>
+//               The system will automatically assign rooms and time slots (7 AM - 7 PM) 
+//               while preventing scheduling conflicts.
+//             </small>
+//           </div>
+//         </div>
+//         <div className="modal-footer-custom">
+//           <button className="action-btn secondary" onClick={onHide}>
+//             Cancel
+//           </button>
+//           <button className="action-btn primary" onClick={onConfirm}>
+//             <CheckCircle size={16} />
+//             Confirm & Generate
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // MAIN COMPONENT
+// // ============================================
+
+// export default function DeanSchedulePage() {
+//   // State Management
+//   const [courses, setCourses] = useState([]);
+//   const [courseId, setCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [studentsCount, setStudentsCount] = useState(30);
+//   const [sectionCount, setSectionCount] = useState(1);
+  
+//   const [subjects, setSubjects] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  
+//   const [allInstructors, setAllInstructors] = useState([]);
+//   const [courseInstructors, setCourseInstructors] = useState([]);
+//   const [selectedInstructorIds, setSelectedInstructorIds] = useState([]);
+//   const [instructorAvailability, setInstructorAvailability] = useState({});
+//   const [availabilityData, setAvailabilityData] = useState({});
+  
+//   const [rooms, setRooms] = useState([]);
+//   const [showConfirm, setShowConfirm] = useState(false);
+//   const [generating, setGenerating] = useState(false);
+//   const [scheduleResult, setScheduleResult] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const [considerAvailability, setConsiderAvailability] = useState(true);
+//   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+//   const [conflicts, setConflicts] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   // Fetch initial data on mount
+//   useEffect(() => {
+//     const initData = async () => {
+//       setLoading(true);
+//       await Promise.all([
+//         fetchCourses(),
+//         fetchAllInstructors(),
+//         fetchRooms(),
+//         fetchAvailabilityData()
+//       ]);
+//       setLoading(false);
+//     };
+//     initData();
+//   }, []);
+
+//   // API Fetch Functions
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching courses:', err);
+//       setCourses([]);
+//     }
+//   }, []);
+
+//   const fetchAllInstructors = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructors`);
+//       const data = await res.json();
+//       setAllInstructors(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching instructors:', err);
+//       setAllInstructors([]);
+//     }
+//   }, []);
+
+//   const fetchRooms = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/rooms`);
+//       if (res.ok) {
+//         const data = await res.json();
+//         setRooms(Array.isArray(data) ? data : []);
+//       }
+//     } catch (err) {
+//       console.error('Error fetching rooms:', err);
+//       setRooms([]);
+//     }
+//   }, []);
+
+//   const fetchAvailabilityData = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructor-availability`);
+//       if (!res.ok) throw new Error('Failed to fetch availability');
+//       const data = await res.json();
+      
+//       const availMap = {};
+//       if (Array.isArray(data)) {
+//         data.forEach(item => {
+//           const name = item.instructorName || 'Unknown';
+//           if (!availMap[name]) {
+//             availMap[name] = [];
+//           }
+//           availMap[name].push({
+//             day: item.day,
+//             start_time: item.start_time,
+//             end_time: item.end_time
+//           });
+//         });
+//       }
+//       setAvailabilityData(availMap);
+//       setAvailabilityLoaded(true);
+//     } catch (err) {
+//       console.error('Error fetching availability data:', err);
+//       setAvailabilityLoaded(true);
+//     }
+//   }, []);
+
+//   // Load subjects and instructors when course/year/semester changes
+//   useEffect(() => {
+//     if (!courseId) {
+//       setSubjects([]);
+//       setSelectedSubjects([]);
+//       setCourseInstructors([]);
+//       setSelectedInstructorIds([]);
+//       setInstructorAvailability({});
+//       return;
+//     }
+
+//     const loadSubjects = async () => {
+//       setLoadingSubjects(true);
+//       try {
+//         const q = new URLSearchParams({ courseId, yearLevel, semester }).toString();
+//         const res = await fetch(`${API}/api/subjects?${q}`);
+//         const data = await res.json();
+//         const arr = Array.isArray(data) ? data : [];
+//         setSubjects(arr);
+//         setSelectedSubjects(arr.map(s => s.id || s.subject_id).filter(Boolean));
+//       } catch (err) {
+//         console.error('Error loading subjects:', err);
+//         setSubjects([]);
+//       } finally {
+//         setLoadingSubjects(false);
+//       }
+//     };
+
+//     const loadCourseInstructors = async () => {
+//       try {
+//         const res = await fetch(`${API}/api/instructors/byCourse/${courseId}`);
+//         if (res.ok) {
+//           const data = await res.json();
+//           if (Array.isArray(data) && data.length > 0) {
+//             setCourseInstructors(data);
+//             initializeAvailability(data);
+//             return;
+//           }
+//         }
+//       } catch (err) {
+//         console.error('Error fetching instructors by course:', err);
+//       }
+
+//       const filtered = allInstructors.filter(i => String(i.course_id) === String(courseId));
+//       setCourseInstructors(filtered);
+//       initializeAvailability(filtered);
+//     };
+
+//     const initializeAvailability = (instructors) => {
+//       const availMap = {};
+//       instructors.forEach(i => {
+//         const hasAvailability = availabilityData[i.name || i.instructor_name] !== undefined;
+//         availMap[i.id] = hasAvailability;
+//       });
+//       setInstructorAvailability(availMap);
+//     };
+
+//     loadSubjects();
+//     loadCourseInstructors();
+//   }, [courseId, yearLevel, semester, allInstructors, availabilityData]);
+
+//   // Toggle Functions
+//   const toggleSubject = useCallback((id) => {
+//     setSelectedSubjects(prev =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   }, []);
+
+//   const toggleInstructor = useCallback((id) => {
+//     setSelectedInstructorIds(prev =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   }, []);
+
+//   const selectAllInstructors = useCallback(() => {
+//     setSelectedInstructorIds(courseInstructors.map(i => i.id));
+//   }, [courseInstructors]);
+
+//   const deselectAllInstructors = useCallback(() => {
+//     setSelectedInstructorIds([]);
+//   }, []);
+
+//   // Conflict Detection
+//   const detectConflicts = useCallback((assignments) => {
+//     const conflictList = [];
+//     const roomUsage = new Map();
+//     const instructorUsage = new Map();
+//     const sectionUsage = new Map();
+
+//     assignments.forEach((a) => {
+//       const room = rooms.find(r => r.id === a.room_id);
+//       const instructor = courseInstructors.find(i => i.id === a.instructor_id) || 
+//                          allInstructors.find(i => i.id === a.instructor_id);
+//       const subject = subjects.find(s => s.id === a.subject_id);
+
+//       // Check room conflicts
+//       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
+//       if (roomUsage.has(roomKey)) {
+//         const existing = roomUsage.get(roomKey);
+//         conflictList.push({
+//           type: 'room',
+//           message: `Room "${room?.name || a.room_id}" is double-booked on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Conflict between subjects: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+//         });
+//       }
+//       roomUsage.set(roomKey, { ...a, subject: subject?.subject_code });
+
+//       // Check instructor conflicts
+//       const instrKey = `${a.instructor_id}-${a.day}-${a.slot_index}`;
+//       if (instructorUsage.has(instrKey)) {
+//         const existing = instructorUsage.get(instrKey);
+//         conflictList.push({
+//           type: 'instructor',
+//           message: `Instructor "${instructor?.name || a.instructor_id}" is scheduled twice on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Teaching both: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+//         });
+//       }
+//       instructorUsage.set(instrKey, { ...a, subject: subject?.subject_code });
+
+//       // Check section conflicts
+//       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
+//       if (sectionUsage.has(sectionKey)) {
+//         const existing = sectionUsage.get(sectionKey);
+//         const sectionName = String.fromCharCode(65 + a.section_index);
+//         conflictList.push({
+//           type: 'section',
+//           message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Both: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+//         });
+//       }
+//       sectionUsage.set(sectionKey, { ...a, subject: subject?.subject_code });
+//     });
+
+//     return conflictList;
+//   }, [rooms, courseInstructors, allInstructors, subjects]);
+
+//   // Generate Schedule Handler
+//   const handleGenerate = useCallback(async () => {
+//     if (!courseId || selectedSubjects.length === 0) {
+//       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
+//       return;
+//     }
+
+//     if (selectedInstructorIds.length === 0) {
+//       setToast({ type: 'error', message: 'Please select at least one instructor for this course.' });
+//       return;
+//     }
+
+//     const selectedButUnavailable = selectedInstructorIds.filter(id => !instructorAvailability[id]);
+//     if (considerAvailability && selectedButUnavailable.length > 0) {
+//       setToast({ 
+//         type: 'error', 
+//         message: `${selectedButUnavailable.length} selected instructor(s) have no availability data. They will be excluded from scheduling.` 
+//       });
+//       return;
+//     }
+
+//     setShowConfirm(false);
+//     setGenerating(true);
+//     setToast(null);
+//     setScheduleResult(null);
+//     setConflicts([]);
+
+//     try {
+//       const instructorsPayload = selectedInstructorIds.map(id => ({
+//         id,
+//         available: instructorAvailability[id] || true
+//       }));
+
+//       const payload = {
+//         courseId: Number(courseId),
+//         yearLevel: Number(yearLevel),
+//         semester: String(semester),
+//         studentsCount: Number(studentsCount),
+//         sectionCount: Number(sectionCount),
+//         subjects: selectedSubjects,
+//         instructors: instructorsPayload,
+//         considerInstructorAvailability: considerAvailability
+//       };
+
+//       const res = await fetch(`${API}/api/scheduler/generate`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//       });
+
+//       const data = await res.json();
+
+//       if (!res.ok) {
+//         throw new Error(data.detail || data.error || 'Schedule generation failed');
+//       }
+
+//       const detectedConflicts = detectConflicts(data.assignments || []);
+//       setConflicts(detectedConflicts);
+//       setScheduleResult(data);
+      
+//       if (detectedConflicts.length > 0) {
+//         setToast({ 
+//           type: 'error', 
+//           message: `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` 
+//         });
+//       } else {
+//         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
+//       }
+//     } catch (err) {
+//       console.error('Error generating schedule:', err);
+//       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
+//     } finally {
+//       setGenerating(false);
+//     }
+//   }, [
+//     courseId, 
+//     selectedSubjects, 
+//     selectedInstructorIds, 
+//     instructorAvailability, 
+//     considerAvailability,
+//     yearLevel,
+//     semester,
+//     studentsCount,
+//     sectionCount,
+//     detectConflicts
+//   ]);
+
+//   // Memoized values
+//   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
+
+//   const overallStats = useMemo(() => {
+//     return {
+//       totalCourses: courses.length,
+//       totalSubjects: subjects.length,
+//       totalInstructors: courseInstructors.length,
+//       selectedSubjects: selectedSubjects.length,
+//       selectedInstructors: selectedInstructorIds.length
+//     };
+//   }, [courses.length, subjects.length, courseInstructors.length, selectedSubjects.length, selectedInstructorIds.length]);
+
+//   if (loading) {
+//     return (
+//       <div style={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         minHeight: '100vh',
+//         background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)`
+//       }}>
+//         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
+//         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         * {
+//           box-sizing: border-box;
+//         }
+
+//         body {
+//           margin: 0;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+//         }
+
+//         .schedule-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         .page-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           margin-bottom: 2rem;
+//           color: white;
+//         }
+
+//         .page-title-section {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           margin: 0 0 0.5rem 0;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           letter-spacing: -0.5px;
+//         }
+
+//         .page-subtitle {
+//           font-size: 1.05rem;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           font-size: 0.95rem;
+//         }
+
+//         .action-btn.primary {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//         }
+
+//         .action-btn.secondary {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover:not(:disabled) {
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn.primary:hover:not(:disabled) {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%);
+//         }
+
+//         .action-btn.secondary:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid ${COLORS.accent};
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(10px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//         }
+
+//         .config-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .config-card-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .config-card-body {
+//           padding: 2rem;
+//         }
+
+//         .form-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .form-group {
+//           display: flex;
+//           flex-direction: column;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.5rem;
+//           display: flex;
+//           align-items: center;
+//           font-size: 0.9rem;
+//         }
+
+//         .form-input-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//           background: white;
+//         }
+
+//         .form-input-custom:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .form-input-custom:disabled {
+//           background: #f5f5f5;
+//           cursor: not-allowed;
+//         }
+
+//         .availability-section {
+//           background: ${COLORS.lightest};
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//         }
+
+//         .checkbox-container {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-container input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-label {
+//           flex: 1;
+//           color: ${COLORS.primary};
+//         }
+
+//         .selection-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         .selection-card-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .selection-card-header:hover {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%);
+//         }
+
+//         .selection-card-body {
+//           padding: 1.5rem;
+//         }
+
+//         .count-badge {
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.3rem 0.75rem;
+//           border-radius: 12px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .warning-badge {
+//           background: #F59E0B;
+//           padding: 0.25rem 0.6rem;
+//           border-radius: 6px;
+//           font-size: 0.75rem;
+//           font-weight: 600;
+//         }
+
+//         .small-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: none;
+//           color: white;
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-size: 0.8rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .small-btn:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//         }
+
+//         .small-btn:disabled {
+//           opacity: 0.5;
+//           cursor: not-allowed;
+//         }
+
+//         .search-box {
+//           position: relative;
+//           margin-bottom: 1rem;
+//         }
+
+//         .search-box input {
+//           width: 100%;
+//           padding: 0.75rem 1rem 0.75rem 2.75rem;
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-box input:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-inline {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: ${COLORS.accent};
+//           pointer-events: none;
+//         }
+
+//         .clear-btn {
+//           position: absolute;
+//           right: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           transition: color 0.3s ease;
+//         }
+
+//         .clear-btn:hover {
+//           color: ${COLORS.accent};
+//         }
+
+//         .items-list {
+//           max-height: 400px;
+//           overflow-y: auto;
+//         }
+
+//         .item-checkbox {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 1rem;
+//           padding: 1rem;
+//           margin-bottom: 0.75rem;
+//           border-radius: 10px;
+//           border: 2px solid #E9ECEF;
+//           background: #F8F9FA;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .item-checkbox.selected {
+//           background: #E6F7FF;
+//           border-color: ${COLORS.light};
+//         }
+
+//         .item-checkbox:hover {
+//           border-color: ${COLORS.accent};
+//           transform: translateX(4px);
+//         }
+
+//         .item-checkbox input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//           flex-shrink: 0;
+//         }
+
+//         .item-content {
+//           flex: 1;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .units-badge {
+//           background: #6c757d;
+//           color: white;
+//           padding: 0.25rem 0.6rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .warning-box {
+//           background: #FFF3CD;
+//           border: 2px solid #FFE69C;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           color: #856404;
+//         }
+
+//         .conflicts-box {
+//           background: #FFE6E6;
+//           border: 2px solid #FFB3B3;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-badge {
+//           padding: 0.5rem 1rem;
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .preview-badge.success {
+//           background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+//           color: white;
+//         }
+
+//         .preview-badge.danger {
+//           background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%);
+//           color: white;
+//         }
+
+//         .section-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//         }
+
+//         .section-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//         }
+
+//         .schedule-table {
+//           width: 100%;
+//           border-collapse: collapse;
+//           font-size: 0.9rem;
+//         }
+
+//         .schedule-table thead {
+//           background: ${COLORS.lightest};
+//           color: ${COLORS.primary};
+//         }
+
+//         .schedule-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .schedule-table td {
+//           padding: 0.75rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//           transition: all 0.3s ease;
+//         }
+
+//         .schedule-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .schedule-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-badge {
+//           background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%);
+//           color: ${COLORS.primary};
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           font-size: 0.8rem;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 600px;
+//           width: 100%;
+//           max-height: 90vh;
+//           overflow-y: auto;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from {
+//             transform: translateY(50px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateY(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .modal-close {
+//           background: none;
+//           border: none;
+//           color: white;
+//           font-size: 2rem;
+//           cursor: pointer;
+//           line-height: 1;
+//           padding: 0;
+//           transition: transform 0.3s ease;
+//         }
+
+//         .modal-close:hover {
+//           transform: scale(1.2);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//         }
+
+//         .modal-info-grid {
+//           display: grid;
+//           grid-template-columns: repeat(2, 1fr);
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .modal-info-grid > div {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//         }
+
+//         .modal-info-grid p {
+//           margin: 0;
+//           color: #333;
+//           font-size: 0.95rem;
+//         }
+
+//         .modal-badge {
+//           display: inline-block;
+//           padding: 0.25rem 0.75rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .modal-badge.success {
+//           background: #10B981;
+//           color: white;
+//         }
+
+//         .modal-badge.secondary {
+//           background: #6c757d;
+//           color: white;
+//         }
+
+//         .modal-info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1rem;
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 1rem;
+//         }
+
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from {
+//             transform: translateX(400px);
+//             opacity: 0;
+//           }
+//           to {
+//                         transform: translateX(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .edusched-toast.toast-success { border-left-color: #10B981; }
+//         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
+
+//         .edusched-toast .toast-icon { display: flex; align-items: center; }
+//         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
+//         .edusched-toast .toast-close {
+//           background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280;
+//         }
+//         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
+
+//         .page-content-grid {
+//           display: grid;
+//           grid-template-columns: 1.15fr 1fr;
+//           gap: 1.5rem;
+//         }
+
+//         @media (max-width: 1100px) {
+//           .page-content-grid { grid-template-columns: 1fr; }
+//         }
+
+//         .left-col { display: flex; flex-direction: column; gap: 1.5rem; }
+//         .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+
+//         .footer-actions {
+//           display: flex;
+//           gap: 0.75rem;
+//           justify-content: flex-end;
+//           margin-top: 1rem;
+//         }
+
+//         .divider {
+//           height: 1px;
+//           background: #E8F4F8;
+//           margin: 1.25rem 0;
+//         }
+//       `}</style>
+
+//       <div className="schedule-container">
+//         {/* HEADER */}
+//         <div className="page-header">
+//           <div className="page-title-section">
+//             <div>
+//               <h1 className="page-title">
+//                 <Calendar size={28} />
+//                  Schedule Generator
+//               </h1>
+//               <p className="page-subtitle">
+//                 Auto-assign rooms & times while preventing conflicts. Uses 7:00 AM – 7:00 PM slots (hourly).
+//               </p>
+//             </div>
+
+//             <div className="header-actions">
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={async () => {
+//                   setLoading(true);
+//                   await Promise.all([fetchCourses(), fetchAllInstructors(), fetchRooms(), fetchAvailabilityData()]);
+//                   setLoading(false);
+//                   setToast({ type: 'success', message: 'Data reloaded successfully.' });
+//                 }}
+//                 disabled={loading || generating}
+//                 title="Reload courses, instructors, rooms, availability"
+//               >
+//                 <RefreshCw size={16} />
+//                 Reload Data
+//               </button>
+
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setScheduleResult(null);
+//                   setConflicts([]);
+//                   setSelectedSubjects([]);
+//                   setSelectedInstructorIds([]);
+//                   setToast({ type: 'success', message: 'Selections cleared.' });
+//                 }}
+//                 disabled={generating}
+//                 title="Clear selections & preview"
+//               >
+//                 <X size={16} />
+//                 Reset Selections
+//               </button>
+
+//               <button
+//                 className="action-btn primary"
+//                 onClick={() => setShowConfirm(true)}
+//                 disabled={generating}
+//                 title="Generate schedule"
+//               >
+//                 <CheckCircle size={16} />
+//                 {generating ? 'Generating…' : 'Generate Schedule'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* TOP STATS */}
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label"><BookOpen size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Total Courses</div>
+//             <div className="stat-value">{overallStats.totalCourses}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label"><Users size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Course Instructors</div>
+//             <div className="stat-value">{overallStats.totalInstructors}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label"><DoorOpen size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Total Rooms</div>
+//             <div className="stat-value">{rooms.length}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Subjects</div>
+//             <div className="stat-value">{overallStats.selectedSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Instructors</div>
+//             <div className="stat-value">{overallStats.selectedInstructors}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Availability Records</div>
+//             <div className="stat-value">{availabilityDataCount}</div>
+//           </div>
+//         </div>
+
+//         {/* BODY GRID */}
+//         <div className="page-content-grid">
+//           <div className="left-col">
+//             <DeanScheduleForm
+//               courses={courses}
+//               courseId={courseId}
+//               setCourseId={setCourseId}
+//               yearLevel={yearLevel}
+//               setYearLevel={setYearLevel}
+//               semester={semester}
+//               setSemester={setSemester}
+//               studentsCount={studentsCount}
+//               setStudentsCount={setStudentsCount}
+//               sectionCount={sectionCount}
+//               setSectionCount={setSectionCount}
+//               considerAvailability={considerAvailability}
+//               setConsiderAvailability={setConsiderAvailability}
+//               generating={generating}
+//               availabilityLoaded={availabilityLoaded}
+//               availabilityDataCount={availabilityDataCount}
+//             />
+
+//             {/* Optional: quick rooms glance */}
+//             <div className="selection-card">
+//               <div className="selection-card-header" style={{ cursor: 'default' }}>
+//                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//                   <Building2 size={18} />
+//                   <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Rooms (Auto-assigned)</h3>
+//                 </div>
+//               </div>
+//               <div className="selection-card-body">
+//                 {rooms.length === 0 ? (
+//                   <div className="warning-box">No rooms found. Add rooms in the admin first.</div>
+//                 ) : (
+//                   <>
+//                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+//                       {rooms.slice(0, 18).map(r => (
+//                         <span
+//                           key={r.id}
+//                           className="preview-badge"
+//                           style={{ background: '#EEF8FF', color: COLORS.primary }}
+//                         >
+//                           {r.name}
+//                         </span>
+//                       ))}
+//                       {rooms.length > 18 && (
+//                         <span className="preview-badge" style={{ background: '#EEF8FF', color: COLORS.primary }}>
+//                           +{rooms.length - 18} more
+//                         </span>
+//                       )}
+//                     </div>
+//                     <div className="divider" />
+//                     <small style={{ color: '#6B7280' }}>
+//                       Rooms are assigned automatically to avoid conflicts.
+//                     </small>
+//                   </>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="right-col">
+//             <SubjectList
+//               subjects={subjects}
+//               selectedSubjects={selectedSubjects}
+//               toggleSubject={toggleSubject}
+//               generating={generating}
+//               loading={loadingSubjects}
+//               courseId={courseId}
+//             />
+
+//             <InstructorSubjectList
+//               instructors={courseInstructors}
+//               selectedInstructorIds={selectedInstructorIds}
+//               toggleInstructor={toggleInstructor}
+//               selectAllInstructors={selectAllInstructors}
+//               deselectAllInstructors={deselectAllInstructors}
+//               instructorAvailability={instructorAvailability}
+//               availabilityData={availabilityData}
+//               considerAvailability={considerAvailability}
+//               generating={generating}
+//               courseId={courseId}
+//             />
+
+//             <div className="footer-actions">
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setSelectedSubjects(subjects.map(s => s.id || s.subject_id).filter(Boolean));
+//                   setSelectedInstructorIds(courseInstructors.map(i => i.id));
+//                 }}
+//                 disabled={generating || subjects.length === 0 || courseInstructors.length === 0}
+//               >
+//                 <Plus size={16} />
+//                 Select All
+//               </button>
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setSelectedSubjects([]);
+//                   setSelectedInstructorIds([]);
+//                 }}
+//                 disabled={generating}
+//               >
+//                 <X size={16} />
+//                 Clear All
+//               </button>
+//               <button
+//                 className="action-btn primary"
+//                 onClick={() => setShowConfirm(true)}
+//                 disabled={generating}
+//               >
+//                 <CheckCircle size={16} />
+//                 {generating ? 'Generating…' : 'Generate'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* PREVIEW */}
+//         <SchedulePreview
+//           scheduleResult={scheduleResult}
+//           conflicts={conflicts}
+//           subjects={subjects}
+//           instructors={allInstructors}
+//           rooms={rooms}
+//           onClear={() => {
+//             setScheduleResult(null);
+//             setConflicts([]);
+//           }}
+//         />
+//       </div>
+
+//       {/* MODAL */}
+//       <GenerateModal
+//         show={showConfirm}
+//         onHide={() => setShowConfirm(false)}
+//         onConfirm={handleGenerate}
+//         courses={courses}
+//         courseId={courseId}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         sectionCount={sectionCount}
+//         studentsCount={studentsCount}
+//         selectedSubjects={selectedSubjects}
+//         selectedInstructorIds={selectedInstructorIds}
+//         considerAvailability={considerAvailability}
+//       />
+
+//       {/* TOAST */}
+//       {toast && (
+//         <Toast
+//           message={toast.message}
+//           type={toast.type === 'success' ? 'success' : 'error'}
+//           onClose={() => setToast(null)}
+//         />
+//       )}
+//     </>
+//   );
+// }
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Calendar, Settings, CheckCircle, AlertTriangle, Clock, Users, BookOpen, Loader, Download, RefreshCw, Search, Filter, X, Plus, Building2, DoorOpen, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -8479,7 +10536,6 @@ const DeanScheduleForm = ({
           >
             <option value="1">1st Semester</option>
             <option value="2">2nd Semester</option>
-            <option value="Summer">Summer</option>
           </select>
         </div>
 
@@ -9202,23 +11258,21 @@ export default function DeanSchedulePage() {
     };
 
     const loadCourseInstructors = async () => {
-      try {
-        const res = await fetch(`${API}/api/instructors/byCourse/${courseId}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            setCourseInstructors(data);
-            initializeAvailability(data);
-            return;
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching instructors by course:', err);
+      // Filter instructors that match the selected course
+      const filtered = allInstructors.filter(i => {
+        const instructorCourseId = i.course_id || i.courseId;
+        return String(instructorCourseId) === String(courseId);
+      });
+      
+      if (filtered.length > 0) {
+        console.log(`Found ${filtered.length} instructors for course ${courseId}`);
+        setCourseInstructors(filtered);
+        initializeAvailability(filtered);
+      } else {
+        console.warn(`No instructors found for course ${courseId}`);
+        setCourseInstructors([]);
+        initializeAvailability([]);
       }
-
-      const filtered = allInstructors.filter(i => String(i.course_id) === String(courseId));
-      setCourseInstructors(filtered);
-      initializeAvailability(filtered);
     };
 
     const initializeAvailability = (instructors) => {
@@ -10092,7 +12146,7 @@ export default function DeanSchedulePage() {
             opacity: 0;
           }
           to {
-                        transform: translateX(0);
+            transform: translateX(0);
             opacity: 1;
           }
         }
@@ -10132,6 +12186,19 @@ export default function DeanSchedulePage() {
           background: #E8F4F8;
           margin: 1.25rem 0;
         }
+
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
       `}</style>
 
       <div className="schedule-container">
@@ -10141,7 +12208,7 @@ export default function DeanSchedulePage() {
             <div>
               <h1 className="page-title">
                 <Calendar size={28} />
-                 Schedule Generator
+                Schedule Generator
               </h1>
               <p className="page-subtitle">
                 Auto-assign rooms & times while preventing conflicts. Uses 7:00 AM – 7:00 PM slots (hourly).

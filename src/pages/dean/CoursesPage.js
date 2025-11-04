@@ -4269,9 +4269,16 @@ import {
   Check, ChevronDown, ChevronUp, Filter, Download, 
   AlertCircle, CheckCircle, Calendar, Users, Award
 } from 'lucide-react';
+// import { API } from '../../config/api';
+
 
 // ==================== CONSTANTS ====================
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// const API_BASE =
+//   process.env.REACT_APP_API_URL ||
+//   (window.location.hostname === 'localhost'
+//     ? 'http://localhost:5000'
+//     : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
 
 const COLORS = {
   primary: "#03045E",
@@ -4410,7 +4417,7 @@ const SemesterSelector = React.memo(({ semester, onChange }) => (
       <h3>Semester</h3>
     </div>
     <div className="button-group">
-      {['1', '2', 'Summer'].map(sem => (
+      {['1', '2', ].map(sem => (
         <button
           key={sem}
           className={`selector-btn ${sem === semester ? 'active' : ''}`}
