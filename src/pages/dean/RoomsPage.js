@@ -4193,10 +4193,6992 @@
 
 // export default RoomManagement;
 
+// PRE-ORAL WORKING
+
+// import React, { useState, useEffect, useMemo, useCallback } from "react";
+// import { Card, Button, Modal, Form, Spinner, Badge, InputGroup } from "react-bootstrap";
+// import { Building2, DoorOpen, Search, Plus, RotateCw, Trash2, Edit, AlertCircle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+// // import { API } from '../../config/api';
+
+// const RoomManagement = () => {
+//   // State management
+//   const [buildings, setBuildings] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [expandedBuildings, setExpandedBuildings] = useState({});
+//   const [toast, setToast] = useState(null);
+
+//   // Modal states
+//   const [showBuildingModal, setShowBuildingModal] = useState(false);
+//   const [showRoomModal, setShowRoomModal] = useState(false);
+//   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+//   const [newBuildingName, setNewBuildingName] = useState("");
+//   const [newRoom, setNewRoom] = useState({ name: "", buildingId: "" });
+//   const [modalLoading, setModalLoading] = useState(false);
+//   const [deleteLoading, setDeleteLoading] = useState(false);
+//   const [selectedBuildingForRoom, setSelectedBuildingForRoom] = useState(null);
+
+//   const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+//   // const API_BASE =
+//   // process.env.REACT_APP_API_URL ||
+//   // (window.location.hostname === 'localhost'
+//   //   ? 'http://localhost:5000'
+//   //   : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+
+//   const COLORS = {
+//     primary: "#03045E",
+//     secondary: "#023E8A",
+//     accent: "#0077B6",
+//     light: "#00B4D8",
+//     lighter: "#48CAE4",
+//     lightest: "#CAF0F8",
+//   };
+
+//   // Time slots: 7:00 AM to 7:00 PM
+//   const timeSlots = useMemo(() => {
+//     const slots = [];
+//     for (let hour = 7; hour < 19; hour++) {
+//       const start = `${hour.toString().padStart(2, "0")}:00`;
+//       const end = `${(hour + 1).toString().padStart(2, "0")}:00`;
+//       slots.push({ start, end, hour });
+//     }
+//     return slots;
+//   }, []);
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   /**
+//    * Format time from 24-hour to 12-hour format
+//    */
+//   const formatTime = useCallback((time) => {
+//     const [hour, minute] = time.split(":");
+//     let h = parseInt(hour);
+//     const ampm = h >= 12 ? "PM" : "AM";
+//     h = h % 12 || 12;
+//     return `${h}:${minute} ${ampm}`;
+//   }, []);
+
+//   /**
+//    * Fetch all buildings with rooms and schedules
+//    */
+//   const fetchBuildings = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+//     try {
+//       const res = await fetch(`${API}/api/buildings`);
+//       if (!res.ok) throw new Error("Failed to fetch buildings");
+//       const data = await res.json();
+//       setBuildings(Array.isArray(data) ? data : []);
+      
+//       // Initialize expanded state for all buildings
+//       const expandedState = {};
+//       data.forEach(b => {
+//         expandedState[b.id] = true;
+//       });
+//       setExpandedBuildings(expandedState);
+//     } catch (err) {
+//       console.error("Error fetching buildings:", err);
+//       setError(err.message);
+//       showToast("Failed to load buildings", "error");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [API]);
+
+//   /**
+//    * Show toast notification
+//    */
+//   const showToast = (message, type) => {
+//     setToast({ message, type });
+//   };
+
+//   /**
+//    * Toggle building expansion
+//    */
+//   const toggleBuildingExpansion = (buildingId) => {
+//     setExpandedBuildings(prev => ({
+//       ...prev,
+//       [buildingId]: !prev[buildingId]
+//     }));
+//   };
+
+//   /**
+//    * Expand all buildings
+//    */
+//   const expandAllBuildings = () => {
+//     const expanded = {};
+//     buildings.forEach(b => {
+//       expanded[b.id] = true;
+//     });
+//     setExpandedBuildings(expanded);
+//   };
+
+//   /**
+//    * Collapse all buildings
+//    */
+//   const collapseAllBuildings = () => {
+//     const collapsed = {};
+//     buildings.forEach(b => {
+//       collapsed[b.id] = false;
+//     });
+//     setExpandedBuildings(collapsed);
+//   };
+
+//   /**
+//    * Add new building
+//    */
+//   const handleAddBuilding = async (e) => {
+//     e.preventDefault();
+//     if (!newBuildingName.trim()) {
+//       showToast("Please enter a building name", "error");
+//       return;
+//     }
+
+//     setModalLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/buildings`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ name: newBuildingName })
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to add building");
+      
+//       const saved = await res.json();
+//       setBuildings(prev => [...prev, { ...saved, rooms: [] }]);
+//       setExpandedBuildings(prev => ({ ...prev, [saved.id]: true }));
+//       setNewBuildingName("");
+//       setShowBuildingModal(false);
+//       showToast(`Building "${saved.name}" added successfully`, "success");
+//     } catch (err) {
+//       console.error("Error adding building:", err);
+//       showToast(err.message || "Failed to add building", "error");
+//     } finally {
+//       setModalLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Delete a building
+//    */
+//   const handleDeleteBuilding = async (buildingId) => {
+//     setDeleteLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/buildings/${buildingId}`, {
+//         method: "DELETE"
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to delete building");
+      
+//       setBuildings(prev => prev.filter(b => b.id !== buildingId));
+//       setShowDeleteConfirm(null);
+//       showToast("Building deleted successfully", "success");
+//     } catch (err) {
+//       console.error("Error deleting building:", err);
+//       showToast("Failed to delete building", "error");
+//     } finally {
+//       setDeleteLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Add new room
+//    */
+//   const handleAddRoom = async (e) => {
+//     e.preventDefault();
+//     if (!newRoom.name.trim() || !newRoom.buildingId) {
+//       showToast("Please enter room name and select building", "error");
+//       return;
+//     }
+
+//     setModalLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/rooms`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           name: newRoom.name,
+//           buildingId: Number(newRoom.buildingId)
+//         })
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to add room");
+      
+//       const saved = await res.json();
+//       setBuildings(prev =>
+//         prev.map(b =>
+//           b.id === saved.buildingId
+//             ? { ...b, rooms: [...(b.rooms || []), saved] }
+//             : b
+//         )
+//       );
+//       setNewRoom({ name: "", buildingId: "" });
+//       setShowRoomModal(false);
+//       setSelectedBuildingForRoom(null);
+//       showToast(`Room "${saved.name}" added successfully`, "success");
+//     } catch (err) {
+//       console.error("Error adding room:", err);
+//       showToast(err.message || "Failed to add room", "error");
+//     } finally {
+//       setModalLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Delete a room
+//    */
+//   const handleDeleteRoom = async (roomId, buildingId) => {
+//     setDeleteLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/rooms/${roomId}`, {
+//         method: "DELETE"
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to delete room");
+      
+//       setBuildings(prev =>
+//         prev.map(b =>
+//           b.id === buildingId
+//             ? { ...b, rooms: b.rooms.filter(r => r.id !== roomId) }
+//             : b
+//         )
+//       );
+//       setShowDeleteConfirm(null);
+//       showToast("Room deleted successfully", "success");
+//     } catch (err) {
+//       console.error("Error deleting room:", err);
+//       showToast("Failed to delete room", "error");
+//     } finally {
+//       setDeleteLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Open add room modal with pre-selected building
+//    */
+//   const handleOpenRoomModal = (buildingId) => {
+//     setSelectedBuildingForRoom(buildingId);
+//     setNewRoom({ name: "", buildingId: String(buildingId) });
+//     setShowRoomModal(true);
+//   };
+
+//   /**
+//    * Check if room is in use for a specific day/time slot
+//    */
+//   const isRoomInUse = useCallback((room, day, startTime, endTime) => {
+//     const schedules = room.schedules || [];
+//     return schedules.some(s => {
+//       if (s.day !== day) return false;
+//       return (
+//         (s.start_time <= startTime && s.end_time > startTime) ||
+//         (s.start_time < endTime && s.end_time >= endTime)
+//       );
+//     });
+//   }, []);
+
+//   /**
+//    * Calculate utilization statistics for a room
+//    */
+//   const getRoomStats = useCallback((room) => {
+//     const schedules = room.schedules || [];
+//     const totalSlots = timeSlots.length * days.length;
+//     const usedSlots = schedules.length;
+//     const utilizationPercent = Math.round((usedSlots / totalSlots) * 100);
+    
+//     return {
+//       totalSlots,
+//       usedSlots,
+//       availableSlots: totalSlots - usedSlots,
+//       utilizationPercent
+//     };
+//   }, [timeSlots.length, days.length]);
+
+//   /**
+//    * Calculate utilization statistics for a building
+//    */
+//   const getBuildingStats = useCallback((building) => {
+//     const rooms = building.rooms || [];
+//     const totalRooms = rooms.length;
+//     const totalSlots = totalRooms * timeSlots.length * days.length;
+//     const totalUsedSlots = rooms.reduce((sum, r) => sum + (r.schedules?.length || 0), 0);
+//     const utilizationPercent = totalSlots > 0 ? Math.round((totalUsedSlots / totalSlots) * 100) : 0;
+    
+//     return {
+//       totalRooms,
+//       totalUsedSlots,
+//       utilizationPercent
+//     };
+//   }, [timeSlots.length, days.length]);
+
+//   /**
+//    * Filter buildings based on search term
+//    */
+//   const filteredBuildings = useMemo(() => {
+//     return buildings.filter(b =>
+//       b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       b.rooms?.some(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()))
+//     );
+//   }, [buildings, searchTerm]);
+
+//   /**
+//    * Calculate overall statistics
+//    */
+//   const overallStats = useMemo(() => {
+//     const totalBuildings = buildings.length;
+//     const totalRooms = buildings.reduce((sum, b) => sum + (b.rooms?.length || 0), 0);
+//     const totalSchedules = buildings.reduce((sum, b) =>
+//       sum + (b.rooms?.reduce((roomSum, r) => roomSum + (r.schedules?.length || 0), 0) || 0),
+//       0
+//     );
+    
+//     return { totalBuildings, totalRooms, totalSchedules };
+//   }, [buildings]);
+
+//   // Fetch buildings on mount
+//   useEffect(() => {
+//     fetchBuildings();
+//   }, [fetchBuildings]);
+
+//   // Loading state
+//   if (loading) {
+//     return (
+//       <div className="room-loading-container">
+//         <Spinner animation="border" variant="primary" />
+//         <p className="mt-3">Loading facilities...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         /* ============================================
+//            EduSched Room Management Styles
+//            ============================================ */
+
+//         .room-management-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         /* Page Header with Gradient */
+//         .page-header-room {
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-section-gradient-room {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title-content-room {
+//           color: white;
+//         }
+
+//         .page-title-gradient-room {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           color: white;
+//           margin: 0 0 0.5rem 0;
+//           letter-spacing: -0.5px;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .page-subtitle-gradient-room {
+//           font-size: 1.05rem;
+//           color: white;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         /* Statistics Section */
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid #0077B6;
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(10px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: #03045E;
+//         }
+
+//         /* Search Section */
+//         .search-section {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//         }
+
+//         .search-input {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem 1rem 0.75rem 2.5rem;
+//           width: 100%;
+//           font-size: 1rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-input:focus {
+//           outline: none;
+//           border-color: #0077B6;
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-wrapper {
+//           position: relative;
+//         }
+
+//         .search-icon {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: #0077B6;
+//           pointer-events: none;
+//         }
+
+//         /* Building Card */
+//         .building-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 1.5rem;
+//           overflow: hidden;
+//           transition: all 0.3s ease;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .building-card:hover {
+//           box-shadow: 0 8px 24px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .building-header {
+//           background: linear-gradient(135deg, #03045E 0%, #0077B6 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .building-header:hover {
+//           background: linear-gradient(135deg, #023E8A 0%, #023E8A 100%);
+//         }
+
+//         .building-info {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           flex: 1;
+//         }
+
+//         .building-name {
+//           font-size: 1.2rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .building-stats {
+//           display: flex;
+//           gap: 1rem;
+//           margin-left: auto;
+//         }
+
+//         .building-stat {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 0.9rem;
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//         }
+
+//         .building-actions {
+//           display: flex;
+//           gap: 0.5rem;
+//         }
+
+//         .icon-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: none;
+//           color: white;
+//           padding: 0.5rem;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//         }
+
+//         .icon-btn:hover {
+//           background: rgba(255, 255, 255, 0.4);
+//           transform: scale(1.1);
+//         }
+
+//         .chevron-icon {
+//           transition: transform 0.3s ease;
+//         }
+
+//         .chevron-icon.open {
+//           transform: rotate(180deg);
+//         }
+
+//         /* Building Content */
+//         .building-content {
+//           padding: 1.5rem;
+//         }
+
+//         .empty-rooms {
+//           text-align: center;
+//           padding: 2rem;
+//           color: #999;
+//         }
+
+//         /* Room Section */
+//         .room-section {
+//           margin-bottom: 2rem;
+//         }
+
+//         .room-header-custom {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           padding: 1rem;
+//           background: #CAF0F8;
+//           border-radius: 10px;
+//           margin-bottom: 1rem;
+//           border-left: 4px solid #0077B6;
+//         }
+
+//         .room-title-custom {
+//           font-weight: 600;
+//           color: #03045E;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 1rem;
+//         }
+
+//         .room-stats-custom {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .room-stat-badge {
+//           background: white;
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           border: 1px solid #90E0EF;
+//         }
+
+//         .utilization-badge {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           border: none;
+//         }
+
+//         /* Schedule Table */
+//         .room-table {
+//           border-collapse: collapse;
+//           width: 100%;
+//           font-size: 0.9rem;
+//           margin-bottom: 1rem;
+//         }
+
+//         .room-table thead {
+//           background: #CAF0F8;
+//           color: #03045E;
+//         }
+
+//         .room-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .room-table td {
+//           padding: 0.75rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//           transition: all 0.3s ease;
+//         }
+
+//         .room-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .room-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-cell {
+//           font-weight: 500;
+//           color: #0077B6;
+//           text-align: left;
+//           padding-left: 1rem;
+//         }
+
+//         .status-available {
+//           background: linear-gradient(135deg, #90EE90 0%, #76D776 100%);
+//           color: white;
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           font-size: 0.8rem;
+//         }
+
+//         .status-in-use {
+//           background: linear-gradient(135deg, #FF6B6B 0%, #FF4444 100%);
+//           color: white;
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           font-size: 0.8rem;
+//         }
+
+//         /* Toast Notifications */
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from {
+//             transform: translateX(400px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateX(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .toast-success {
+//           border-left-color: #00c851;
+//         }
+
+//         .toast-error {
+//           border-left-color: #ff4444;
+//         }
+
+//         .toast-icon {
+//           flex-shrink: 0;
+//         }
+
+//         .toast-success .toast-icon {
+//           color: #00c851;
+//         }
+
+//         .toast-error .toast-icon {
+//           color: #ff4444;
+//         }
+
+//         .toast-message {
+//           flex: 1;
+//           color: #333;
+//           font-weight: 500;
+//         }
+
+//         .toast-close {
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           font-size: 1.5rem;
+//           padding: 0;
+//           line-height: 1;
+//           flex-shrink: 0;
+//           transition: color 0.3s ease;
+//         }
+
+//         .toast-close:hover {
+//           color: #333;
+//         }
+
+//         /* Modal Styles */
+//         .edusched-modal .modal-content {
+//           border-radius: 16px;
+//           border: none;
+//           overflow: hidden;
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           border: none;
+//         }
+
+//         .modal-header-custom .modal-title {
+//           display: flex;
+//           align-items: center;
+//           font-weight: 700;
+//           font-size: 1.3rem;
+//           gap: 0.75rem;
+//         }
+
+//         .modal-header-custom .btn-close {
+//           filter: brightness(0) invert(1);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: #03045E;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .form-input-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .form-input-custom:focus {
+//           border-color: #0077B6;
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//           outline: none;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//         }
+
+//         .btn-primary-custom {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           color: white;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .btn-primary-custom:hover:not(:disabled) {
+//           background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+//         }
+
+//         .btn-secondary-custom {
+//           background: white;
+//           border: 2px solid #90E0EF;
+//           color: #0077B6;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-secondary-custom:hover {
+//           background: #F8FCFD;
+//           border-color: #0077B6;
+//         }
+
+//         /* Delete Confirmation Modal */
+//         .delete-modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .delete-modal {
+//           background: white;
+//           border-radius: 16px;
+//           padding: 2rem;
+//           max-width: 400px;
+//           width: 100%;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from {
+//             transform: translateY(50px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateY(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .delete-modal-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 1rem;
+//           color: #ff4444;
+//         }
+
+//         .delete-modal-title {
+//           font-size: 1.3rem;
+//           font-weight: 700;
+//           margin: 0;
+//         }
+
+//         .delete-modal-body {
+//           color: #666;
+//           margin-bottom: 1.5rem;
+//           line-height: 1.6;
+//         }
+
+//         .delete-modal-footer {
+//           display: flex;
+//           gap: 1rem;
+//           justify-content: flex-end;
+//         }
+
+//         .room-loading-container {
+//           display: flex;
+//           flex-direction: column;
+//           align-items: center;
+//           justify-content: center;
+//           height: 100vh;
+//           background: linear-gradient(135deg, #CAF0F8 0%, #ADE8F4 100%);
+//           color: #0077B6;
+//         }
+
+//         /* Responsive Design */
+//         @media (max-width: 992px) {
+//           .page-title-section-gradient-room {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .header-actions {
+//             width: 100%;
+//           }
+
+//           .action-btn {
+//             flex: 1;
+//             justify-content: center;
+//           }
+
+//           .building-header {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .building-stats {
+//             margin-left: 0;
+//             margin-top: 0.5rem;
+//           }
+
+//           .room-table {
+//             font-size: 0.8rem;
+//           }
+
+//           .room-table th,
+//           .room-table td {
+//             padding: 0.5rem 0.25rem;
+//           }
+//         }
+
+//         @media (max-width: 768px) {
+//           .room-management-container {
+//             padding: 1rem;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: repeat(2, 1fr);
+//           }
+
+//           .page-title-gradient-room {
+//             font-size: 2rem;
+//           }
+
+//           .building-info {
+//             flex-direction: column;
+//             gap: 0.5rem;
+//           }
+
+//           .building-stat {
+//             font-size: 0.75rem;
+//             padding: 0.25rem 0.5rem;
+//           }
+
+//           .room-table {
+//             font-size: 0.75rem;
+//             display: block;
+//             overflow-x: auto;
+//           }
+
+//           .edusched-toast {
+//             left: 1rem;
+//             right: 1rem;
+//             min-width: auto;
+//           }
+//         }
+
+//         @media (max-width: 576px) {
+//           .room-management-container {
+//             padding: 0.5rem;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .page-title-gradient-room {
+//             font-size: 1.5rem;
+//           }
+
+//           .building-name {
+//             font-size: 1rem;
+//           }
+
+//           .delete-modal {
+//             padding: 1.5rem;
+//           }
+//         }
+//       `}</style>
+
+//       <div className="room-management-container">
+//         {/* Toast Notifications */}
+//         {toast && (
+//           <div className={`edusched-toast toast-${toast.type}`}>
+//             <div className="toast-icon">
+//               {toast.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+//             </div>
+//             <span className="toast-message">{toast.message}</span>
+//             <button className="toast-close" onClick={() => setToast(null)}>×</button>
+//           </div>
+//         )}
+
+//         {/* Delete Confirmation Modal */}
+//         {showDeleteConfirm && (
+//           <div className="delete-modal-overlay" onClick={() => !deleteLoading && setShowDeleteConfirm(null)}>
+//             <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+//               <div className="delete-modal-header">
+//                 <AlertCircle size={28} />
+//                 <h3 className="delete-modal-title">Confirm Delete</h3>
+//               </div>
+//               <p className="delete-modal-body">
+//                 Are you sure you want to delete this? This action cannot be undone.
+//               </p>
+//               <div className="delete-modal-footer">
+//                 <button
+//                   className="btn-secondary-custom"
+//                   onClick={() => setShowDeleteConfirm(null)}
+//                   disabled={deleteLoading}
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button
+//                   className="btn-primary-custom"
+//                   style={{ background: "linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)" }}
+//                   onClick={() => {
+//                     if (showDeleteConfirm.type === "building") {
+//                       handleDeleteBuilding(showDeleteConfirm.id);
+//                     } else if (showDeleteConfirm.type === "room") {
+//                       handleDeleteRoom(showDeleteConfirm.id, showDeleteConfirm.buildingId);
+//                     }
+//                   }}
+//                   disabled={deleteLoading}
+//                 >
+//                   {deleteLoading ? (
+//                     <>
+//                       <Spinner animation="border" size="sm" />
+//                       Deleting...
+//                     </>
+//                   ) : (
+//                     <>
+//                       <Trash2 size={18} />
+//                       Delete
+//                     </>
+//                   )}
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Page Header with Gradient */}
+//         <div className="page-header-room">
+//           <div className="page-title-section-gradient-room">
+//             <div className="page-title-content-room">
+//               <h1 className="page-title-gradient-room">
+//                 <Building2 size={36} />
+//                 Room Management
+//               </h1>
+//               <p className="page-subtitle-gradient-room">
+//                 Manage buildings, rooms, and track facility utilization
+//               </p>
+//             </div>
+//             <div className="header-actions">
+//               <button className="action-btn" onClick={() => setShowBuildingModal(true)}>
+//                 <Plus size={20} />
+//                 Add Building
+//               </button>
+//               <button className="action-btn" onClick={fetchBuildings}>
+//                 <RotateCw size={20} />
+//                 Refresh
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Statistics Section */}
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Buildings</div>
+//             <div className="stat-value">{overallStats.totalBuildings}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Total Rooms</div>
+//             <div className="stat-value">{overallStats.totalRooms}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Total Schedules</div>
+//             <div className="stat-value">{overallStats.totalSchedules}</div>
+//           </div>
+//         </div>
+
+//         {/* Error State */}
+//         {error && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "2rem",
+//             textAlign: "center",
+//             marginBottom: "2rem",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <AlertCircle size={64} style={{ color: "#ff4444", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>Unable to Load Facilities</h4>
+//             <p style={{ color: "#666", marginBottom: "1.5rem" }}>{error}</p>
+//             <button className="action-btn" onClick={fetchBuildings} style={{ 
+//               background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//               border: "none"
+//             }}>
+//               <RotateCw size={20} />
+//               Try Again
+//             </button>
+//           </div>
+//         )}
+
+//         {/* Search Section */}
+//         {!error && buildings.length > 0 && (
+//           <div className="search-section">
+//             <div className="search-icon-wrapper">
+//               <Search className="search-icon" size={20} />
+//               <input
+//                 type="text"
+//                 className="search-input"
+//                 placeholder="Search buildings or rooms..."
+//                 value={searchTerm}
+//                 onChange={(e) => setSearchTerm(e.target.value)}
+//               />
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Expand/Collapse Controls */}
+//         {!error && filteredBuildings.length > 0 && (
+//           <div style={{ marginBottom: "1.5rem", display: "flex", gap: "0.5rem" }}>
+//             <button 
+//               className="action-btn" 
+//               onClick={expandAllBuildings} 
+//               style={{ 
+//                 fontSize: "0.9rem",
+//                 background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//                 border: "none"
+//               }}
+//             >
+//               Expand All
+//             </button>
+//             <button 
+//               className="action-btn" 
+//               onClick={collapseAllBuildings} 
+//               style={{ 
+//                 fontSize: "0.9rem",
+//                 background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//                 border: "none"
+//               }}
+//             >
+//               Collapse All
+//             </button>
+//           </div>
+//         )}
+
+//         {/* Empty State */}
+//         {!error && buildings.length === 0 && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "4rem 2rem",
+//             textAlign: "center",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <Building2 size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>No Buildings Yet</h4>
+//             <p style={{ color: "#666" }}>Create your first building to get started with room management.</p>
+//           </div>
+//         )}
+
+//         {/* No Results State */}
+//         {!error && buildings.length > 0 && filteredBuildings.length === 0 && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "4rem 2rem",
+//             textAlign: "center",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <Search size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>No Results Found</h4>
+//             <p style={{ color: "#666" }}>Try adjusting your search criteria.</p>
+//           </div>
+//         )}
+
+//         {/* Buildings List */}
+//         {!error && filteredBuildings.map(building => {
+//           const buildingStats = getBuildingStats(building);
+//           const isExpanded = expandedBuildings[building.id] !== false;
+
+//           return (
+//             <div key={building.id} className="building-card">
+//               <div
+//                 className="building-header"
+//                 onClick={() => toggleBuildingExpansion(building.id)}
+//               >
+//                 <div className="building-info">
+//                   <div className="building-name">
+//                     <Building2 size={22} />
+//                     {building.name}
+//                   </div>
+//                   <div className="building-stats">
+//                     <div className="building-stat">
+//                       <DoorOpen size={14} />
+//                       {buildingStats.totalRooms} room{buildingStats.totalRooms !== 1 ? "s" : ""}
+//                     </div>
+//                     <div className="building-stat">
+//                       Utilization: {buildingStats.utilizationPercent}%
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div className="building-actions">
+//                   <button
+//                     className="icon-btn"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       handleOpenRoomModal(building.id);
+//                     }}
+//                     title="Add Room"
+//                   >
+//                     <Plus size={18} />
+//                   </button>
+//                   <button
+//                     className="icon-btn"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       setShowDeleteConfirm({ type: "building", id: building.id });
+//                     }}
+//                     title="Delete Building"
+//                   >
+//                     <Trash2 size={18} />
+//                   </button>
+//                   <ChevronDown className={`chevron-icon ${isExpanded ? "open" : ""}`} size={20} />
+//                 </div>
+//               </div>
+
+//               {isExpanded && (
+//                 <div className="building-content">
+//                   {!building.rooms || building.rooms.length === 0 ? (
+//                     <div className="empty-rooms">
+//                       <p>No rooms added yet</p>
+//                     </div>
+//                   ) : (
+//                     building.rooms.map(room => {
+//                       const roomStats = getRoomStats(room);
+                      
+//                       return (
+//                         <div key={room.id} className="room-section">
+//                           <div className="room-header-custom">
+//                             <div className="room-title-custom">
+//                               <DoorOpen size={18} />
+//                               {room.name}
+//                             </div>
+//                             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginLeft: "auto" }}>
+//                               <div className="room-stats-custom">
+//                                 <div className="room-stat-badge">
+//                                   {roomStats.usedSlots} / {roomStats.totalSlots} slots
+//                                 </div>
+//                                 <div className="room-stat-badge utilization-badge">
+//                                   {roomStats.utilizationPercent}% utilized
+//                                 </div>
+//                               </div>
+//                               <button
+//                                 className="icon-btn"
+//                                 onClick={() => setShowDeleteConfirm({ type: "room", id: room.id, buildingId: building.id })}
+//                                 style={{ background: "#ff4444", marginLeft: "0.5rem" }}
+//                                 title="Delete Room"
+//                               >
+//                                 <Trash2 size={16} />
+//                               </button>
+//                             </div>
+//                           </div>
+
+//                           <div style={{ overflowX: "auto" }}>
+//                             <table className="room-table">
+//                               <thead>
+//                                 <tr>
+//                                   <th>Time</th>
+//                                   {days.map(day => (
+//                                     <th key={day}>{day}</th>
+//                                   ))}
+//                                 </tr>
+//                               </thead>
+//                               <tbody>
+//                                 {timeSlots.map(slot => (
+//                                   <tr key={slot.start}>
+//                                     <td className="time-cell">
+//                                       {formatTime(slot.start)} - {formatTime(slot.end)}
+//                                     </td>
+//                                     {days.map(day => {
+//                                       const inUse = isRoomInUse(room, day, slot.start, slot.end);
+//                                       return (
+//                                         <td key={day}>
+//                                           <span className={inUse ? "status-in-use" : "status-available"}>
+//                                             {inUse ? "In Use" : "Available"}
+//                                           </span>
+//                                         </td>
+//                                       );
+//                                     })}
+//                                   </tr>
+//                                 ))}
+//                               </tbody>
+//                             </table>
+//                           </div>
+//                         </div>
+//                       );
+//                     })
+//                   )}
+//                 </div>
+//               )}
+//             </div>
+//           );
+//         })}
+
+//         {/* Add Building Modal */}
+//         <Modal show={showBuildingModal} onHide={() => setShowBuildingModal(false)} centered className="edusched-modal">
+//           <Modal.Header closeButton className="modal-header-custom">
+//             <Modal.Title>
+//               <Building2 size={24} />
+//               Add New Building
+//             </Modal.Title>
+//           </Modal.Header>
+//           <Form onSubmit={handleAddBuilding}>
+//             <Modal.Body className="modal-body-custom">
+//               <Form.Group>
+//                 <Form.Label className="form-label-custom">Building Name</Form.Label>
+//                 <Form.Control
+//                   type="text"
+//                   placeholder="e.g., Engineering Building A"
+//                   value={newBuildingName}
+//                   onChange={(e) => setNewBuildingName(e.target.value)}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 />
+//               </Form.Group>
+//             </Modal.Body>
+//             <Modal.Footer className="modal-footer-custom">
+//               <button
+//                 className="btn-secondary-custom"
+//                 onClick={() => setShowBuildingModal(false)}
+//                 disabled={modalLoading}
+//               >
+//                 Cancel
+//               </button>
+//               <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+//                 {modalLoading ? (
+//                   <>
+//                     <Spinner size="sm" animation="border" />
+//                     Adding...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Plus size={18} />
+//                     Add Building
+//                   </>
+//                 )}
+//               </button>
+//             </Modal.Footer>
+//           </Form>
+//         </Modal>
+
+//         {/* Add Room Modal */}
+//         <Modal show={showRoomModal} onHide={() => setShowRoomModal(false)} centered className="edusched-modal">
+//           <Modal.Header closeButton className="modal-header-custom">
+//             <Modal.Title>
+//               <DoorOpen size={24} />
+//               Add New Room
+//             </Modal.Title>
+//           </Modal.Header>
+//           <Form onSubmit={handleAddRoom}>
+//             <Modal.Body className="modal-body-custom">
+//               <Form.Group className="mb-3">
+//                 <Form.Label className="form-label-custom">Building</Form.Label>
+//                 <Form.Select
+//                   value={newRoom.buildingId}
+//                   onChange={(e) => setNewRoom({ ...newRoom, buildingId: e.target.value })}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 >
+//                   <option value="">Select Building</option>
+//                   {buildings
+//                     .filter(b => !selectedBuildingForRoom || b.id === Number(selectedBuildingForRoom))
+//                     .map(b => (
+//                       <option key={b.id} value={b.id}>{b.name}</option>
+//                     ))}
+//                 </Form.Select>
+//               </Form.Group>
+//               <Form.Group>
+//                 <Form.Label className="form-label-custom">Room Name</Form.Label>
+//                 <Form.Control
+//                   type="text"
+//                   placeholder="e.g., Main-101"
+//                   value={newRoom.name}
+//                   onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 />
+//               </Form.Group>
+//             </Modal.Body>
+//             <Modal.Footer className="modal-footer-custom">
+//               <button
+//                 className="btn-secondary-custom"
+//                 onClick={() => {
+//                   setShowRoomModal(false);
+//                   setSelectedBuildingForRoom(null);
+//                 }}
+//                 disabled={modalLoading}
+//               >
+//                 Cancel
+//               </button>
+//               <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+//                 {modalLoading ? (
+//                   <>
+//                     <Spinner size="sm" animation="border" />
+//                     Adding...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Plus size={18} />
+//                     Add Room
+//                   </>
+//                 )}
+//               </button>
+//             </Modal.Footer>
+//           </Form>
+//         </Modal>
+//       </div>
+//     </>
+//   );
+// };
+
+// export default RoomManagement;
+
+//WORKING WITHOUT ROOM ASSIGNMENT
+
+// import React, { useState, useEffect, useMemo, useCallback } from "react";
+// import { Card, Button, Modal, Form, Spinner, Badge, InputGroup } from "react-bootstrap";
+// import { Building2, DoorOpen, Search, Plus, RotateCw, Trash2, Edit, AlertCircle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+
+// const RoomManagement = () => {
+//   // State management
+//   const [buildings, setBuildings] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [expandedBuildings, setExpandedBuildings] = useState({});
+//   const [toast, setToast] = useState(null);
+
+//   // Modal states
+//   const [showBuildingModal, setShowBuildingModal] = useState(false);
+//   const [showRoomModal, setShowRoomModal] = useState(false);
+//   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+//   const [newBuildingName, setNewBuildingName] = useState("");
+//   const [newRoom, setNewRoom] = useState({ name: "", buildingId: "" });
+//   const [modalLoading, setModalLoading] = useState(false);
+//   const [deleteLoading, setDeleteLoading] = useState(false);
+//   const [selectedBuildingForRoom, setSelectedBuildingForRoom] = useState(null);
+
+//   const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+//   const COLORS = {
+//     primary: "#03045E",
+//     secondary: "#023E8A",
+//     accent: "#0077B6",
+//     light: "#00B4D8",
+//     lighter: "#48CAE4",
+//     lightest: "#CAF0F8",
+//   };
+
+//   // Time slots: 7:00 AM to 7:00 PM
+//   const timeSlots = useMemo(() => {
+//     const slots = [];
+//     for (let hour = 7; hour < 19; hour++) {
+//       const start = `${hour.toString().padStart(2, "0")}:00`;
+//       const end = `${(hour + 1).toString().padStart(2, "0")}:00`;
+//       slots.push({ start, end, hour });
+//     }
+//     return slots;
+//   }, []);
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   /**
+//    * Format time from 24-hour to 12-hour format
+//    */
+//   const formatTime = useCallback((time) => {
+//     const [hour, minute] = time.split(":");
+//     let h = parseInt(hour);
+//     const ampm = h >= 12 ? "PM" : "AM";
+//     h = h % 12 || 12;
+//     return `${h}:${minute} ${ampm}`;
+//   }, []);
+
+//   /**
+//    * Fetch all buildings with rooms and schedules
+//    */
+//   const fetchBuildings = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+//     try {
+//       const res = await fetch(`${API}/api/buildings`);
+//       if (!res.ok) throw new Error("Failed to fetch buildings");
+//       const data = await res.json();
+//       setBuildings(Array.isArray(data) ? data : []);
+      
+//       // Initialize expanded state for all buildings
+//       const expandedState = {};
+//       data.forEach(b => {
+//         expandedState[b.id] = true;
+//       });
+//       setExpandedBuildings(expandedState);
+//     } catch (err) {
+//       console.error("Error fetching buildings:", err);
+//       setError(err.message);
+//       showToast("Failed to load buildings", "error");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [API]);
+
+//   /**
+//    * Show toast notification
+//    */
+//   const showToast = (message, type) => {
+//     setToast({ message, type });
+//   };
+
+//   /**
+//    * Toggle building expansion
+//    */
+//   const toggleBuildingExpansion = (buildingId) => {
+//     setExpandedBuildings(prev => ({
+//       ...prev,
+//       [buildingId]: !prev[buildingId]
+//     }));
+//   };
+
+//   /**
+//    * Expand all buildings
+//    */
+//   const expandAllBuildings = () => {
+//     const expanded = {};
+//     buildings.forEach(b => {
+//       expanded[b.id] = true;
+//     });
+//     setExpandedBuildings(expanded);
+//   };
+
+//   /**
+//    * Collapse all buildings
+//    */
+//   const collapseAllBuildings = () => {
+//     const collapsed = {};
+//     buildings.forEach(b => {
+//       collapsed[b.id] = false;
+//     });
+//     setExpandedBuildings(collapsed);
+//   };
+
+//   /**
+//    * Add new building
+//    */
+//   const handleAddBuilding = async (e) => {
+//     e.preventDefault();
+//     if (!newBuildingName.trim()) {
+//       showToast("Please enter a building name", "error");
+//       return;
+//     }
+
+//     setModalLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/buildings`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ name: newBuildingName })
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to add building");
+      
+//       const saved = await res.json();
+//       setBuildings(prev => [...prev, { ...saved, rooms: [] }]);
+//       setExpandedBuildings(prev => ({ ...prev, [saved.id]: true }));
+//       setNewBuildingName("");
+//       setShowBuildingModal(false);
+//       showToast(`Building "${saved.name}" added successfully`, "success");
+//     } catch (err) {
+//       console.error("Error adding building:", err);
+//       showToast(err.message || "Failed to add building", "error");
+//     } finally {
+//       setModalLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Delete a building
+//    */
+//   const handleDeleteBuilding = async (buildingId) => {
+//     setDeleteLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/buildings/${buildingId}`, {
+//         method: "DELETE"
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to delete building");
+      
+//       setBuildings(prev => prev.filter(b => b.id !== buildingId));
+//       setShowDeleteConfirm(null);
+//       showToast("Building deleted successfully", "success");
+//     } catch (err) {
+//       console.error("Error deleting building:", err);
+//       showToast("Failed to delete building", "error");
+//     } finally {
+//       setDeleteLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Add new room
+//    */
+//   const handleAddRoom = async (e) => {
+//     e.preventDefault();
+//     if (!newRoom.name.trim() || !newRoom.buildingId) {
+//       showToast("Please enter room name and select building", "error");
+//       return;
+//     }
+
+//     setModalLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/rooms`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           name: newRoom.name,
+//           buildingId: Number(newRoom.buildingId)
+//         })
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to add room");
+      
+//       const saved = await res.json();
+//       setBuildings(prev =>
+//         prev.map(b =>
+//           b.id === saved.buildingId
+//             ? { ...b, rooms: [...(b.rooms || []), saved] }
+//             : b
+//         )
+//       );
+//       setNewRoom({ name: "", buildingId: "" });
+//       setShowRoomModal(false);
+//       setSelectedBuildingForRoom(null);
+//       showToast(`Room "${saved.name}" added successfully`, "success");
+//     } catch (err) {
+//       console.error("Error adding room:", err);
+//       showToast(err.message || "Failed to add room", "error");
+//     } finally {
+//       setModalLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Delete a room
+//    */
+//   const handleDeleteRoom = async (roomId, buildingId) => {
+//     setDeleteLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/rooms/${roomId}`, {
+//         method: "DELETE"
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to delete room");
+      
+//       setBuildings(prev =>
+//         prev.map(b =>
+//           b.id === buildingId
+//             ? { ...b, rooms: b.rooms.filter(r => r.id !== roomId) }
+//             : b
+//         )
+//       );
+//       setShowDeleteConfirm(null);
+//       showToast("Room deleted successfully", "success");
+//     } catch (err) {
+//       console.error("Error deleting room:", err);
+//       showToast("Failed to delete room", "error");
+//     } finally {
+//       setDeleteLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Open add room modal with pre-selected building
+//    */
+//   const handleOpenRoomModal = (buildingId) => {
+//     setSelectedBuildingForRoom(buildingId);
+//     setNewRoom({ name: "", buildingId: String(buildingId) });
+//     setShowRoomModal(true);
+//   };
+
+//   /**
+//    * Filter buildings based on search term
+//    */
+//   const filteredBuildings = useMemo(() => {
+//     return buildings.filter(b =>
+//       b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       b.rooms?.some(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()))
+//     );
+//   }, [buildings, searchTerm]);
+
+//   /**
+//    * Calculate overall statistics
+//    */
+//   const overallStats = useMemo(() => {
+//     const totalBuildings = buildings.length;
+//     const totalRooms = buildings.reduce((sum, b) => sum + (b.rooms?.length || 0), 0);
+    
+//     return { totalBuildings, totalRooms };
+//   }, [buildings]);
+
+//   // Fetch buildings on mount
+//   useEffect(() => {
+//     fetchBuildings();
+//   }, [fetchBuildings]);
+
+//   // Loading state
+//   if (loading) {
+//     return (
+//       <div className="room-loading-container">
+//         <Spinner animation="border" variant="primary" />
+//         <p className="mt-3">Loading facilities...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         /* ============================================
+//            Room Management Styles
+//            ============================================ */
+
+//         .room-management-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         /* Page Header with Gradient */
+//         .page-header-room {
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-section-gradient-room {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title-content-room {
+//           color: white;
+//         }
+
+//         .page-title-gradient-room {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           color: white;
+//           margin: 0 0 0.5rem 0;
+//           letter-spacing: -0.5px;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .page-subtitle-gradient-room {
+//           font-size: 1.05rem;
+//           color: white;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         /* Statistics Section */
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid #0077B6;
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(10px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: #03045E;
+//         }
+
+//         /* Search Section */
+//         .search-section {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//         }
+
+//         .search-input {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem 1rem 0.75rem 2.5rem;
+//           width: 100%;
+//           font-size: 1rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-input:focus {
+//           outline: none;
+//           border-color: #0077B6;
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-wrapper {
+//           position: relative;
+//         }
+
+//         .search-icon {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: #0077B6;
+//           pointer-events: none;
+//         }
+
+//         /* Building Card */
+//         .building-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 1.5rem;
+//           overflow: hidden;
+//           transition: all 0.3s ease;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .building-card:hover {
+//           box-shadow: 0 8px 24px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .building-header {
+//           background: linear-gradient(135deg, #03045E 0%, #0077B6 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .building-header:hover {
+//           background: linear-gradient(135deg, #023E8A 0%, #023E8A 100%);
+//         }
+
+//         .building-info {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           flex: 1;
+//         }
+
+//         .building-name {
+//           font-size: 1.2rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .building-stats {
+//           display: flex;
+//           gap: 1rem;
+//           margin-left: auto;
+//         }
+
+//         .building-stat {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 0.9rem;
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//         }
+
+//         .building-actions {
+//           display: flex;
+//           gap: 0.5rem;
+//         }
+
+//         .icon-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: none;
+//           color: white;
+//           padding: 0.5rem;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//         }
+
+//         .icon-btn:hover {
+//           background: rgba(255, 255, 255, 0.4);
+//           transform: scale(1.1);
+//         }
+
+//         .chevron-icon {
+//           transition: transform 0.3s ease;
+//         }
+
+//         .chevron-icon.open {
+//           transform: rotate(180deg);
+//         }
+
+//         /* Building Content */
+//         .building-content {
+//           padding: 1.5rem;
+//         }
+
+//         .empty-rooms {
+//           text-align: center;
+//           padding: 2rem;
+//           color: #999;
+//         }
+
+//         /* Room Section */
+//         .room-section {
+//           margin-bottom: 2rem;
+//         }
+
+//         .room-header-custom {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           padding: 1rem;
+//           background: #CAF0F8;
+//           border-radius: 10px;
+//           margin-bottom: 1rem;
+//           border-left: 4px solid #0077B6;
+//         }
+
+//         .room-title-custom {
+//           font-weight: 600;
+//           color: #03045E;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 1rem;
+//         }
+
+//         /* Schedule Table */
+//         .room-table {
+//           border-collapse: collapse;
+//           width: 100%;
+//           font-size: 0.9rem;
+//           margin-bottom: 1rem;
+//         }
+
+//         .room-table thead {
+//           background: #CAF0F8;
+//           color: #03045E;
+//         }
+
+//         .room-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .room-table td {
+//           padding: 0.5rem 0.25rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//         }
+
+//         .room-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .room-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-cell {
+//           font-weight: 500;
+//           color: #0077B6;
+//           text-align: left;
+//           padding-left: 1rem;
+//           background: #f8f9fa;
+//         }
+
+//         .time-slot-cell {
+//           background: white;
+//           color: #495057;
+//           padding: 4px 6px;
+//           border: 1px solid #dee2e6;
+//           font-size: 0.65rem;
+//           font-weight: 400;
+//           white-space: nowrap;
+//         }
+
+//         /* Toast Notifications */
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from {
+//             transform: translateX(400px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateX(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .toast-success {
+//           border-left-color: #00c851;
+//         }
+
+//         .toast-error {
+//           border-left-color: #ff4444;
+//         }
+
+//         .toast-icon {
+//           flex-shrink: 0;
+//         }
+
+//         .toast-success .toast-icon {
+//           color: #00c851;
+//         }
+
+//         .toast-error .toast-icon {
+//           color: #ff4444;
+//         }
+
+//         .toast-message {
+//           flex: 1;
+//           color: #333;
+//           font-weight: 500;
+//         }
+
+//         .toast-close {
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           font-size: 1.5rem;
+//           padding: 0;
+//           line-height: 1;
+//           flex-shrink: 0;
+//           transition: color 0.3s ease;
+//         }
+
+//         .toast-close:hover {
+//           color: #333;
+//         }
+
+//         /* Modal Styles */
+//         .edusched-modal .modal-content {
+//           border-radius: 16px;
+//           border: none;
+//           overflow: hidden;
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           border: none;
+//         }
+
+//         .modal-header-custom .modal-title {
+//           display: flex;
+//           align-items: center;
+//           font-weight: 700;
+//           font-size: 1.3rem;
+//           gap: 0.75rem;
+//         }
+
+//         .modal-header-custom .btn-close {
+//           filter: brightness(0) invert(1);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: #03045E;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .form-input-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .form-input-custom:focus {
+//           border-color: #0077B6;
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//           outline: none;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//         }
+
+//         .btn-primary-custom {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           color: white;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .btn-primary-custom:hover:not(:disabled) {
+//           background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+//         }
+
+//         .btn-secondary-custom {
+//           background: white;
+//           border: 2px solid #90E0EF;
+//           color: #0077B6;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-secondary-custom:hover {
+//           background: #F8FCFD;
+//           border-color: #0077B6;
+//         }
+
+//         /* Delete Confirmation Modal */
+//         .delete-modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .delete-modal {
+//           background: white;
+//           border-radius: 16px;
+//           padding: 2rem;
+//           max-width: 400px;
+//           width: 100%;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from {
+//             transform: translateY(50px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateY(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .delete-modal-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 1rem;
+//           color: #ff4444;
+//         }
+
+//         .delete-modal-title {
+//           font-size: 1.3rem;
+//           font-weight: 700;
+//           margin: 0;
+//         }
+
+//         .delete-modal-body {
+//           color: #666;
+//           margin-bottom: 1.5rem;
+//           line-height: 1.6;
+//         }
+
+//         .delete-modal-footer {
+//           display: flex;
+//           gap: 1rem;
+//           justify-content: flex-end;
+//         }
+
+//         .room-loading-container {
+//           display: flex;
+//           flex-direction: column;
+//           align-items: center;
+//           justify-content: center;
+//           height: 100vh;
+//           background: linear-gradient(135deg, #CAF0F8 0%, #ADE8F4 100%);
+//           color: #0077B6;
+//         }
+
+//         /* Responsive Design */
+//         @media (max-width: 992px) {
+//           .page-title-section-gradient-room {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .header-actions {
+//             width: 100%;
+//           }
+
+//           .action-btn {
+//             flex: 1;
+//             justify-content: center;
+//           }
+
+//           .building-header {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .building-stats {
+//             margin-left: 0;
+//             margin-top: 0.5rem;
+//           }
+
+//           .room-table {
+//             font-size: 0.8rem;
+//           }
+
+//           .room-table th,
+//           .room-table td {
+//             padding: 0.5rem 0.25rem;
+//           }
+//         }
+
+//         @media (max-width: 768px) {
+//           .room-management-container {
+//             padding: 1rem;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: repeat(2, 1fr);
+//           }
+
+//           .page-title-gradient-room {
+//             font-size: 2rem;
+//           }
+
+//           .building-info {
+//             flex-direction: column;
+//             gap: 0.5rem;
+//           }
+
+//           .building-stat {
+//             font-size: 0.75rem;
+//             padding: 0.25rem 0.5rem;
+//           }
+
+//           .room-table {
+//             font-size: 0.75rem;
+//             display: block;
+//             overflow-x: auto;
+//           }
+
+//           .time-slot-cell {
+//             font-size: 0.55rem;
+//             padding: 3px 4px;
+//           }
+
+//           .edusched-toast {
+//             left: 1rem;
+//             right: 1rem;
+//             min-width: auto;
+//           }
+//         }
+
+//         @media (max-width: 576px) {
+//           .room-management-container {
+//             padding: 0.5rem;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .page-title-gradient-room {
+//             font-size: 1.5rem;
+//           }
+
+//           .building-name {
+//             font-size: 1rem;
+//           }
+
+//           .delete-modal {
+//             padding: 1.5rem;
+//           }
+
+//           .time-slot-cell {
+//             font-size: 0.5rem;
+//             padding: 2px 3px;
+//           }
+//         }
+//       `}</style>
+
+//       <div className="room-management-container">
+//         {/* Toast Notifications */}
+//         {toast && (
+//           <div className={`edusched-toast toast-${toast.type}`}>
+//             <div className="toast-icon">
+//               {toast.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+//             </div>
+//             <span className="toast-message">{toast.message}</span>
+//             <button className="toast-close" onClick={() => setToast(null)}>×</button>
+//           </div>
+//         )}
+
+//         {/* Delete Confirmation Modal */}
+//         {showDeleteConfirm && (
+//           <div className="delete-modal-overlay" onClick={() => !deleteLoading && setShowDeleteConfirm(null)}>
+//             <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+//               <div className="delete-modal-header">
+//                 <AlertCircle size={28} />
+//                 <h3 className="delete-modal-title">Confirm Delete</h3>
+//               </div>
+//               <p className="delete-modal-body">
+//                 Are you sure you want to delete this? This action cannot be undone.
+//               </p>
+//               <div className="delete-modal-footer">
+//                 <button
+//                   className="btn-secondary-custom"
+//                   onClick={() => setShowDeleteConfirm(null)}
+//                   disabled={deleteLoading}
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button
+//                   className="btn-primary-custom"
+//                   style={{ background: "linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)" }}
+//                   onClick={() => {
+//                     if (showDeleteConfirm.type === "building") {
+//                       handleDeleteBuilding(showDeleteConfirm.id);
+//                     } else if (showDeleteConfirm.type === "room") {
+//                       handleDeleteRoom(showDeleteConfirm.id, showDeleteConfirm.buildingId);
+//                     }
+//                   }}
+//                   disabled={deleteLoading}
+//                 >
+//                   {deleteLoading ? (
+//                     <>
+//                       <Spinner animation="border" size="sm" />
+//                       Deleting...
+//                     </>
+//                   ) : (
+//                     <>
+//                       <Trash2 size={18} />
+//                       Delete
+//                     </>
+//                   )}
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Page Header with Gradient */}
+//         <div className="page-header-room">
+//           <div className="page-title-section-gradient-room">
+//             <div className="page-title-content-room">
+//               <h1 className="page-title-gradient-room">
+//                 <Building2 size={36} />
+//                 Room Management
+//               </h1>
+//               <p className="page-subtitle-gradient-room">
+//                 Manage buildings, rooms, and track facility utilization
+//               </p>
+//             </div>
+//             <div className="header-actions">
+//               <button className="action-btn" onClick={() => setShowBuildingModal(true)}>
+//                 <Plus size={20} />
+//                 Add Building
+//               </button>
+//               <button className="action-btn" onClick={fetchBuildings}>
+//                 <RotateCw size={20} />
+//                 Refresh
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Statistics Section */}
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Buildings</div>
+//             <div className="stat-value">{overallStats.totalBuildings}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Total Rooms</div>
+//             <div className="stat-value">{overallStats.totalRooms}</div>
+//           </div>
+//         </div>
+
+//         {/* Error State */}
+//         {error && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "2rem",
+//             textAlign: "center",
+//             marginBottom: "2rem",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <AlertCircle size={64} style={{ color: "#ff4444", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>Unable to Load Facilities</h4>
+//             <p style={{ color: "#666", marginBottom: "1.5rem" }}>{error}</p>
+//             <button className="action-btn" onClick={fetchBuildings} style={{ 
+//               background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//               border: "none"
+//             }}>
+//               <RotateCw size={20} />
+//               Try Again
+//             </button>
+//           </div>
+//         )}
+
+//         {/* Search Section */}
+//         {!error && buildings.length > 0 && (
+//           <div className="search-section">
+//             <div className="search-icon-wrapper">
+//               <Search className="search-icon" size={20} />
+//               <input
+//                 type="text"
+//                 className="search-input"
+//                 placeholder="Search buildings or rooms..."
+//                 value={searchTerm}
+//                 onChange={(e) => setSearchTerm(e.target.value)}
+//               />
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Expand/Collapse Controls */}
+//         {!error && filteredBuildings.length > 0 && (
+//           <div style={{ marginBottom: "1.5rem", display: "flex", gap: "0.5rem" }}>
+//             <button 
+//               className="action-btn" 
+//               onClick={expandAllBuildings} 
+//               style={{ 
+//                 fontSize: "0.9rem",
+//                 background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//                 border: "none"
+//               }}
+//             >
+//               Expand All
+//             </button>
+//             <button 
+//               className="action-btn" 
+//               onClick={collapseAllBuildings} 
+//               style={{ 
+//                 fontSize: "0.9rem",
+//                 background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//                 border: "none"
+//               }}
+//             >
+//               Collapse All
+//             </button>
+//           </div>
+//         )}
+
+//         {/* Empty State */}
+//         {!error && buildings.length === 0 && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "4rem 2rem",
+//             textAlign: "center",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <Building2 size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>No Buildings Yet</h4>
+//             <p style={{ color: "#666" }}>Create your first building to get started with room management.</p>
+//           </div>
+//         )}
+
+//         {/* No Results State */}
+//         {!error && buildings.length > 0 && filteredBuildings.length === 0 && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "4rem 2rem",
+//             textAlign: "center",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <Search size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>No Results Found</h4>
+//             <p style={{ color: "#666" }}>Try adjusting your search criteria.</p>
+//           </div>
+//         )}
+
+//         {/* Buildings List */}
+//         {!error && filteredBuildings.map(building => {
+//           const isExpanded = expandedBuildings[building.id] !== false;
+//           const totalRooms = building.rooms?.length || 0;
+
+//           return (
+//             <div key={building.id} className="building-card">
+//               <div
+//                 className="building-header"
+//                 onClick={() => toggleBuildingExpansion(building.id)}
+//               >
+//                 <div className="building-info">
+//                   <div className="building-name">
+//                     <Building2 size={22} />
+//                     {building.name}
+//                   </div>
+//                   <div className="building-stats">
+//                     <div className="building-stat">
+//                       <DoorOpen size={14} />
+//                       {totalRooms} room{totalRooms !== 1 ? "s" : ""}
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div className="building-actions">
+//                   <button
+//                     className="icon-btn"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       handleOpenRoomModal(building.id);
+//                     }}
+//                     title="Add Room"
+//                   >
+//                     <Plus size={18} />
+//                   </button>
+//                   <button
+//                     className="icon-btn"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       setShowDeleteConfirm({ type: "building", id: building.id });
+//                     }}
+//                     title="Delete Building"
+//                   >
+//                     <Trash2 size={18} />
+//                   </button>
+//                   <ChevronDown className={`chevron-icon ${isExpanded ? "open" : ""}`} size={20} />
+//                 </div>
+//               </div>
+
+//               {isExpanded && (
+//                 <div className="building-content">
+//                   {!building.rooms || building.rooms.length === 0 ? (
+//                     <div className="empty-rooms">
+//                       <p>No rooms added yet</p>
+//                     </div>
+//                   ) : (
+//                     building.rooms.map(room => {
+//                       return (
+//                         <div key={room.id} className="room-section">
+//                           <div className="room-header-custom">
+//                             <div className="room-title-custom">
+//                               <DoorOpen size={18} />
+//                               {room.name}
+//                             </div>
+//                             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginLeft: "auto" }}>
+//                               <button
+//                                 className="icon-btn"
+//                                 onClick={() => setShowDeleteConfirm({ type: "room", id: room.id, buildingId: building.id })}
+//                                 style={{ background: "#ff4444", marginLeft: "0.5rem" }}
+//                                 title="Delete Room"
+//                               >
+//                                 <Trash2 size={16} />
+//                               </button>
+//                             </div>
+//                           </div>
+
+//                           <div style={{ overflowX: "auto" }}>
+//                             <table className="room-table">
+//                               <thead>
+//                                 <tr>
+//                                   {days.map(day => (
+//                                     <th key={day} style={{minWidth: '120px'}}>{day}</th>
+//                                   ))}
+//                                 </tr>
+//                               </thead>
+//                               <tbody>
+//                                 {timeSlots.map(slot => (
+//                                   <tr key={slot.start}>
+//                                     {days.map(day => (
+//                                       <td key={day}>
+//                                         <div className="time-slot-cell">
+//                                           {formatTime(slot.start)} - {formatTime(slot.end)}
+//                                         </div>
+//                                       </td>
+//                                     ))}
+//                                   </tr>
+//                                 ))}
+//                               </tbody>
+//                             </table>
+//                           </div>
+//                         </div>
+//                       );
+//                     })
+//                   )}
+//                 </div>
+//               )}
+//             </div>
+//           );
+//         })}
+
+//         {/* Add Building Modal */}
+//         <Modal show={showBuildingModal} onHide={() => setShowBuildingModal(false)} centered className="edusched-modal">
+//           <Modal.Header closeButton className="modal-header-custom">
+//             <Modal.Title>
+//               <Building2 size={24} />
+//               Add New Building
+//             </Modal.Title>
+//           </Modal.Header>
+//           <Form onSubmit={handleAddBuilding}>
+//             <Modal.Body className="modal-body-custom">
+//               <Form.Group>
+//                 <Form.Label className="form-label-custom">Building Name</Form.Label>
+//                 <Form.Control
+//                   type="text"
+//                   placeholder="e.g., Engineering Building A"
+//                   value={newBuildingName}
+//                   onChange={(e) => setNewBuildingName(e.target.value)}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 />
+//               </Form.Group>
+//             </Modal.Body>
+//             <Modal.Footer className="modal-footer-custom">
+//               <button
+//                 className="btn-secondary-custom"
+//                 onClick={() => setShowBuildingModal(false)}
+//                 disabled={modalLoading}
+//               >
+//                 Cancel
+//               </button>
+//               <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+//                 {modalLoading ? (
+//                   <>
+//                     <Spinner size="sm" animation="border" />
+//                     Adding...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Plus size={18} />
+//                     Add Building
+//                   </>
+//                 )}
+//               </button>
+//             </Modal.Footer>
+//           </Form>
+//         </Modal>
+
+//         {/* Add Room Modal */}
+//         <Modal show={showRoomModal} onHide={() => setShowRoomModal(false)} centered className="edusched-modal">
+//           <Modal.Header closeButton className="modal-header-custom">
+//             <Modal.Title>
+//               <DoorOpen size={24} />
+//               Add New Room
+//             </Modal.Title>
+//           </Modal.Header>
+//           <Form onSubmit={handleAddRoom}>
+//             <Modal.Body className="modal-body-custom">
+//               <Form.Group className="mb-3">
+//                 <Form.Label className="form-label-custom">Building</Form.Label>
+//                 <Form.Select
+//                   value={newRoom.buildingId}
+//                   onChange={(e) => setNewRoom({ ...newRoom, buildingId: e.target.value })}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 >
+//                   <option value="">Select Building</option>
+//                   {buildings
+//                     .filter(b => !selectedBuildingForRoom || b.id === Number(selectedBuildingForRoom))
+//                     .map(b => (
+//                       <option key={b.id} value={b.id}>{b.name}</option>
+//                     ))}
+//                 </Form.Select>
+//               </Form.Group>
+//               <Form.Group>
+//                 <Form.Label className="form-label-custom">Room Name</Form.Label>
+//                 <Form.Control
+//                   type="text"
+//                   placeholder="e.g., Main-101"
+//                   value={newRoom.name}
+//                   onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 />
+//               </Form.Group>
+//             </Modal.Body>
+//             <Modal.Footer className="modal-footer-custom">
+//               <button
+//                 className="btn-secondary-custom"
+//                 onClick={() => {
+//                   setShowRoomModal(false);
+//                   setSelectedBuildingForRoom(null);
+//                 }}
+//                 disabled={modalLoading}
+//               >
+//                 Cancel
+//               </button>
+//               <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+//                 {modalLoading ? (
+//                   <>
+//                     <Spinner size="sm" animation="border" />
+//                     Adding...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Plus size={18} />
+//                     Add Room
+//                   </>
+//                 )}
+//               </button>
+//             </Modal.Footer>
+//           </Form>
+//         </Modal>
+//       </div>
+//     </>
+//   );
+// };
+
+// export default RoomManagement;
+
+//FUNCTIONAL WITHOUT MULTIPLE ROOM SUPPORT
+
+// import React, { useState, useEffect, useMemo, useCallback } from "react";
+// import { Card, Button, Modal, Form, Spinner, Badge, InputGroup } from "react-bootstrap";
+// import { Building2, DoorOpen, Search, Plus, RotateCw, Trash2, Edit, AlertCircle, CheckCircle, ChevronDown, ChevronUp, BookOpen, X } from "lucide-react";
+
+// const RoomManagement = () => {
+//   // State management
+//   const [buildings, setBuildings] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [expandedBuildings, setExpandedBuildings] = useState({});
+//   const [toast, setToast] = useState(null);
+
+//   // Modal states
+//   const [showBuildingModal, setShowBuildingModal] = useState(false);
+//   const [showRoomModal, setShowRoomModal] = useState(false);
+//   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+//   const [newBuildingName, setNewBuildingName] = useState("");
+//   const [newRoom, setNewRoom] = useState({ name: "", buildingId: "" });
+//   const [modalLoading, setModalLoading] = useState(false);
+//   const [deleteLoading, setDeleteLoading] = useState(false);
+//   const [selectedBuildingForRoom, setSelectedBuildingForRoom] = useState(null);
+  
+//   // Room Assignment States
+//   const [courses, setCourses] = useState([]);
+//   const [showRoomAssignmentModal, setShowRoomAssignmentModal] = useState(false);
+//   const [selectedAssignment, setSelectedAssignment] = useState(null);
+//   const [roomAssignments, setRoomAssignments] = useState([]);
+
+//   const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+//   const COLORS = {
+//     primary: "#03045E",
+//     secondary: "#023E8A",
+//     accent: "#0077B6",
+//     light: "#00B4D8",
+//     lighter: "#48CAE4",
+//     lightest: "#CAF0F8",
+//   };
+
+//   // Time slots: 7:00 AM to 7:00 PM
+//   const timeSlots = useMemo(() => {
+//     const slots = [];
+//     for (let hour = 7; hour < 19; hour++) {
+//       const start = `${hour.toString().padStart(2, "0")}:00`;
+//       const end = `${(hour + 1).toString().padStart(2, "0")}:00`;
+//       slots.push({ start, end, hour });
+//     }
+//     return slots;
+//   }, []);
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   /**
+//    * Format time from 24-hour to 12-hour format
+//    */
+//   const formatTime = useCallback((time) => {
+//     const [hour, minute] = time.split(":");
+//     let h = parseInt(hour);
+//     const ampm = h >= 12 ? "PM" : "AM";
+//     h = h % 12 || 12;
+//     return `${h}:${minute} ${ampm}`;
+//   }, []);
+
+//   /**
+//    * Fetch all courses
+//    */
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       if (!res.ok) throw new Error("Failed to fetch courses");
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data.filter(c => !c.is_general) : []);
+//     } catch (err) {
+//       console.error("Error fetching courses:", err);
+//       showToast("Failed to load courses", "error");
+//     }
+//   }, [API]);
+
+//   /**
+//    * Fetch room assignments
+//    */
+//   const fetchRoomAssignments = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/room-assignments`);
+//       if (!res.ok) throw new Error("Failed to fetch room assignments");
+//       const data = await res.json();
+//       setRoomAssignments(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error("Error fetching room assignments:", err);
+//       setRoomAssignments([]);
+//     }
+//   }, [API]);
+
+//   /**
+//    * Fetch all buildings with rooms and schedules
+//    */
+//   const fetchBuildings = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+//     try {
+//       const res = await fetch(`${API}/api/buildings`);
+//       if (!res.ok) throw new Error("Failed to fetch buildings");
+//       const data = await res.json();
+//       setBuildings(Array.isArray(data) ? data : []);
+      
+//       // Initialize expanded state for all buildings
+//       const expandedState = {};
+//       data.forEach(b => {
+//         expandedState[b.id] = true;
+//       });
+//       setExpandedBuildings(expandedState);
+//     } catch (err) {
+//       console.error("Error fetching buildings:", err);
+//       setError(err.message);
+//       showToast("Failed to load buildings", "error");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [API]);
+
+//   /**
+//    * Show toast notification
+//    */
+//   const showToast = (message, type) => {
+//     setToast({ message, type });
+//   };
+
+//   /**
+//    * Toggle building expansion
+//    */
+//   const toggleBuildingExpansion = (buildingId) => {
+//     setExpandedBuildings(prev => ({
+//       ...prev,
+//       [buildingId]: !prev[buildingId]
+//     }));
+//   };
+
+//   /**
+//    * Expand all buildings
+//    */
+//   const expandAllBuildings = () => {
+//     const expanded = {};
+//     buildings.forEach(b => {
+//       expanded[b.id] = true;
+//     });
+//     setExpandedBuildings(expanded);
+//   };
+
+//   /**
+//    * Collapse all buildings
+//    */
+//   const collapseAllBuildings = () => {
+//     const collapsed = {};
+//     buildings.forEach(b => {
+//       collapsed[b.id] = false;
+//     });
+//     setExpandedBuildings(collapsed);
+//   };
+
+//   /**
+//    * Add new building
+//    */
+//   const handleAddBuilding = async (e) => {
+//     e.preventDefault();
+//     if (!newBuildingName.trim()) {
+//       showToast("Please enter a building name", "error");
+//       return;
+//     }
+
+//     setModalLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/buildings`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ name: newBuildingName })
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to add building");
+      
+//       const saved = await res.json();
+//       setBuildings(prev => [...prev, { ...saved, rooms: [] }]);
+//       setExpandedBuildings(prev => ({ ...prev, [saved.id]: true }));
+//       setNewBuildingName("");
+//       setShowBuildingModal(false);
+//       showToast(`Building "${saved.name}" added successfully`, "success");
+//     } catch (err) {
+//       console.error("Error adding building:", err);
+//       showToast(err.message || "Failed to add building", "error");
+//     } finally {
+//       setModalLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Delete a building
+//    */
+//   const handleDeleteBuilding = async (buildingId) => {
+//     setDeleteLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/buildings/${buildingId}`, {
+//         method: "DELETE"
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to delete building");
+      
+//       setBuildings(prev => prev.filter(b => b.id !== buildingId));
+//       setShowDeleteConfirm(null);
+//       showToast("Building deleted successfully", "success");
+//     } catch (err) {
+//       console.error("Error deleting building:", err);
+//       showToast("Failed to delete building", "error");
+//     } finally {
+//       setDeleteLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Add new room
+//    */
+//   const handleAddRoom = async (e) => {
+//     e.preventDefault();
+//     if (!newRoom.name.trim() || !newRoom.buildingId) {
+//       showToast("Please enter room name and select building", "error");
+//       return;
+//     }
+
+//     setModalLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/rooms`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           name: newRoom.name,
+//           buildingId: Number(newRoom.buildingId)
+//         })
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to add room");
+      
+//       const saved = await res.json();
+//       setBuildings(prev =>
+//         prev.map(b =>
+//           b.id === saved.buildingId
+//             ? { ...b, rooms: [...(b.rooms || []), saved] }
+//             : b
+//         )
+//       );
+//       setNewRoom({ name: "", buildingId: "" });
+//       setShowRoomModal(false);
+//       setSelectedBuildingForRoom(null);
+//       showToast(`Room "${saved.name}" added successfully`, "success");
+//     } catch (err) {
+//       console.error("Error adding room:", err);
+//       showToast(err.message || "Failed to add room", "error");
+//     } finally {
+//       setModalLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Delete a room
+//    */
+//   const handleDeleteRoom = async (roomId, buildingId) => {
+//     setDeleteLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/rooms/${roomId}`, {
+//         method: "DELETE"
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to delete room");
+      
+//       setBuildings(prev =>
+//         prev.map(b =>
+//           b.id === buildingId
+//             ? { ...b, rooms: b.rooms.filter(r => r.id !== roomId) }
+//             : b
+//         )
+//       );
+//       setShowDeleteConfirm(null);
+//       showToast("Room deleted successfully", "success");
+//     } catch (err) {
+//       console.error("Error deleting room:", err);
+//       showToast("Failed to delete room", "error");
+//     } finally {
+//       setDeleteLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Open room assignment modal
+//    */
+//   const handleOpenRoomAssignment = (courseId, yearLevel, semester, buildingId) => {
+//     setSelectedAssignment({ courseId, yearLevel, semester, buildingId });
+//     setShowRoomAssignmentModal(true);
+//   };
+
+//   /**
+//    * Assign/Update room for a course/year/semester
+//    */
+//   const handleAssignRoom = async (roomId) => {
+//     if (!selectedAssignment) return;
+
+//     try {
+//       const res = await fetch(`${API}/api/room-assignments`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           courseId: selectedAssignment.courseId,
+//           yearLevel: selectedAssignment.yearLevel,
+//           semester: selectedAssignment.semester,
+//           roomId: Number(roomId),
+//           buildingId: selectedAssignment.buildingId
+//         })
+//       });
+
+//       if (!res.ok) throw new Error("Failed to assign room");
+
+//       await fetchRoomAssignments();
+//       setShowRoomAssignmentModal(false);
+//       setSelectedAssignment(null);
+//       showToast("Room assigned successfully", "success");
+//     } catch (err) {
+//       console.error("Error assigning room:", err);
+//       showToast(err.message || "Failed to assign room", "error");
+//     }
+//   };
+
+//   /**
+//    * Delete/Unassign room for a course/year/semester/building
+//    */
+//   const handleUnassignRoom = async (courseId, yearLevel, semester, buildingId) => {
+//     try {
+//       // Find the assignment ID
+//       const assignment = roomAssignments.find(
+//         a => a.course_id === courseId && 
+//              a.year_level === yearLevel && 
+//              a.semester === semester &&
+//              a.building_id === buildingId
+//       );
+
+//       if (!assignment) {
+//         showToast("Assignment not found", "error");
+//         return;
+//       }
+
+//       const res = await fetch(`${API}/api/room-assignments/${assignment.id}`, {
+//         method: "DELETE"
+//       });
+
+//       if (!res.ok) throw new Error("Failed to unassign room");
+
+//       await fetchRoomAssignments();
+//       showToast("Room unassigned successfully", "success");
+//     } catch (err) {
+//       console.error("Error unassigning room:", err);
+//       showToast(err.message || "Failed to unassign room", "error");
+//     }
+//   };
+
+//   /**
+//    * Get assigned room for a specific course/year/semester/building
+//    */
+//   const getAssignedRoom = (courseId, yearLevel, semester, buildingId) => {
+//     const assignment = roomAssignments.find(
+//       a => a.course_id === courseId && 
+//            a.year_level === yearLevel && 
+//            a.semester === semester &&
+//            a.building_id === buildingId
+//     );
+    
+//     if (!assignment) return null;
+
+//     // Find the room details
+//     for (const building of buildings) {
+//       if (building.id === buildingId) {
+//         const room = building.rooms?.find(r => r.id === assignment.room_id);
+//         if (room) {
+//           return {
+//             roomId: room.id,
+//             roomName: room.name,
+//             buildingName: building.name
+//           };
+//         }
+//       }
+//     }
+//     return null;
+//   };
+
+//   /**
+//    * Open add room modal with pre-selected building
+//    */
+//   const handleOpenRoomModal = (buildingId) => {
+//     setSelectedBuildingForRoom(buildingId);
+//     setNewRoom({ name: "", buildingId: String(buildingId) });
+//     setShowRoomModal(true);
+//   };
+
+//   /**
+//    * Filter buildings based on search term
+//    */
+//   const filteredBuildings = useMemo(() => {
+//     return buildings.filter(b =>
+//       b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       b.rooms?.some(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()))
+//     );
+//   }, [buildings, searchTerm]);
+
+//   /**
+//    * Calculate overall statistics
+//    */
+//   const overallStats = useMemo(() => {
+//     const totalBuildings = buildings.length;
+//     const totalRooms = buildings.reduce((sum, b) => sum + (b.rooms?.length || 0), 0);
+    
+//     return { totalBuildings, totalRooms };
+//   }, [buildings]);
+
+//   // Fetch buildings on mount
+//   useEffect(() => {
+//     fetchBuildings();
+//     fetchCourses();
+//     fetchRoomAssignments();
+//   }, [fetchBuildings, fetchCourses, fetchRoomAssignments]);
+
+//   // Auto-dismiss toast
+//   useEffect(() => {
+//     if (toast) {
+//       const timer = setTimeout(() => setToast(null), 4000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [toast]);
+
+//   // Loading state
+//   if (loading) {
+//     return (
+//       <div className="room-loading-container">
+//         <Spinner animation="border" variant="primary" />
+//         <p className="mt-3">Loading facilities...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         /* ============================================
+//            Room Management Styles
+//            ============================================ */
+
+//         .room-management-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         /* Page Header with Gradient */
+//         .page-header-room {
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-section-gradient-room {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title-content-room {
+//           color: white;
+//         }
+
+//         .page-title-gradient-room {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           color: white;
+//           margin: 0 0 0.5rem 0;
+//           letter-spacing: -0.5px;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .page-subtitle-gradient-room {
+//           font-size: 1.05rem;
+//           color: white;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         /* Statistics Section */
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid #0077B6;
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(10px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: #03045E;
+//         }
+
+//         /* Search Section */
+//         .search-section {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//         }
+
+//         .search-input {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem 1rem 0.75rem 2.5rem;
+//           width: 100%;
+//           font-size: 1rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-input:focus {
+//           outline: none;
+//           border-color: #0077B6;
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-wrapper {
+//           position: relative;
+//         }
+
+//         .search-icon {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: #0077B6;
+//           pointer-events: none;
+//         }
+
+//         /* Building Card */
+//         .building-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 1.5rem;
+//           overflow: hidden;
+//           transition: all 0.3s ease;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .building-card:hover {
+//           box-shadow: 0 8px 24px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .building-header {
+//           background: linear-gradient(135deg, #03045E 0%, #0077B6 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .building-header:hover {
+//           background: linear-gradient(135deg, #023E8A 0%, #023E8A 100%);
+//         }
+
+//         .building-info {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           flex: 1;
+//         }
+
+//         .building-name {
+//           font-size: 1.2rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .building-stats {
+//           display: flex;
+//           gap: 1rem;
+//           margin-left: auto;
+//         }
+
+//         .building-stat {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 0.9rem;
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//         }
+
+//         .building-actions {
+//           display: flex;
+//           gap: 0.5rem;
+//         }
+
+//         .icon-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: none;
+//           color: white;
+//           padding: 0.5rem;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//         }
+
+//         .icon-btn:hover {
+//           background: rgba(255, 255, 255, 0.4);
+//           transform: scale(1.1);
+//         }
+
+//         .chevron-icon {
+//           transition: transform 0.3s ease;
+//         }
+
+//         .chevron-icon.open {
+//           transform: rotate(180deg);
+//         }
+
+//         /* Building Content */
+//         .building-content {
+//           padding: 1.5rem;
+//         }
+
+//         .empty-rooms {
+//           text-align: center;
+//           padding: 2rem;
+//           color: #999;
+//         }
+
+//         /* Room Section */
+//         .room-section {
+//           margin-bottom: 2rem;
+//         }
+
+//         .room-header-custom {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           padding: 1rem;
+//           background: #CAF0F8;
+//           border-radius: 10px;
+//           margin-bottom: 1rem;
+//           border-left: 4px solid #0077B6;
+//         }
+
+//         .room-title-custom {
+//           font-weight: 600;
+//           color: #03045E;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 1rem;
+//         }
+
+//         /* Schedule Table */
+//         .room-table {
+//           border-collapse: collapse;
+//           width: 100%;
+//           font-size: 0.9rem;
+//           margin-bottom: 1rem;
+//         }
+
+//         .room-table thead {
+//           background: #CAF0F8;
+//           color: #03045E;
+//         }
+
+//         .room-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .room-table td {
+//           padding: 0.5rem 0.25rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//         }
+
+//         .room-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .room-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-cell {
+//           font-weight: 500;
+//           color: #0077B6;
+//           text-align: left;
+//           padding-left: 1rem;
+//           background: #f8f9fa;
+//         }
+
+//         .time-slot-cell {
+//           background: white;
+//           color: #495057;
+//           padding: 4px 6px;
+//           border: 1px solid #dee2e6;
+//           font-size: 0.65rem;
+//           font-weight: 400;
+//           white-space: nowrap;
+//         }
+
+//         /* Room Assignment Styles */
+//         .room-assignments-section {
+//           margin-top: 3rem;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 2rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//         }
+
+//         .room-assignments-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//           padding-bottom: 1rem;
+//           border-bottom: 2px solid #90E0EF;
+//         }
+
+//         .room-assignments-title {
+//           font-size: 1.5rem;
+//           font-weight: 700;
+//           color: #03045E;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .room-assignments-grid {
+//           display: grid;
+//           gap: 2rem;
+//         }
+
+//         .course-assignment-card {
+//           background: #F8FCFD;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           border: 2px solid #CAF0F8;
+//           transition: all 0.3s ease;
+//         }
+
+//         .course-assignment-card:hover {
+//           border-color: #0077B6;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .course-assignment-header {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           padding: 1rem 1.5rem;
+//           border-radius: 8px;
+//           margin-bottom: 1.5rem;
+//           font-weight: 600;
+//           font-size: 1.1rem;
+//         }
+
+//         .year-assignments-table {
+//           width: 100%;
+//           border-collapse: separate;
+//           border-spacing: 0;
+//         }
+
+//         .year-assignments-table th {
+//           background: #CAF0F8;
+//           color: #03045E;
+//           padding: 1rem;
+//           text-align: center;
+//           font-weight: 600;
+//           border: 1px solid #90E0EF;
+//         }
+
+//         .year-assignments-table th:first-child {
+//           border-top-left-radius: 8px;
+//           text-align: left;
+//           padding-left: 1.5rem;
+//         }
+
+//         .year-assignments-table th:last-child {
+//           border-top-right-radius: 8px;
+//         }
+
+//         .year-assignments-table td {
+//           padding: 1rem;
+//           text-align: center;
+//           border: 1px solid #E8F4F8;
+//           background: white;
+//         }
+
+//         .year-assignments-table td:first-child {
+//           text-align: left;
+//           padding-left: 1.5rem;
+//           font-weight: 600;
+//           color: #0077B6;
+//         }
+
+//         .year-assignments-table tbody tr:last-child td:first-child {
+//           border-bottom-left-radius: 8px;
+//         }
+
+//         .year-assignments-table tbody tr:last-child td:last-child {
+//           border-bottom-right-radius: 8px;
+//         }
+
+//         .room-assignment-cell {
+//           display: flex;
+//           flex-direction: column;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .assigned-room-info {
+//           background: #d4edda;
+//           color: #155724;
+//           padding: 0.5rem 1rem;
+//           border-radius: 6px;
+//           font-weight: 500;
+//           font-size: 0.9rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .select-room-btn {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           border: none;
+//           padding: 0.5rem 1rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 0.85rem;
+//         }
+
+//         .select-room-btn:hover {
+//           background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
+//         }
+
+//         .edit-room-btn {
+//           background: #ffc107;
+//           color: #000;
+//           border: none;
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.3rem;
+//           font-size: 0.75rem;
+//         }
+
+//         .edit-room-btn:hover {
+//           background: #ffb300;
+//           transform: scale(1.05);
+//         }
+
+//         .remove-room-btn {
+//           background: #dc3545;
+//           color: white;
+//           border: none;
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.3rem;
+//           font-size: 0.75rem;
+//         }
+
+//         .remove-room-btn:hover {
+//           background: #c82333;
+//           transform: scale(1.05);
+//         }
+
+//         .room-selection-modal .modal-body-custom {
+//           max-height: 500px;
+//           overflow-y: auto;
+//         }
+
+//         .building-rooms-group {
+//           margin-bottom: 2rem;
+//         }
+
+//         .building-group-title {
+//           background: #CAF0F8;
+//           color: #03045E;
+//           padding: 0.75rem 1rem;
+//           border-radius: 8px;
+//           font-weight: 600;
+//           margin-bottom: 1rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .rooms-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+//           gap: 1rem;
+//         }
+
+//         .room-option-card {
+//           background: white;
+//           border: 2px solid #90E0EF;
+//           padding: 1rem;
+//           border-radius: 8px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           text-align: center;
+//         }
+
+//         .room-option-card:hover {
+//           border-color: #0077B6;
+//           background: #F8FCFD;
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .room-option-card.selected {
+//           border-color: #0077B6;
+//           background: #E8F4F8;
+//           box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
+//         }
+
+//         .room-option-name {
+//           font-weight: 600;
+//           color: #03045E;
+//           margin-bottom: 0.25rem;
+//         }
+
+//         .room-option-building {
+//           font-size: 0.85rem;
+//           color: #666;
+//         }
+
+//         /* Toast Notifications */
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from {
+//             transform: translateX(400px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateX(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .toast-success {
+//           border-left-color: #00c851;
+//         }
+
+//         .toast-error {
+//           border-left-color: #ff4444;
+//         }
+
+//         .toast-icon {
+//           flex-shrink: 0;
+//         }
+
+//         .toast-success .toast-icon {
+//           color: #00c851;
+//         }
+
+//         .toast-error .toast-icon {
+//           color: #ff4444;
+//         }
+
+//         .toast-message {
+//           flex: 1;
+//           color: #333;
+//           font-weight: 500;
+//         }
+
+//         .toast-close {
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           font-size: 1.5rem;
+//           padding: 0;
+//           line-height: 1;
+//           flex-shrink: 0;
+//           transition: color 0.3s ease;
+//         }
+
+//         .toast-close:hover {
+//           color: #333;
+//         }
+
+//         /* Modal Styles */
+//         .edusched-modal .modal-content {
+//           border-radius: 16px;
+//           border: none;
+//           overflow: hidden;
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           border: none;
+//         }
+
+//         .modal-header-custom .modal-title {
+//           display: flex;
+//           align-items: center;
+//           font-weight: 700;
+//           font-size: 1.3rem;
+//           gap: 0.75rem;
+//         }
+
+//         .modal-header-custom .btn-close {
+//           filter: brightness(0) invert(1);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: #03045E;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .form-input-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .form-input-custom:focus {
+//           border-color: #0077B6;
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//           outline: none;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//         }
+
+//         .btn-primary-custom {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           color: white;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .btn-primary-custom:hover:not(:disabled) {
+//           background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+//         }
+
+//         .btn-secondary-custom {
+//           background: white;
+//           border: 2px solid #90E0EF;
+//           color: #0077B6;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-secondary-custom:hover {
+//           background: #F8FCFD;
+//           border-color: #0077B6;
+//         }
+
+//         /* Delete Confirmation Modal */
+//         .delete-modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .delete-modal {
+//           background: white;
+//           border-radius: 16px;
+//           padding: 2rem;
+//           max-width: 400px;
+//           width: 100%;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from {
+//             transform: translateY(50px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateY(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .delete-modal-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 1rem;
+//           color: #ff4444;
+//         }
+
+//         .delete-modal-title {
+//           font-size: 1.3rem;
+//           font-weight: 700;
+//           margin: 0;
+//         }
+
+//         .delete-modal-body {
+//           color: #666;
+//           margin-bottom: 1.5rem;
+//           line-height: 1.6;
+//         }
+
+//         .delete-modal-footer {
+//           display: flex;
+//           gap: 1rem;
+//           justify-content: flex-end;
+//         }
+
+//         .room-loading-container {
+//           display: flex;
+//           flex-direction: column;
+//           align-items: center;
+//           justify-content: center;
+//           height: 100vh;
+//           background: linear-gradient(135deg, #CAF0F8 0%, #ADE8F4 100%);
+//           color: #0077B6;
+//         }
+
+//         /* Responsive Design */
+//         @media (max-width: 992px) {
+//           .page-title-section-gradient-room {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .header-actions {
+//             width: 100%;
+//           }
+
+//           .action-btn {
+//             flex: 1;
+//             justify-content: center;
+//           }
+
+//           .building-header {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .building-stats {
+//             margin-left: 0;
+//             margin-top: 0.5rem;
+//           }
+
+//           .room-table {
+//             font-size: 0.8rem;
+//           }
+
+//           .room-table th,
+//           .room-table td {
+//             padding: 0.5rem 0.25rem;
+//           }
+
+//           .year-assignments-table {
+//             font-size: 0.85rem;
+//           }
+
+//           .rooms-grid {
+//             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+//           }
+//         }
+
+//         @media (max-width: 768px) {
+//           .room-management-container {
+//             padding: 1rem;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: repeat(2, 1fr);
+//           }
+
+//           .page-title-gradient-room {
+//             font-size: 2rem;
+//           }
+
+//           .building-info {
+//             flex-direction: column;
+//             gap: 0.5rem;
+//           }
+
+//           .building-stat {
+//             font-size: 0.75rem;
+//             padding: 0.25rem 0.5rem;
+//           }
+
+//           .room-table {
+//             font-size: 0.75rem;
+//             display: block;
+//             overflow-x: auto;
+//           }
+
+//           .time-slot-cell {
+//             font-size: 0.55rem;
+//             padding: 3px 4px;
+//           }
+
+//           .edusched-toast {
+//             left: 1rem;
+//             right: 1rem;
+//             min-width: auto;
+//           }
+
+//           .year-assignments-table {
+//             font-size: 0.75rem;
+//             display: block;
+//             overflow-x: auto;
+//           }
+
+//           .select-room-btn {
+//             font-size: 0.75rem;
+//             padding: 0.4rem 0.8rem;
+//           }
+
+//           .assigned-room-info {
+//             font-size: 0.75rem;
+//             padding: 0.4rem 0.8rem;
+//           }
+//         }
+
+//         @media (max-width: 576px) {
+//           .room-management-container {
+//             padding: 0.5rem;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .page-title-gradient-room {
+//             font-size: 1.5rem;
+//           }
+
+//           .building-name {
+//             font-size: 1rem;
+//           }
+
+//           .delete-modal {
+//             padding: 1.5rem;
+//           }
+
+//           .time-slot-cell {
+//             font-size: 0.5rem;
+//             padding: 2px 3px;
+//           }
+
+//           .rooms-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .room-assignments-section {
+//             padding: 1rem;
+//           }
+//         }
+//       `}</style>
+
+//       <div className="room-management-container">
+//         {/* Toast Notifications */}
+//         {toast && (
+//           <div className={`edusched-toast toast-${toast.type}`}>
+//             <div className="toast-icon">
+//               {toast.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+//             </div>
+//             <span className="toast-message">{toast.message}</span>
+//             <button className="toast-close" onClick={() => setToast(null)}>×</button>
+//           </div>
+//         )}
+
+//         {/* Delete Confirmation Modal */}
+//         {showDeleteConfirm && (
+//           <div className="delete-modal-overlay" onClick={() => !deleteLoading && setShowDeleteConfirm(null)}>
+//             <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+//               <div className="delete-modal-header">
+//                 <AlertCircle size={28} />
+//                 <h3 className="delete-modal-title">Confirm Delete</h3>
+//               </div>
+//               <p className="delete-modal-body">
+//                 Are you sure you want to delete this? This action cannot be undone.
+//               </p>
+//               <div className="delete-modal-footer">
+//                 <button
+//                   className="btn-secondary-custom"
+//                   onClick={() => setShowDeleteConfirm(null)}
+//                   disabled={deleteLoading}
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button
+//                   className="btn-primary-custom"
+//                   style={{ background: "linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)" }}
+//                   onClick={() => {
+//                     if (showDeleteConfirm.type === "building") {
+//                       handleDeleteBuilding(showDeleteConfirm.id);
+//                     } else if (showDeleteConfirm.type === "room") {
+//                       handleDeleteRoom(showDeleteConfirm.id, showDeleteConfirm.buildingId);
+//                     }
+//                   }}
+//                   disabled={deleteLoading}
+//                 >
+//                   {deleteLoading ? (
+//                     <>
+//                       <Spinner animation="border" size="sm" />
+//                       Deleting...
+//                     </>
+//                   ) : (
+//                     <>
+//                       <Trash2 size={18} />
+//                       Delete
+//                     </>
+//                   )}
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Page Header with Gradient */}
+//         <div className="page-header-room">
+//           <div className="page-title-section-gradient-room">
+//             <div className="page-title-content-room">
+//               <h1 className="page-title-gradient-room">
+//                 <Building2 size={36} />
+//                 Room Management
+//               </h1>
+//               <p className="page-subtitle-gradient-room">
+//                 Manage buildings, rooms, and track facility utilization
+//               </p>
+//             </div>
+//             <div className="header-actions">
+//               <button className="action-btn" onClick={() => setShowBuildingModal(true)}>
+//                 <Plus size={20} />
+//                 Add Building
+//               </button>
+//               <button className="action-btn" onClick={() => {
+//                 fetchBuildings();
+//                 fetchCourses();
+//                 fetchRoomAssignments();
+//               }}>
+//                 <RotateCw size={20} />
+//                 Refresh
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Statistics Section */}
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Buildings</div>
+//             <div className="stat-value">{overallStats.totalBuildings}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Total Rooms</div>
+//             <div className="stat-value">{overallStats.totalRooms}</div>
+//           </div>
+//         </div>
+
+//         {/* Error State */}
+//         {error && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "2rem",
+//             textAlign: "center",
+//             marginBottom: "2rem",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <AlertCircle size={64} style={{ color: "#ff4444", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>Unable to Load Facilities</h4>
+//             <p style={{ color: "#666", marginBottom: "1.5rem" }}>{error}</p>
+//             <button className="action-btn" onClick={fetchBuildings} style={{ 
+//               background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//               border: "none"
+//             }}>
+//               <RotateCw size={20} />
+//               Try Again
+//             </button>
+//           </div>
+//         )}
+
+//         {/* Search Section */}
+//         {!error && buildings.length > 0 && (
+//           <div className="search-section">
+//             <div className="search-icon-wrapper">
+//               <Search className="search-icon" size={20} />
+//               <input
+//                 type="text"
+//                 className="search-input"
+//                 placeholder="Search buildings or rooms..."
+//                 value={searchTerm}
+//                 onChange={(e) => setSearchTerm(e.target.value)}
+//               />
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Expand/Collapse Controls */}
+//         {!error && filteredBuildings.length > 0 && (
+//           <div style={{ marginBottom: "1.5rem", display: "flex", gap: "0.5rem" }}>
+//             <button 
+//               className="action-btn" 
+//               onClick={expandAllBuildings} 
+//               style={{ 
+//                 fontSize: "0.9rem",
+//                 background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//                 border: "none"
+//               }}
+//             >
+//               Expand All
+//             </button>
+//             <button 
+//               className="action-btn" 
+//               onClick={collapseAllBuildings} 
+//               style={{ 
+//                 fontSize: "0.9rem",
+//                 background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//                 border: "none"
+//               }}
+//             >
+//               Collapse All
+//             </button>
+//           </div>
+//         )}
+
+//         {/* Empty State */}
+//         {!error && buildings.length === 0 && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "4rem 2rem",
+//             textAlign: "center",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <Building2 size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>No Buildings Yet</h4>
+//             <p style={{ color: "#666" }}>Create your first building to get started with room management.</p>
+//           </div>
+//         )}
+
+//         {/* No Results State */}
+//         {!error && buildings.length > 0 && filteredBuildings.length === 0 && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "4rem 2rem",
+//             textAlign: "center",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <Search size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>No Results Found</h4>
+//             <p style={{ color: "#666" }}>Try adjusting your search criteria.</p>
+//           </div>
+//         )}
+
+//         {/* Buildings List */}
+//         {!error && filteredBuildings.map(building => {
+//           const isExpanded = expandedBuildings[building.id] !== false;
+//           const totalRooms = building.rooms?.length || 0;
+
+//           return (
+//             <div key={building.id} className="building-card">
+//               <div
+//                 className="building-header"
+//                 onClick={() => toggleBuildingExpansion(building.id)}
+//               >
+//                 <div className="building-info">
+//                   <div className="building-name">
+//                     <Building2 size={22} />
+//                     {building.name}
+//                   </div>
+//                   <div className="building-stats">
+//                     <div className="building-stat">
+//                       <DoorOpen size={14} />
+//                       {totalRooms} room{totalRooms !== 1 ? "s" : ""}
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div className="building-actions">
+//                   <button
+//                     className="icon-btn"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       handleOpenRoomModal(building.id);
+//                     }}
+//                     title="Add Room"
+//                   >
+//                     <Plus size={18} />
+//                   </button>
+//                   <button
+//                     className="icon-btn"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       setShowDeleteConfirm({ type: "building", id: building.id });
+//                     }}
+//                     title="Delete Building"
+//                   >
+//                     <Trash2 size={18} />
+//                   </button>
+//                   <ChevronDown className={`chevron-icon ${isExpanded ? "open" : ""}`} size={20} />
+//                 </div>
+//               </div>
+
+//               {isExpanded && (
+//                 <div className="building-content">
+//                   {!building.rooms || building.rooms.length === 0 ? (
+//                     <div className="empty-rooms">
+//                       <p>No rooms added yet</p>
+//                     </div>
+//                   ) : (
+//                     building.rooms.map(room => {
+//                       return (
+//                         <div key={room.id} className="room-section">
+//                           <div className="room-header-custom">
+//                             <div className="room-title-custom">
+//                               <DoorOpen size={18} />
+//                               {room.name}
+//                             </div>
+//                             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginLeft: "auto" }}>
+//                               <button
+//                                 className="icon-btn"
+//                                 onClick={() => setShowDeleteConfirm({ type: "room", id: room.id, buildingId: building.id })}
+//                                 style={{ background: "#ff4444", marginLeft: "0.5rem" }}
+//                                 title="Delete Room"
+//                               >
+//                                 <Trash2 size={16} />
+//                               </button>
+//                             </div>
+//                           </div>
+
+//                           <div style={{ overflowX: "auto" }}>
+//                             <table className="room-table">
+//                               <thead>
+//                                 <tr>
+//                                   {days.map(day => (
+//                                     <th key={day} style={{minWidth: '120px'}}>{day}</th>
+//                                   ))}
+//                                 </tr>
+//                               </thead>
+//                               <tbody>
+//                                 {timeSlots.map(slot => (
+//                                   <tr key={slot.start}>
+//                                     {days.map(day => (
+//                                       <td key={day}>
+//                                         <div className="time-slot-cell">
+//                                           {formatTime(slot.start)} - {formatTime(slot.end)}
+//                                         </div>
+//                                       </td>
+//                                     ))}
+//                                   </tr>
+//                                 ))}
+//                               </tbody>
+//                             </table>
+//                           </div>
+//                         </div>
+//                       );
+//                     })
+//                   )}
+//                 </div>
+//               )}
+//             </div>
+//           );
+//         })}
+
+//         {/* Room Assignments Section */}
+//         <div className="room-assignments-section">
+//           <div className="room-assignments-header">
+//             <h2 className="room-assignments-title">
+//               <DoorOpen size={28} />
+//               Room Assignments by Course
+//             </h2>
+//           </div>
+
+//           {courses.length === 0 ? (
+//             <div style={{
+//               textAlign: "center",
+//               padding: "3rem",
+//               color: "#999"
+//             }}>
+//               <BookOpen size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//               <p>No courses available</p>
+//             </div>
+//           ) : (
+//             <div className="room-assignments-grid">
+//               {courses.map(course => (
+//                 <div key={course.id} className="course-assignment-card">
+//                   <div className="course-assignment-header">
+//                     {course.code} - {course.name}
+//                   </div>
+                  
+//                   <table className="year-assignments-table">
+//                     <thead>
+//                       <tr>
+//                         <th>Building</th>
+//                         <th>First Year</th>
+//                         <th>Second Year</th>
+//                         <th>Third Year</th>
+//                         <th>Fourth Year</th>
+//                       </tr>
+//                     </thead>
+//                     <tbody>
+//                       {buildings.map(building => (
+//                         <tr key={building.id}>
+//                           <td>{building.name}</td>
+//                           {[1, 2, 3, 4].map(year => {
+//                             const semester = '1';
+//                             const assignedRoom = getAssignedRoom(course.id, year, semester, building.id);
+                            
+//                             return (
+//                               <td key={year}>
+//                                 <div className="room-assignment-cell">
+//                                   {assignedRoom ? (
+//                                     <>
+//                                       <div className="assigned-room-info">
+//                                         <DoorOpen size={14} />
+//                                         {assignedRoom.roomName}
+//                                       </div>
+//                                       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+//                                         <button
+//                                           className="edit-room-btn"
+//                                           onClick={() => handleOpenRoomAssignment(course.id, year, semester, building.id)}
+//                                         >
+//                                           <Edit size={12} />
+//                                           Change
+//                                         </button>
+//                                         <button
+//                                           className="remove-room-btn"
+//                                           onClick={() => handleUnassignRoom(course.id, year, semester, building.id)}
+//                                         >
+//                                           <X size={12} />
+//                                           Remove
+//                                         </button>
+//                                       </div>
+//                                     </>
+//                                   ) : (
+//                                     <button
+//                                       className="select-room-btn"
+//                                       onClick={() => handleOpenRoomAssignment(course.id, year, semester, building.id)}
+//                                     >
+//                                       <Plus size={14} />
+//                                       Select Room
+//                                     </button>
+//                                   )}
+//                                 </div>
+//                               </td>
+//                             );
+//                           })}
+//                         </tr>
+//                       ))}
+//                     </tbody>
+//                   </table>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Add Building Modal */}
+//         <Modal show={showBuildingModal} onHide={() => setShowBuildingModal(false)} centered className="edusched-modal">
+//           <Modal.Header closeButton className="modal-header-custom">
+//             <Modal.Title>
+//               <Building2 size={24} />
+//               Add New Building
+//             </Modal.Title>
+//           </Modal.Header>
+//           <Form onSubmit={handleAddBuilding}>
+//             <Modal.Body className="modal-body-custom">
+//               <Form.Group>
+//                 <Form.Label className="form-label-custom">Building Name</Form.Label>
+//                 <Form.Control
+//                   type="text"
+//                   placeholder="e.g., Engineering Building A"
+//                   value={newBuildingName}
+//                   onChange={(e) => setNewBuildingName(e.target.value)}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 />
+//               </Form.Group>
+//             </Modal.Body>
+//             <Modal.Footer className="modal-footer-custom">
+//               <button
+//                 className="btn-secondary-custom"
+//                 onClick={() => setShowBuildingModal(false)}
+//                 disabled={modalLoading}
+//               >
+//                 Cancel
+//               </button>
+//               <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+//                 {modalLoading ? (
+//                   <>
+//                     <Spinner size="sm" animation="border" />
+//                     Adding...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Plus size={18} />
+//                     Add Building
+//                   </>
+//                 )}
+//               </button>
+//             </Modal.Footer>
+//           </Form>
+//         </Modal>
+
+//         {/* Add Room Modal */}
+//         <Modal show={showRoomModal} onHide={() => setShowRoomModal(false)} centered className="edusched-modal">
+//           <Modal.Header closeButton className="modal-header-custom">
+//             <Modal.Title>
+//               <DoorOpen size={24} />
+//               Add New Room
+//             </Modal.Title>
+//           </Modal.Header>
+//           <Form onSubmit={handleAddRoom}>
+//             <Modal.Body className="modal-body-custom">
+//               <Form.Group className="mb-3">
+//                 <Form.Label className="form-label-custom">Building</Form.Label>
+//                 <Form.Select
+//                   value={newRoom.buildingId}
+//                   onChange={(e) => setNewRoom({ ...newRoom, buildingId: e.target.value })}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 >
+//                   <option value="">Select Building</option>
+//                   {buildings
+//                     .filter(b => !selectedBuildingForRoom || b.id === Number(selectedBuildingForRoom))
+//                     .map(b => (
+//                       <option key={b.id} value={b.id}>{b.name}</option>
+//                     ))}
+//                 </Form.Select>
+//               </Form.Group>
+//               <Form.Group>
+//                 <Form.Label className="form-label-custom">Room Name</Form.Label>
+//                 <Form.Control
+//                   type="text"
+//                   placeholder="e.g., Main-101"
+//                   value={newRoom.name}
+//                   onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
+//                   className="form-input-custom"
+//                   disabled={modalLoading}
+//                 />
+//               </Form.Group>
+//             </Modal.Body>
+//             <Modal.Footer className="modal-footer-custom">
+//               <button
+//                 className="btn-secondary-custom"
+//                 onClick={() => {
+//                   setShowRoomModal(false);
+//                   setSelectedBuildingForRoom(null);
+//                 }}
+//                 disabled={modalLoading}
+//               >
+//                 Cancel
+//               </button>
+//               <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+//                 {modalLoading ? (
+//                   <>
+//                     <Spinner size="sm" animation="border" />
+//                     Adding...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Plus size={18} />
+//                     Add Room
+//                   </>
+//                 )}
+//               </button>
+//             </Modal.Footer>
+//           </Form>
+//         </Modal>
+
+//         {/* Room Assignment Modal */}
+//         <Modal 
+//           show={showRoomAssignmentModal} 
+//           onHide={() => {
+//             setShowRoomAssignmentModal(false);
+//             setSelectedAssignment(null);
+//           }} 
+//           centered 
+//           className="edusched-modal room-selection-modal"
+//           size="lg"
+//         >
+//           <Modal.Header closeButton className="modal-header-custom">
+//             <Modal.Title>
+//               <DoorOpen size={24} />
+//               Select Room
+//               {selectedAssignment && (
+//                 <div style={{ fontSize: '0.9rem', fontWeight: 'normal', marginTop: '0.5rem', opacity: 0.9 }}>
+//                   {courses.find(c => c.id === selectedAssignment.courseId)?.code} - 
+//                   Year {selectedAssignment.yearLevel} - 
+//                   Semester {selectedAssignment.semester}
+//                 </div>
+//               )}
+//             </Modal.Title>
+//           </Modal.Header>
+//           <Modal.Body className="modal-body-custom">
+//             {buildings.length === 0 ? (
+//               <div style={{ textAlign: "center", padding: "2rem", color: "#999" }}>
+//                 <Building2 size={48} style={{ marginBottom: "1rem" }} />
+//                 <p>No buildings available</p>
+//               </div>
+//             ) : selectedAssignment && selectedAssignment.buildingId ? (
+//               // Show only rooms from the selected building
+//               (() => {
+//                 const selectedBuilding = buildings.find(b => b.id === selectedAssignment.buildingId);
+//                 if (!selectedBuilding || !selectedBuilding.rooms || selectedBuilding.rooms.length === 0) {
+//                   return (
+//                     <div style={{ textAlign: "center", padding: "2rem", color: "#999" }}>
+//                       <DoorOpen size={48} style={{ marginBottom: "1rem" }} />
+//                       <p>No rooms available in {selectedBuilding?.name || 'this building'}</p>
+//                     </div>
+//                   );
+//                 }
+                
+//                 return (
+//                   <div className="building-rooms-group">
+//                     <div className="building-group-title">
+//                       <Building2 size={18} />
+//                       {selectedBuilding.name}
+//                     </div>
+//                     <div className="rooms-grid">
+//                       {selectedBuilding.rooms.map(room => {
+//                         const currentAssignment = selectedAssignment && 
+//                           getAssignedRoom(
+//                             selectedAssignment.courseId, 
+//                             selectedAssignment.yearLevel, 
+//                             selectedAssignment.semester,
+//                             selectedAssignment.buildingId
+//                           );
+//                         const isSelected = currentAssignment?.roomId === room.id;
+                        
+//                         return (
+//                           <div
+//                             key={room.id}
+//                             className={`room-option-card ${isSelected ? 'selected' : ''}`}
+//                             onClick={() => handleAssignRoom(room.id)}
+//                           >
+//                             <div className="room-option-name">
+//                               <DoorOpen size={16} style={{ display: 'inline', marginRight: '0.25rem' }} />
+//                               {room.name}
+//                             </div>
+//                             <div className="room-option-building">{selectedBuilding.name}</div>
+//                           </div>
+//                         );
+//                       })}
+//                     </div>
+//                   </div>
+//                 );
+//               })()
+//             ) : null}
+//           </Modal.Body>
+//           <Modal.Footer className="modal-footer-custom">
+//             <button
+//               className="btn-secondary-custom"
+//               onClick={() => {
+//                 setShowRoomAssignmentModal(false);
+//                 setSelectedAssignment(null);
+//               }}
+//             >
+//               Cancel
+//             </button>
+//           </Modal.Footer>
+//         </Modal>
+//       </div>
+//     </>
+//   );
+// };
+
+// export default RoomManagement;
+
+//WORKING BUT ASSIGN ROOM IS ONLY FOR 1ST SEM
+
+// import React, { useState, useEffect, useMemo, useCallback } from "react";
+// import { Building2, DoorOpen, Search, Plus, RotateCw, Trash2, Edit, AlertCircle, CheckCircle, ChevronDown, BookOpen, X } from "lucide-react";
+
+// const RoomManagement = () => {
+//   // State management
+//   const [buildings, setBuildings] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [expandedBuildings, setExpandedBuildings] = useState({});
+//   const [toast, setToast] = useState(null);
+
+//   // Modal states
+//   const [showBuildingModal, setShowBuildingModal] = useState(false);
+//   const [showRoomModal, setShowRoomModal] = useState(false);
+//   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+//   const [newBuildingName, setNewBuildingName] = useState("");
+//   const [newRoom, setNewRoom] = useState({ name: "", buildingId: "" });
+//   const [modalLoading, setModalLoading] = useState(false);
+//   const [deleteLoading, setDeleteLoading] = useState(false);
+//   const [selectedBuildingForRoom, setSelectedBuildingForRoom] = useState(null);
+  
+//   // Room Assignment States
+//   const [courses, setCourses] = useState([]);
+//   const [showRoomAssignmentModal, setShowRoomAssignmentModal] = useState(false);
+//   const [selectedAssignment, setSelectedAssignment] = useState(null);
+//   const [roomAssignments, setRoomAssignments] = useState([]);
+//   const [selectedRooms, setSelectedRooms] = useState([]);
+
+//   const API = "http://localhost:5000";
+
+//   const COLORS = {
+//     primary: "#03045E",
+//     secondary: "#023E8A",
+//     accent: "#0077B6",
+//     light: "#00B4D8",
+//     lighter: "#48CAE4",
+//     lightest: "#CAF0F8",
+//   };
+
+//   // Time slots: 7:00 AM to 7:00 PM
+//   const timeSlots = useMemo(() => {
+//     const slots = [];
+//     for (let hour = 7; hour < 19; hour++) {
+//       const start = `${hour.toString().padStart(2, "0")}:00`;
+//       const end = `${(hour + 1).toString().padStart(2, "0")}:00`;
+//       slots.push({ start, end, hour });
+//     }
+//     return slots;
+//   }, []);
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   const formatTime = useCallback((time) => {
+//     const [hour, minute] = time.split(":");
+//     let h = parseInt(hour);
+//     const ampm = h >= 12 ? "PM" : "AM";
+//     h = h % 12 || 12;
+//     return `${h}:${minute} ${ampm}`;
+//   }, []);
+
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       if (!res.ok) throw new Error("Failed to fetch courses");
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data.filter(c => !c.is_general) : []);
+//     } catch (err) {
+//       console.error("Error fetching courses:", err);
+//       showToast("Failed to load courses", "error");
+//     }
+//   }, [API]);
+
+//   const fetchRoomAssignments = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/room-assignments`);
+//       if (!res.ok) throw new Error("Failed to fetch room assignments");
+//       const data = await res.json();
+//       setRoomAssignments(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error("Error fetching room assignments:", err);
+//       setRoomAssignments([]);
+//     }
+//   }, [API]);
+
+//   const fetchBuildings = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+//     try {
+//       const res = await fetch(`${API}/api/buildings`);
+//       if (!res.ok) throw new Error("Failed to fetch buildings");
+//       const data = await res.json();
+//       setBuildings(Array.isArray(data) ? data : []);
+      
+//       const expandedState = {};
+//       data.forEach(b => {
+//         expandedState[b.id] = true;
+//       });
+//       setExpandedBuildings(expandedState);
+//     } catch (err) {
+//       console.error("Error fetching buildings:", err);
+//       setError(err.message);
+//       showToast("Failed to load buildings", "error");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [API]);
+
+//   const showToast = (message, type) => {
+//     setToast({ message, type });
+//   };
+
+//   const toggleBuildingExpansion = (buildingId) => {
+//     setExpandedBuildings(prev => ({
+//       ...prev,
+//       [buildingId]: !prev[buildingId]
+//     }));
+//   };
+
+//   const expandAllBuildings = () => {
+//     const expanded = {};
+//     buildings.forEach(b => {
+//       expanded[b.id] = true;
+//     });
+//     setExpandedBuildings(expanded);
+//   };
+
+//   const collapseAllBuildings = () => {
+//     const collapsed = {};
+//     buildings.forEach(b => {
+//       collapsed[b.id] = false;
+//     });
+//     setExpandedBuildings(collapsed);
+//   };
+
+//   const handleAddBuilding = async (e) => {
+//     e.preventDefault();
+//     if (!newBuildingName.trim()) {
+//       showToast("Please enter a building name", "error");
+//       return;
+//     }
+
+//     setModalLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/buildings`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ name: newBuildingName })
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to add building");
+      
+//       const saved = await res.json();
+//       setBuildings(prev => [...prev, { ...saved, rooms: [] }]);
+//       setExpandedBuildings(prev => ({ ...prev, [saved.id]: true }));
+//       setNewBuildingName("");
+//       setShowBuildingModal(false);
+//       showToast(`Building "${saved.name}" added successfully`, "success");
+//     } catch (err) {
+//       console.error("Error adding building:", err);
+//       showToast(err.message || "Failed to add building", "error");
+//     } finally {
+//       setModalLoading(false);
+//     }
+//   };
+
+//   const handleDeleteBuilding = async (buildingId) => {
+//     setDeleteLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/buildings/${buildingId}`, {
+//         method: "DELETE"
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to delete building");
+      
+//       setBuildings(prev => prev.filter(b => b.id !== buildingId));
+//       setShowDeleteConfirm(null);
+//       showToast("Building deleted successfully", "success");
+//     } catch (err) {
+//       console.error("Error deleting building:", err);
+//       showToast("Failed to delete building", "error");
+//     } finally {
+//       setDeleteLoading(false);
+//     }
+//   };
+
+//   const handleAddRoom = async (e) => {
+//     e.preventDefault();
+//     if (!newRoom.name.trim() || !newRoom.buildingId) {
+//       showToast("Please enter room name and select building", "error");
+//       return;
+//     }
+
+//     setModalLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/rooms`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           name: newRoom.name,
+//           buildingId: Number(newRoom.buildingId)
+//         })
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to add room");
+      
+//       const saved = await res.json();
+//       setBuildings(prev =>
+//         prev.map(b =>
+//           b.id === saved.buildingId
+//             ? { ...b, rooms: [...(b.rooms || []), saved] }
+//             : b
+//         )
+//       );
+//       setNewRoom({ name: "", buildingId: "" });
+//       setShowRoomModal(false);
+//       setSelectedBuildingForRoom(null);
+//       showToast(`Room "${saved.name}" added successfully`, "success");
+//     } catch (err) {
+//       console.error("Error adding room:", err);
+//       showToast(err.message || "Failed to add room", "error");
+//     } finally {
+//       setModalLoading(false);
+//     }
+//   };
+
+//   const handleDeleteRoom = async (roomId, buildingId) => {
+//     setDeleteLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/rooms/${roomId}`, {
+//         method: "DELETE"
+//       });
+      
+//       if (!res.ok) throw new Error("Failed to delete room");
+      
+//       setBuildings(prev =>
+//         prev.map(b =>
+//           b.id === buildingId
+//             ? { ...b, rooms: b.rooms.filter(r => r.id !== roomId) }
+//             : b
+//         )
+//       );
+//       setShowDeleteConfirm(null);
+//       showToast("Room deleted successfully", "success");
+//     } catch (err) {
+//       console.error("Error deleting room:", err);
+//       showToast("Failed to delete room", "error");
+//     } finally {
+//       setDeleteLoading(false);
+//     }
+//   };
+
+//   const handleOpenRoomAssignment = (courseId, yearLevel, semester, buildingId) => {
+//     setSelectedAssignment({ courseId, yearLevel, semester, buildingId });
+    
+//     // Get currently assigned rooms for this combination
+//     const currentAssignments = roomAssignments.filter(
+//       a => a.course_id === courseId && 
+//            a.year_level === yearLevel && 
+//            a.semester === semester &&
+//            a.building_id === buildingId
+//     ).map(a => a.room_id);
+    
+//     setSelectedRooms(currentAssignments);
+//     setShowRoomAssignmentModal(true);
+//   };
+
+//   const handleToggleRoom = (roomId) => {
+//     setSelectedRooms(prev => {
+//       if (prev.includes(roomId)) {
+//         return prev.filter(id => id !== roomId);
+//       } else {
+//         return [...prev, roomId];
+//       }
+//     });
+//   };
+
+//   const handleSaveRoomAssignments = async () => {
+//     if (!selectedAssignment) return;
+
+//     try {
+//       // Get current assignments
+//       const currentAssignments = roomAssignments.filter(
+//         a => a.course_id === selectedAssignment.courseId && 
+//              a.year_level === selectedAssignment.yearLevel && 
+//              a.semester === selectedAssignment.semester &&
+//              a.building_id === selectedAssignment.buildingId
+//       );
+
+//       const currentRoomIds = currentAssignments.map(a => a.room_id);
+      
+//       // Determine which rooms to add and which to remove
+//       const roomsToAdd = selectedRooms.filter(id => !currentRoomIds.includes(id));
+//       const roomsToRemove = currentRoomIds.filter(id => !selectedRooms.includes(id));
+
+//       // Remove unselected rooms
+//       for (const roomId of roomsToRemove) {
+//         const assignment = currentAssignments.find(a => a.room_id === roomId);
+//         if (assignment) {
+//           await fetch(`${API}/api/room-assignments/${assignment.id}`, {
+//             method: "DELETE"
+//           });
+//         }
+//       }
+
+//       // Add newly selected rooms
+//       for (const roomId of roomsToAdd) {
+//         await fetch(`${API}/api/room-assignments`, {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({
+//             courseId: selectedAssignment.courseId,
+//             yearLevel: selectedAssignment.yearLevel,
+//             semester: selectedAssignment.semester,
+//             roomId: Number(roomId),
+//             buildingId: selectedAssignment.buildingId
+//           })
+//         });
+//       }
+
+//       await fetchRoomAssignments();
+//       setShowRoomAssignmentModal(false);
+//       setSelectedAssignment(null);
+//       setSelectedRooms([]);
+//       showToast("Room assignments updated successfully", "success");
+//     } catch (err) {
+//       console.error("Error saving room assignments:", err);
+//       showToast(err.message || "Failed to save room assignments", "error");
+//     }
+//   };
+
+//   const handleUnassignRoom = async (assignmentId) => {
+//     try {
+//       const res = await fetch(`${API}/api/room-assignments/${assignmentId}`, {
+//         method: "DELETE"
+//       });
+
+//       if (!res.ok) throw new Error("Failed to unassign room");
+
+//       await fetchRoomAssignments();
+//       showToast("Room unassigned successfully", "success");
+//     } catch (err) {
+//       console.error("Error unassigning room:", err);
+//       showToast(err.message || "Failed to unassign room", "error");
+//     }
+//   };
+
+//   const getAssignedRooms = (courseId, yearLevel, semester, buildingId) => {
+//     const assignments = roomAssignments.filter(
+//       a => a.course_id === courseId && 
+//            a.year_level === yearLevel && 
+//            a.semester === semester &&
+//            a.building_id === buildingId
+//     );
+    
+//     const rooms = [];
+//     for (const assignment of assignments) {
+//       for (const building of buildings) {
+//         if (building.id === buildingId) {
+//           const room = building.rooms?.find(r => r.id === assignment.room_id);
+//           if (room) {
+//             rooms.push({
+//               assignmentId: assignment.id,
+//               roomId: room.id,
+//               roomName: room.name,
+//               buildingName: building.name
+//             });
+//           }
+//         }
+//       }
+//     }
+//     return rooms;
+//   };
+
+//   const handleOpenRoomModal = (buildingId) => {
+//     setSelectedBuildingForRoom(buildingId);
+//     setNewRoom({ name: "", buildingId: String(buildingId) });
+//     setShowRoomModal(true);
+//   };
+
+//   const filteredBuildings = useMemo(() => {
+//     return buildings.filter(b =>
+//       b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       b.rooms?.some(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()))
+//     );
+//   }, [buildings, searchTerm]);
+
+//   const overallStats = useMemo(() => {
+//     const totalBuildings = buildings.length;
+//     const totalRooms = buildings.reduce((sum, b) => sum + (b.rooms?.length || 0), 0);
+    
+//     return { totalBuildings, totalRooms };
+//   }, [buildings]);
+
+//   useEffect(() => {
+//     fetchBuildings();
+//     fetchCourses();
+//     fetchRoomAssignments();
+//   }, [fetchBuildings, fetchCourses, fetchRoomAssignments]);
+
+//   useEffect(() => {
+//     if (toast) {
+//       const timer = setTimeout(() => setToast(null), 4000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [toast]);
+
+//   if (loading) {
+//     return (
+//       <div style={{
+//         display: "flex",
+//         flexDirection: "column",
+//         alignItems: "center",
+//         justifyContent: "center",
+//         height: "100vh",
+//         background: "linear-gradient(135deg, #CAF0F8 0%, #ADE8F4 100%)",
+//         color: "#0077B6"
+//       }}>
+//         <div style={{
+//           width: "50px",
+//           height: "50px",
+//           border: "4px solid rgba(0, 119, 182, 0.2)",
+//           borderTop: "4px solid #0077B6",
+//           borderRadius: "50%",
+//           animation: "spin 1s linear infinite"
+//         }} />
+//         <p style={{ marginTop: "1rem" }}>Loading facilities...</p>
+//         <style>{`
+//           @keyframes spin {
+//             0% { transform: rotate(0deg); }
+//             100% { transform: rotate(360deg); }
+//           }
+//         `}</style>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         * { box-sizing: border-box; margin: 0; padding: 0; }
+//         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        
+//         .room-management-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         .page-header-room {
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-section-gradient-room {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title-content-room {
+//           color: white;
+//         }
+
+//         .page-title-gradient-room {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           color: white;
+//           margin: 0 0 0.5rem 0;
+//           letter-spacing: -0.5px;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .page-subtitle-gradient-room {
+//           font-size: 1.05rem;
+//           color: white;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid #0077B6;
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(10px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: #03045E;
+//         }
+
+//         .search-section {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//         }
+
+//         .search-input {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem 1rem 0.75rem 2.5rem;
+//           width: 100%;
+//           font-size: 1rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-input:focus {
+//           outline: none;
+//           border-color: #0077B6;
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-wrapper {
+//           position: relative;
+//         }
+
+//         .search-icon {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: #0077B6;
+//           pointer-events: none;
+//         }
+
+//         .building-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 1.5rem;
+//           overflow: hidden;
+//           transition: all 0.3s ease;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .building-card:hover {
+//           box-shadow: 0 8px 24px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .building-header {
+//           background: linear-gradient(135deg, #03045E 0%, #0077B6 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .building-header:hover {
+//           background: linear-gradient(135deg, #023E8A 0%, #023E8A 100%);
+//         }
+
+//         .building-info {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           flex: 1;
+//         }
+
+//         .building-name {
+//           font-size: 1.2rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .building-stats {
+//           display: flex;
+//           gap: 1rem;
+//           margin-left: auto;
+//         }
+
+//         .building-stat {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 0.9rem;
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//         }
+
+//         .building-actions {
+//           display: flex;
+//           gap: 0.5rem;
+//         }
+
+//         .icon-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: none;
+//           color: white;
+//           padding: 0.5rem;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//         }
+
+//         .icon-btn:hover {
+//           background: rgba(255, 255, 255, 0.4);
+//           transform: scale(1.1);
+//         }
+
+//         .chevron-icon {
+//           transition: transform 0.3s ease;
+//         }
+
+//         .chevron-icon.open {
+//           transform: rotate(180deg);
+//         }
+
+//         .building-content {
+//           padding: 1.5rem;
+//         }
+
+//         .empty-rooms {
+//           text-align: center;
+//           padding: 2rem;
+//           color: #999;
+//         }
+
+//         .room-section {
+//           margin-bottom: 2rem;
+//         }
+
+//         .room-header-custom {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           padding: 1rem;
+//           background: #CAF0F8;
+//           border-radius: 10px;
+//           margin-bottom: 1rem;
+//           border-left: 4px solid #0077B6;
+//         }
+
+//         .room-title-custom {
+//           font-weight: 600;
+//           color: #03045E;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 1rem;
+//         }
+
+//         .room-table {
+//           border-collapse: collapse;
+//           width: 100%;
+//           font-size: 0.9rem;
+//           margin-bottom: 1rem;
+//         }
+
+//         .room-table thead {
+//           background: #CAF0F8;
+//           color: #03045E;
+//         }
+
+//         .room-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .room-table td {
+//           padding: 0.5rem 0.25rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//         }
+
+//         .room-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .room-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-slot-cell {
+//           background: white;
+//           color: #495057;
+//           padding: 4px 6px;
+//           border: 1px solid #dee2e6;
+//           font-size: 0.65rem;
+//           font-weight: 400;
+//           white-space: nowrap;
+//         }
+
+//         .room-assignments-section {
+//           margin-top: 3rem;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 2rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//         }
+
+//         .room-assignments-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//           padding-bottom: 1rem;
+//           border-bottom: 2px solid #90E0EF;
+//         }
+
+//         .room-assignments-title {
+//           font-size: 1.5rem;
+//           font-weight: 700;
+//           color: #03045E;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .room-assignments-grid {
+//           display: grid;
+//           gap: 2rem;
+//         }
+
+//         .course-assignment-card {
+//           background: #F8FCFD;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           border: 2px solid #CAF0F8;
+//           transition: all 0.3s ease;
+//         }
+
+//         .course-assignment-card:hover {
+//           border-color: #0077B6;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .course-assignment-header {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           padding: 1rem 1.5rem;
+//           border-radius: 8px;
+//           margin-bottom: 1.5rem;
+//           font-weight: 600;
+//           font-size: 1.1rem;
+//         }
+
+//         .year-assignments-table {
+//           width: 100%;
+//           border-collapse: separate;
+//           border-spacing: 0;
+//         }
+
+//         .year-assignments-table th {
+//           background: #CAF0F8;
+//           color: #03045E;
+//           padding: 1rem;
+//           text-align: center;
+//           font-weight: 600;
+//           border: 1px solid #90E0EF;
+//         }
+
+//         .year-assignments-table th:first-child {
+//           border-top-left-radius: 8px;
+//           text-align: left;
+//           padding-left: 1.5rem;
+//         }
+
+//         .year-assignments-table th:last-child {
+//           border-top-right-radius: 8px;
+//         }
+
+//         .year-assignments-table td {
+//           padding: 1rem;
+//           text-align: center;
+//           border: 1px solid #E8F4F8;
+//           background: white;
+//         }
+
+//         .year-assignments-table td:first-child {
+//           text-align: left;
+//           padding-left: 1.5rem;
+//           font-weight: 600;
+//           color: #0077B6;
+//         }
+
+//         .year-assignments-table tbody tr:last-child td:first-child {
+//           border-bottom-left-radius: 8px;
+//         }
+
+//         .year-assignments-table tbody tr:last-child td:last-child {
+//           border-bottom-right-radius: 8px;
+//         }
+
+//         .room-assignment-cell {
+//           display: flex;
+//           flex-direction: column;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .assigned-rooms-list {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//           width: 100%;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .assigned-room-item {
+//           background: #d4edda;
+//           color: #155724;
+//           padding: 0.5rem 1rem;
+//           border-radius: 6px;
+//           font-weight: 500;
+//           font-size: 0.85rem;
+//           display: flex;
+//           align-items: center;
+//           justify-content: space-between;
+//           gap: 0.5rem;
+//         }
+
+//         .room-item-info {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .remove-room-icon-btn {
+//           background: #c82333;
+//           color: white;
+//           border: none;
+//           padding: 0.25rem;
+//           border-radius: 4px;
+//           cursor: pointer;
+//           transition: all 0.2s ease;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//         }
+
+//         .remove-room-icon-btn:hover {
+//           background: #a71d2a;
+//           transform: scale(1.1);
+//         }
+
+//         .select-room-btn, .manage-rooms-btn {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           border: none;
+//           padding: 0.5rem 1rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-size: 0.85rem;
+//         }
+
+//         .select-room-btn:hover, .manage-rooms-btn:hover {
+//           background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
+//         }
+
+//         .room-selection-modal .modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .room-selection-modal .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           width: 100%;
+//           max-width: 800px;
+//           max-height: 90vh;
+//           display: flex;
+//           flex-direction: column;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from {
+//             transform: translateY(50px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateY(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           border-radius: 16px 16px 0 0;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: flex-start;
+//         }
+
+//         .modal-title {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//           font-weight: 700;
+//           font-size: 1.3rem;
+//         }
+
+//         .modal-subtitle {
+//           font-size: 0.9rem;
+//           font-weight: normal;
+//           opacity: 0.9;
+//         }
+
+//         .modal-close-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: none;
+//           color: white;
+//           padding: 0.5rem;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//         }
+
+//         .modal-close-btn:hover {
+//           background: rgba(255, 255, 255, 0.3);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//           overflow-y: auto;
+//           flex: 1;
+//         }
+
+//         .building-rooms-group {
+//           margin-bottom: 2rem;
+//         }
+
+//         .building-group-title {
+//           background: #CAF0F8;
+//           color: #03045E;
+//           padding: 0.75rem 1rem;
+//           border-radius: 8px;
+//           font-weight: 600;
+//           margin-bottom: 1rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .rooms-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+//           gap: 1rem;
+//         }
+
+//         .room-option-card {
+//           background: white;
+//           border: 2px solid #90E0EF;
+//           padding: 1rem;
+//           border-radius: 8px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           text-align: center;
+//           position: relative;
+//         }
+
+//         .room-option-card:hover {
+//           border-color: #0077B6;
+//           background: #F8FCFD;
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .room-option-card.selected {
+//           border-color: #0077B6;
+//           background: #E8F4F8;
+//           box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
+//         }
+
+//         .room-option-card.selected::after {
+//           content: '✓';
+//           position: absolute;
+//           top: 0.5rem;
+//           right: 0.5rem;
+//           background: #0077B6;
+//           color: white;
+//           width: 24px;
+//           height: 24px;
+//           border-radius: 50%;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           font-weight: bold;
+//         }
+
+//         .room-option-name {
+//           font-weight: 600;
+//           color: #03045E;
+//           margin-bottom: 0.25rem;
+//         }
+
+//         .room-option-building {
+//           font-size: 0.85rem;
+//           color: #666;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//           display: flex;
+//           gap: 1rem;
+//           justify-content: flex-end;
+//         }
+
+//         .btn-primary-custom {
+//           background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           color: white;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .btn-primary-custom:hover:not(:disabled) {
+//           background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+//         }
+
+//         .btn-primary-custom:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         .btn-secondary-custom {
+//           background: white;
+//           border: 2px solid #90E0EF;
+//           color: #0077B6;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-secondary-custom:hover {
+//           background: #F8FCFD;
+//           border-color: #0077B6;
+//         }
+
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from {
+//             transform: translateX(400px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateX(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .toast-success {
+//           border-left-color: #00c851;
+//         }
+
+//         .toast-error {
+//           border-left-color: #ff4444;
+//         }
+
+//         .toast-icon {
+//           flex-shrink: 0;
+//         }
+
+//         .toast-success .toast-icon {
+//           color: #00c851;
+//         }
+
+//         .toast-error .toast-icon {
+//           color: #ff4444;
+//         }
+
+//         .toast-message {
+//           flex: 1;
+//           color: #333;
+//           font-weight: 500;
+//         }
+
+//         .toast-close {
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           font-size: 1.5rem;
+//           padding: 0;
+//           line-height: 1;
+//           flex-shrink: 0;
+//           transition: color 0.3s ease;
+//         }
+
+//         .toast-close:hover {
+//           color: #333;
+//         }
+
+//         .delete-modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .delete-modal {
+//           background: white;
+//           border-radius: 16px;
+//           padding: 2rem;
+//           max-width: 400px;
+//           width: 100%;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         .delete-modal-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 1rem;
+//           color: #ff4444;
+//         }
+
+//         .delete-modal-title {
+//           font-size: 1.3rem;
+//           font-weight: 700;
+//           margin: 0;
+//         }
+
+//         .delete-modal-body {
+//           color: #666;
+//           margin-bottom: 1.5rem;
+//           line-height: 1.6;
+//         }
+
+//         .delete-modal-footer {
+//           display: flex;
+//           gap: 1rem;
+//           justify-content: flex-end;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: #03045E;
+//           margin-bottom: 0.5rem;
+//           display: block;
+//         }
+
+//         .form-input-custom, .form-select-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           width: 100%;
+//           transition: all 0.3s ease;
+//         }
+
+//         .form-input-custom:focus, .form-select-custom:focus {
+//           border-color: #0077B6;
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//           outline: none;
+//         }
+
+//         .form-group {
+//           margin-bottom: 1.5rem;
+//         }
+
+//         @media (max-width: 992px) {
+//           .page-title-section-gradient-room {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .header-actions {
+//             width: 100%;
+//           }
+
+//           .action-btn {
+//             flex: 1;
+//             justify-content: center;
+//           }
+
+//           .building-header {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .building-stats {
+//             margin-left: 0;
+//             margin-top: 0.5rem;
+//           }
+
+//           .room-table {
+//             font-size: 0.8rem;
+//           }
+
+//           .year-assignments-table {
+//             font-size: 0.85rem;
+//           }
+
+//           .rooms-grid {
+//             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+//           }
+//         }
+
+//         @media (max-width: 768px) {
+//           .room-management-container {
+//             padding: 1rem;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: repeat(2, 1fr);
+//           }
+
+//           .page-title-gradient-room {
+//             font-size: 2rem;
+//           }
+
+//           .edusched-toast {
+//             left: 1rem;
+//             right: 1rem;
+//             min-width: auto;
+//           }
+
+//           .rooms-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .room-assignments-section {
+//             padding: 1rem;
+//           }
+//         }
+
+//         @media (max-width: 576px) {
+//           .room-management-container {
+//             padding: 0.5rem;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .page-title-gradient-room {
+//             font-size: 1.5rem;
+//           }
+
+//           .building-name {
+//             font-size: 1rem;
+//           }
+
+//           .delete-modal {
+//             padding: 1.5rem;
+//           }
+
+//           .time-slot-cell {
+//             font-size: 0.5rem;
+//             padding: 2px 3px;
+//           }
+//         }
+//       `}</style>
+
+//       <div className="room-management-container">
+//         {/* Toast Notifications */}
+//         {toast && (
+//           <div className={`edusched-toast toast-${toast.type}`}>
+//             <div className="toast-icon">
+//               {toast.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+//             </div>
+//             <span className="toast-message">{toast.message}</span>
+//             <button className="toast-close" onClick={() => setToast(null)}>×</button>
+//           </div>
+//         )}
+
+//         {/* Delete Confirmation Modal */}
+//         {showDeleteConfirm && (
+//           <div className="delete-modal-overlay" onClick={() => !deleteLoading && setShowDeleteConfirm(null)}>
+//             <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+//               <div className="delete-modal-header">
+//                 <AlertCircle size={28} />
+//                 <h3 className="delete-modal-title">Confirm Delete</h3>
+//               </div>
+//               <p className="delete-modal-body">
+//                 Are you sure you want to delete this? This action cannot be undone.
+//               </p>
+//               <div className="delete-modal-footer">
+//                 <button
+//                   className="btn-secondary-custom"
+//                   onClick={() => setShowDeleteConfirm(null)}
+//                   disabled={deleteLoading}
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button
+//                   className="btn-primary-custom"
+//                   style={{ background: "linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)" }}
+//                   onClick={() => {
+//                     if (showDeleteConfirm.type === "building") {
+//                       handleDeleteBuilding(showDeleteConfirm.id);
+//                     } else if (showDeleteConfirm.type === "room") {
+//                       handleDeleteRoom(showDeleteConfirm.id, showDeleteConfirm.buildingId);
+//                     }
+//                   }}
+//                   disabled={deleteLoading}
+//                 >
+//                   {deleteLoading ? "Deleting..." : "Delete"}
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Page Header */}
+//         <div className="page-header-room">
+//           <div className="page-title-section-gradient-room">
+//             <div className="page-title-content-room">
+//               <h1 className="page-title-gradient-room">
+//                 <Building2 size={36} />
+//                 Room Management
+//               </h1>
+//               <p className="page-subtitle-gradient-room">
+//                 Manage buildings, rooms, and track facility utilization
+//               </p>
+//             </div>
+//             <div className="header-actions">
+//               <button className="action-btn" onClick={() => setShowBuildingModal(true)}>
+//                 <Plus size={20} />
+//                 Add Building
+//               </button>
+//               <button className="action-btn" onClick={() => {
+//                 fetchBuildings();
+//                 fetchCourses();
+//                 fetchRoomAssignments();
+//               }}>
+//                 <RotateCw size={20} />
+//                 Refresh
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Statistics */}
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Buildings</div>
+//             <div className="stat-value">{overallStats.totalBuildings}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Total Rooms</div>
+//             <div className="stat-value">{overallStats.totalRooms}</div>
+//           </div>
+//         </div>
+
+//         {/* Error State */}
+//         {error && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "2rem",
+//             textAlign: "center",
+//             marginBottom: "2rem",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <AlertCircle size={64} style={{ color: "#ff4444", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>Unable to Load Facilities</h4>
+//             <p style={{ color: "#666", marginBottom: "1.5rem" }}>{error}</p>
+//             <button className="action-btn" onClick={fetchBuildings} style={{ 
+//               background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//               border: "none"
+//             }}>
+//               <RotateCw size={20} />
+//               Try Again
+//             </button>
+//           </div>
+//         )}
+
+//         {/* Search Section */}
+//         {!error && buildings.length > 0 && (
+//           <div className="search-section">
+//             <div className="search-icon-wrapper">
+//               <Search className="search-icon" size={20} />
+//               <input
+//                 type="text"
+//                 className="search-input"
+//                 placeholder="Search buildings or rooms..."
+//                 value={searchTerm}
+//                 onChange={(e) => setSearchTerm(e.target.value)}
+//               />
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Expand/Collapse Controls */}
+//         {!error && filteredBuildings.length > 0 && (
+//           <div style={{ marginBottom: "1.5rem", display: "flex", gap: "0.5rem" }}>
+//             <button 
+//               className="action-btn" 
+//               onClick={expandAllBuildings} 
+//               style={{ 
+//                 fontSize: "0.9rem",
+//                 background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//                 border: "none"
+//               }}
+//             >
+//               Expand All
+//             </button>
+//             <button 
+//               className="action-btn" 
+//               onClick={collapseAllBuildings} 
+//               style={{ 
+//                 fontSize: "0.9rem",
+//                 background: "linear-gradient(135deg, #0077B6 0%, #00B4D8 100%)",
+//                 border: "none"
+//               }}
+//             >
+//               Collapse All
+//             </button>
+//           </div>
+//         )}
+
+//         {/* Empty State */}
+//         {!error && buildings.length === 0 && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "4rem 2rem",
+//             textAlign: "center",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <Building2 size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>No Buildings Yet</h4>
+//             <p style={{ color: "#666" }}>Create your first building to get started with room management.</p>
+//           </div>
+//         )}
+
+//         {/* No Results State */}
+//         {!error && buildings.length > 0 && filteredBuildings.length === 0 && (
+//           <div style={{
+//             background: "white",
+//             borderRadius: "12px",
+//             padding: "4rem 2rem",
+//             textAlign: "center",
+//             boxShadow: "0 4px 12px rgba(0, 119, 182, 0.1)"
+//           }}>
+//             <Search size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//             <h4 style={{ color: "#03045E", marginBottom: "0.5rem" }}>No Results Found</h4>
+//             <p style={{ color: "#666" }}>Try adjusting your search criteria.</p>
+//           </div>
+//         )}
+
+//         {/* Buildings List */}
+//         {!error && filteredBuildings.map(building => {
+//           const isExpanded = expandedBuildings[building.id] !== false;
+//           const totalRooms = building.rooms?.length || 0;
+
+//           return (
+//             <div key={building.id} className="building-card">
+//               <div
+//                 className="building-header"
+//                 onClick={() => toggleBuildingExpansion(building.id)}
+//               >
+//                 <div className="building-info">
+//                   <div className="building-name">
+//                     <Building2 size={22} />
+//                     {building.name}
+//                   </div>
+//                   <div className="building-stats">
+//                     <div className="building-stat">
+//                       <DoorOpen size={14} />
+//                       {totalRooms} room{totalRooms !== 1 ? "s" : ""}
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div className="building-actions">
+//                   <button
+//                     className="icon-btn"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       handleOpenRoomModal(building.id);
+//                     }}
+//                     title="Add Room"
+//                   >
+//                     <Plus size={18} />
+//                   </button>
+//                   <button
+//                     className="icon-btn"
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       setShowDeleteConfirm({ type: "building", id: building.id });
+//                     }}
+//                     title="Delete Building"
+//                   >
+//                     <Trash2 size={18} />
+//                   </button>
+//                   <ChevronDown className={`chevron-icon ${isExpanded ? "open" : ""}`} size={20} />
+//                 </div>
+//               </div>
+
+//               {isExpanded && (
+//                 <div className="building-content">
+//                   {!building.rooms || building.rooms.length === 0 ? (
+//                     <div className="empty-rooms">
+//                       <p>No rooms added yet</p>
+//                     </div>
+//                   ) : (
+//                     building.rooms.map(room => {
+//                       return (
+//                         <div key={room.id} className="room-section">
+//                           <div className="room-header-custom">
+//                             <div className="room-title-custom">
+//                               <DoorOpen size={18} />
+//                               {room.name}
+//                             </div>
+//                             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginLeft: "auto" }}>
+//                               <button
+//                                 className="icon-btn"
+//                                 onClick={() => setShowDeleteConfirm({ type: "room", id: room.id, buildingId: building.id })}
+//                                 style={{ background: "#ff4444", marginLeft: "0.5rem" }}
+//                                 title="Delete Room"
+//                               >
+//                                 <Trash2 size={16} />
+//                               </button>
+//                             </div>
+//                           </div>
+
+//                           <div style={{ overflowX: "auto" }}>
+//                             <table className="room-table">
+//                               <thead>
+//                                 <tr>
+//                                   {days.map(day => (
+//                                     <th key={day} style={{minWidth: '120px'}}>{day}</th>
+//                                   ))}
+//                                 </tr>
+//                               </thead>
+//                               <tbody>
+//                                 {timeSlots.map(slot => (
+//                                   <tr key={slot.start}>
+//                                     {days.map(day => (
+//                                       <td key={day}>
+//                                         <div className="time-slot-cell">
+//                                           {formatTime(slot.start)} - {formatTime(slot.end)}
+//                                         </div>
+//                                       </td>
+//                                     ))}
+//                                   </tr>
+//                                 ))}
+//                               </tbody>
+//                             </table>
+//                           </div>
+//                         </div>
+//                       );
+//                     })
+//                   )}
+//                 </div>
+//               )}
+//             </div>
+//           );
+//         })}
+
+//         {/* Room Assignments Section */}
+//         <div className="room-assignments-section">
+//           <div className="room-assignments-header">
+//             <h2 className="room-assignments-title">
+//               <DoorOpen size={28} />
+//               Room Assignments by Course
+//             </h2>
+//           </div>
+
+//           {courses.length === 0 ? (
+//             <div style={{
+//               textAlign: "center",
+//               padding: "3rem",
+//               color: "#999"
+//             }}>
+//               <BookOpen size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+//               <p>No courses available</p>
+//             </div>
+//           ) : (
+//             <div className="room-assignments-grid">
+//               {courses.map(course => (
+//                 <div key={course.id} className="course-assignment-card">
+//                   <div className="course-assignment-header">
+//                     {course.code} - {course.name}
+//                   </div>
+                  
+//                   <table className="year-assignments-table">
+//                     <thead>
+//                       <tr>
+//                         <th>Building</th>
+//                         <th>First Year</th>
+//                         <th>Second Year</th>
+//                         <th>Third Year</th>
+//                         <th>Fourth Year</th>
+//                       </tr>
+//                     </thead>
+//                     <tbody>
+//                       {buildings.map(building => (
+//                         <tr key={building.id}>
+//                           <td>{building.name}</td>
+//                           {[1, 2, 3, 4].map(year => {
+//                             const semester = '1';
+//                             const assignedRooms = getAssignedRooms(course.id, year, semester, building.id);
+                            
+//                             return (
+//                               <td key={year}>
+//                                 <div className="room-assignment-cell">
+//                                   {assignedRooms.length > 0 ? (
+//                                     <>
+//                                       <div className="assigned-rooms-list">
+//                                         {assignedRooms.map(room => (
+//                                           <div key={room.assignmentId} className="assigned-room-item">
+//                                             <div className="room-item-info">
+//                                               <DoorOpen size={14} />
+//                                               {room.roomName}
+//                                             </div>
+//                                             <button
+//                                               className="remove-room-icon-btn"
+//                                               onClick={() => handleUnassignRoom(room.assignmentId)}
+//                                               title="Remove room"
+//                                             >
+//                                               <X size={14} />
+//                                             </button>
+//                                           </div>
+//                                         ))}
+//                                       </div>
+//                                       <button
+//                                         className="manage-rooms-btn"
+//                                         onClick={() => handleOpenRoomAssignment(course.id, year, semester, building.id)}
+//                                       >
+//                                         <Edit size={14} />
+//                                         Manage Rooms
+//                                       </button>
+//                                     </>
+//                                   ) : (
+//                                     <button
+//                                       className="select-room-btn"
+//                                       onClick={() => handleOpenRoomAssignment(course.id, year, semester, building.id)}
+//                                     >
+//                                       <Plus size={14} />
+//                                       Select Rooms
+//                                     </button>
+//                                   )}
+//                                 </div>
+//                               </td>
+//                             );
+//                           })}
+//                         </tr>
+//                       ))}
+//                     </tbody>
+//                   </table>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Add Building Modal */}
+//         {showBuildingModal && (
+//           <div className="delete-modal-overlay" onClick={() => !modalLoading && setShowBuildingModal(false)}>
+//             <div className="delete-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px" }}>
+//               <div className="modal-header-custom">
+//                 <div className="modal-title">
+//                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+//                     <Building2 size={24} />
+//                     Add New Building
+//                   </div>
+//                 </div>
+//                 <button className="modal-close-btn" onClick={() => setShowBuildingModal(false)}>
+//                   <X size={20} />
+//                 </button>
+//               </div>
+//               <form onSubmit={handleAddBuilding}>
+//                 <div style={{ padding: "2rem" }}>
+//                   <div className="form-group">
+//                     <label className="form-label-custom">Building Name</label>
+//                     <input
+//                       type="text"
+//                       placeholder="e.g., Engineering Building A"
+//                       value={newBuildingName}
+//                       onChange={(e) => setNewBuildingName(e.target.value)}
+//                       className="form-input-custom"
+//                       disabled={modalLoading}
+//                     />
+//                   </div>
+//                 </div>
+//                 <div className="modal-footer-custom">
+//                   <button
+//                     type="button"
+//                     className="btn-secondary-custom"
+//                     onClick={() => setShowBuildingModal(false)}
+//                     disabled={modalLoading}
+//                   >
+//                     Cancel
+//                   </button>
+//                   <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+//                     {modalLoading ? "Adding..." : (
+//                       <>
+//                         <Plus size={18} />
+//                         Add Building
+//                       </>
+//                     )}
+//                   </button>
+//                 </div>
+//               </form>
+//               </div>
+//           </div>
+//         )}
+
+//         {/* Add Room Modal */}
+//         {showRoomModal && (
+//           <div className="delete-modal-overlay" onClick={() => !modalLoading && setShowRoomModal(false)}>
+//             <div className="delete-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px" }}>
+//               <div className="modal-header-custom">
+//                 <div className="modal-title">
+//                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+//                     <DoorOpen size={24} />
+//                     Add New Room
+//                   </div>
+//                 </div>
+//                 <button className="modal-close-btn" onClick={() => setShowRoomModal(false)}>
+//                   <X size={20} />
+//                 </button>
+//               </div>
+//               <form onSubmit={handleAddRoom}>
+//                 <div style={{ padding: "2rem" }}>
+//                   <div className="form-group">
+//                     <label className="form-label-custom">Building</label>
+//                     <select
+//                       value={newRoom.buildingId}
+//                       onChange={(e) => setNewRoom({ ...newRoom, buildingId: e.target.value })}
+//                       className="form-select-custom"
+//                       disabled={modalLoading}
+//                     >
+//                       <option value="">Select Building</option>
+//                       {buildings
+//                         .filter(b => !selectedBuildingForRoom || b.id === Number(selectedBuildingForRoom))
+//                         .map(b => (
+//                           <option key={b.id} value={b.id}>{b.name}</option>
+//                         ))}
+//                     </select>
+//                   </div>
+//                   <div className="form-group">
+//                     <label className="form-label-custom">Room Name</label>
+//                     <input
+//                       type="text"
+//                       placeholder="e.g., Main-101"
+//                       value={newRoom.name}
+//                       onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
+//                       className="form-input-custom"
+//                       disabled={modalLoading}
+//                     />
+//                   </div>
+//                 </div>
+//                 <div className="modal-footer-custom">
+//                   <button
+//                     type="button"
+//                     className="btn-secondary-custom"
+//                     onClick={() => {
+//                       setShowRoomModal(false);
+//                       setSelectedBuildingForRoom(null);
+//                     }}
+//                     disabled={modalLoading}
+//                   >
+//                     Cancel
+//                   </button>
+//                   <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+//                     {modalLoading ? "Adding..." : (
+//                       <>
+//                         <Plus size={18} />
+//                         Add Room
+//                       </>
+//                     )}
+//                   </button>
+//                 </div>
+//               </form>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Room Assignment Modal */}
+//         {showRoomAssignmentModal && selectedAssignment && (
+//           <div className="room-selection-modal">
+//             <div className="modal-overlay" onClick={() => {
+//               setShowRoomAssignmentModal(false);
+//               setSelectedAssignment(null);
+//               setSelectedRooms([]);
+//             }}>
+//               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//                 <div className="modal-header-custom">
+//                   <div className="modal-title">
+//                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+//                       <DoorOpen size={24} />
+//                       Select Rooms
+//                     </div>
+//                     <div className="modal-subtitle">
+//                       {courses.find(c => c.id === selectedAssignment.courseId)?.code} - 
+//                       Year {selectedAssignment.yearLevel} - 
+//                       Semester {selectedAssignment.semester} - 
+//                       {buildings.find(b => b.id === selectedAssignment.buildingId)?.name}
+//                     </div>
+//                   </div>
+//                   <button 
+//                     className="modal-close-btn" 
+//                     onClick={() => {
+//                       setShowRoomAssignmentModal(false);
+//                       setSelectedAssignment(null);
+//                       setSelectedRooms([]);
+//                     }}
+//                   >
+//                     <X size={20} />
+//                   </button>
+//                 </div>
+                
+//                 <div className="modal-body-custom">
+//                   {(() => {
+//                     const selectedBuilding = buildings.find(b => b.id === selectedAssignment.buildingId);
+//                     if (!selectedBuilding || !selectedBuilding.rooms || selectedBuilding.rooms.length === 0) {
+//                       return (
+//                         <div style={{ textAlign: "center", padding: "2rem", color: "#999" }}>
+//                           <DoorOpen size={48} style={{ marginBottom: "1rem" }} />
+//                           <p>No rooms available in {selectedBuilding?.name || 'this building'}</p>
+//                         </div>
+//                       );
+//                     }
+                    
+//                     return (
+//                       <div className="building-rooms-group">
+//                         <div className="building-group-title">
+//                           <Building2 size={18} />
+//                           {selectedBuilding.name}
+//                         </div>
+//                         <div className="rooms-grid">
+//                           {selectedBuilding.rooms.map(room => {
+//                             const isSelected = selectedRooms.includes(room.id);
+                            
+//                             return (
+//                               <div
+//                                 key={room.id}
+//                                 className={`room-option-card ${isSelected ? 'selected' : ''}`}
+//                                 onClick={() => handleToggleRoom(room.id)}
+//                               >
+//                                 <div className="room-option-name">
+//                                   <DoorOpen size={16} style={{ display: 'inline', marginRight: '0.25rem' }} />
+//                                   {room.name}
+//                                 </div>
+//                                 <div className="room-option-building">{selectedBuilding.name}</div>
+//                               </div>
+//                             );
+//                           })}
+//                         </div>
+//                       </div>
+//                     );
+//                   })()}
+//                 </div>
+                
+//                 <div className="modal-footer-custom">
+//                   <button
+//                     className="btn-secondary-custom"
+//                     onClick={() => {
+//                       setShowRoomAssignmentModal(false);
+//                       setSelectedAssignment(null);
+//                       setSelectedRooms([]);
+//                     }}
+//                   >
+//                     Cancel
+//                   </button>
+//                   <button
+//                     className="btn-primary-custom"
+//                     onClick={handleSaveRoomAssignments}
+//                   >
+//                     <CheckCircle size={18} />
+//                     Save ({selectedRooms.length} room{selectedRooms.length !== 1 ? 's' : ''})
+//                   </button>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </>
+//   );
+// };
+
+// export default RoomManagement;
+
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Card, Button, Modal, Form, Spinner, Badge, InputGroup } from "react-bootstrap";
-import { Building2, DoorOpen, Search, Plus, RotateCw, Trash2, Edit, AlertCircle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
-// import { API } from '../../config/api';
+import { Building2, DoorOpen, Search, Plus, RotateCw, Trash2, Edit, AlertCircle, CheckCircle, ChevronDown, BookOpen, X } from "lucide-react";
 
 const RoomManagement = () => {
   // State management
@@ -4216,13 +11198,15 @@ const RoomManagement = () => {
   const [modalLoading, setModalLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [selectedBuildingForRoom, setSelectedBuildingForRoom] = useState(null);
+  
+  // Room Assignment States
+  const [courses, setCourses] = useState([]);
+  const [showRoomAssignmentModal, setShowRoomAssignmentModal] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [roomAssignments, setRoomAssignments] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState([]);
 
-  const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
-  // const API_BASE =
-  // process.env.REACT_APP_API_URL ||
-  // (window.location.hostname === 'localhost'
-  //   ? 'http://localhost:5000'
-  //   : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+  const API = "http://localhost:5000";
 
   const COLORS = {
     primary: "#03045E",
@@ -4246,9 +11230,6 @@ const RoomManagement = () => {
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-  /**
-   * Format time from 24-hour to 12-hour format
-   */
   const formatTime = useCallback((time) => {
     const [hour, minute] = time.split(":");
     let h = parseInt(hour);
@@ -4257,9 +11238,30 @@ const RoomManagement = () => {
     return `${h}:${minute} ${ampm}`;
   }, []);
 
-  /**
-   * Fetch all buildings with rooms and schedules
-   */
+  const fetchCourses = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/api/courses`);
+      if (!res.ok) throw new Error("Failed to fetch courses");
+      const data = await res.json();
+      setCourses(Array.isArray(data) ? data.filter(c => !c.is_general) : []);
+    } catch (err) {
+      console.error("Error fetching courses:", err);
+      showToast("Failed to load courses", "error");
+    }
+  }, [API]);
+
+  const fetchRoomAssignments = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/api/room-assignments`);
+      if (!res.ok) throw new Error("Failed to fetch room assignments");
+      const data = await res.json();
+      setRoomAssignments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching room assignments:", err);
+      setRoomAssignments([]);
+    }
+  }, [API]);
+
   const fetchBuildings = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -4269,7 +11271,6 @@ const RoomManagement = () => {
       const data = await res.json();
       setBuildings(Array.isArray(data) ? data : []);
       
-      // Initialize expanded state for all buildings
       const expandedState = {};
       data.forEach(b => {
         expandedState[b.id] = true;
@@ -4284,16 +11285,10 @@ const RoomManagement = () => {
     }
   }, [API]);
 
-  /**
-   * Show toast notification
-   */
   const showToast = (message, type) => {
     setToast({ message, type });
   };
 
-  /**
-   * Toggle building expansion
-   */
   const toggleBuildingExpansion = (buildingId) => {
     setExpandedBuildings(prev => ({
       ...prev,
@@ -4301,9 +11296,6 @@ const RoomManagement = () => {
     }));
   };
 
-  /**
-   * Expand all buildings
-   */
   const expandAllBuildings = () => {
     const expanded = {};
     buildings.forEach(b => {
@@ -4312,9 +11304,6 @@ const RoomManagement = () => {
     setExpandedBuildings(expanded);
   };
 
-  /**
-   * Collapse all buildings
-   */
   const collapseAllBuildings = () => {
     const collapsed = {};
     buildings.forEach(b => {
@@ -4323,9 +11312,6 @@ const RoomManagement = () => {
     setExpandedBuildings(collapsed);
   };
 
-  /**
-   * Add new building
-   */
   const handleAddBuilding = async (e) => {
     e.preventDefault();
     if (!newBuildingName.trim()) {
@@ -4357,9 +11343,6 @@ const RoomManagement = () => {
     }
   };
 
-  /**
-   * Delete a building
-   */
   const handleDeleteBuilding = async (buildingId) => {
     setDeleteLoading(true);
     try {
@@ -4380,9 +11363,6 @@ const RoomManagement = () => {
     }
   };
 
-  /**
-   * Add new room
-   */
   const handleAddRoom = async (e) => {
     e.preventDefault();
     if (!newRoom.name.trim() || !newRoom.buildingId) {
@@ -4423,9 +11403,6 @@ const RoomManagement = () => {
     }
   };
 
-  /**
-   * Delete a room
-   */
   const handleDeleteRoom = async (roomId, buildingId) => {
     setDeleteLoading(true);
     try {
@@ -4452,66 +11429,134 @@ const RoomManagement = () => {
     }
   };
 
-  /**
-   * Open add room modal with pre-selected building
-   */
+  const handleOpenRoomAssignment = (courseId, yearLevel, semester, buildingId) => {
+    setSelectedAssignment({ courseId, yearLevel, semester, buildingId });
+    
+    // Get currently assigned rooms for this combination
+    const currentAssignments = roomAssignments.filter(
+      a => a.course_id === courseId && 
+           a.year_level === yearLevel && 
+           a.semester === semester &&
+           a.building_id === buildingId
+    ).map(a => a.room_id);
+    
+    setSelectedRooms(currentAssignments);
+    setShowRoomAssignmentModal(true);
+  };
+
+  const handleToggleRoom = (roomId) => {
+    setSelectedRooms(prev => {
+      if (prev.includes(roomId)) {
+        return prev.filter(id => id !== roomId);
+      } else {
+        return [...prev, roomId];
+      }
+    });
+  };
+
+  const handleSaveRoomAssignments = async () => {
+    if (!selectedAssignment) return;
+
+    try {
+      // Get current assignments
+      const currentAssignments = roomAssignments.filter(
+        a => a.course_id === selectedAssignment.courseId && 
+             a.year_level === selectedAssignment.yearLevel && 
+             a.semester === selectedAssignment.semester &&
+             a.building_id === selectedAssignment.buildingId
+      );
+
+      const currentRoomIds = currentAssignments.map(a => a.room_id);
+      
+      // Determine which rooms to add and which to remove
+      const roomsToAdd = selectedRooms.filter(id => !currentRoomIds.includes(id));
+      const roomsToRemove = currentRoomIds.filter(id => !selectedRooms.includes(id));
+
+      // Remove unselected rooms
+      for (const roomId of roomsToRemove) {
+        const assignment = currentAssignments.find(a => a.room_id === roomId);
+        if (assignment) {
+          await fetch(`${API}/api/room-assignments/${assignment.id}`, {
+            method: "DELETE"
+          });
+        }
+      }
+
+      // Add newly selected rooms
+      for (const roomId of roomsToAdd) {
+        await fetch(`${API}/api/room-assignments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            courseId: selectedAssignment.courseId,
+            yearLevel: selectedAssignment.yearLevel,
+            semester: selectedAssignment.semester,
+            roomId: Number(roomId),
+            buildingId: selectedAssignment.buildingId
+          })
+        });
+      }
+
+      await fetchRoomAssignments();
+      setShowRoomAssignmentModal(false);
+      setSelectedAssignment(null);
+      setSelectedRooms([]);
+      showToast("Room assignments updated successfully", "success");
+    } catch (err) {
+      console.error("Error saving room assignments:", err);
+      showToast(err.message || "Failed to save room assignments", "error");
+    }
+  };
+
+  const handleUnassignRoom = async (assignmentId) => {
+    try {
+      const res = await fetch(`${API}/api/room-assignments/${assignmentId}`, {
+        method: "DELETE"
+      });
+
+      if (!res.ok) throw new Error("Failed to unassign room");
+
+      await fetchRoomAssignments();
+      showToast("Room unassigned successfully", "success");
+    } catch (err) {
+      console.error("Error unassigning room:", err);
+      showToast(err.message || "Failed to unassign room", "error");
+    }
+  };
+
+  const getAssignedRooms = (courseId, yearLevel, semester, buildingId) => {
+    const assignments = roomAssignments.filter(
+      a => a.course_id === courseId && 
+           a.year_level === yearLevel && 
+           a.semester === semester &&
+           a.building_id === buildingId
+    );
+    
+    const rooms = [];
+    for (const assignment of assignments) {
+      for (const building of buildings) {
+        if (building.id === buildingId) {
+          const room = building.rooms?.find(r => r.id === assignment.room_id);
+          if (room) {
+            rooms.push({
+              assignmentId: assignment.id,
+              roomId: room.id,
+              roomName: room.name,
+              buildingName: building.name
+            });
+          }
+        }
+      }
+    }
+    return rooms;
+  };
+
   const handleOpenRoomModal = (buildingId) => {
     setSelectedBuildingForRoom(buildingId);
     setNewRoom({ name: "", buildingId: String(buildingId) });
     setShowRoomModal(true);
   };
 
-  /**
-   * Check if room is in use for a specific day/time slot
-   */
-  const isRoomInUse = useCallback((room, day, startTime, endTime) => {
-    const schedules = room.schedules || [];
-    return schedules.some(s => {
-      if (s.day !== day) return false;
-      return (
-        (s.start_time <= startTime && s.end_time > startTime) ||
-        (s.start_time < endTime && s.end_time >= endTime)
-      );
-    });
-  }, []);
-
-  /**
-   * Calculate utilization statistics for a room
-   */
-  const getRoomStats = useCallback((room) => {
-    const schedules = room.schedules || [];
-    const totalSlots = timeSlots.length * days.length;
-    const usedSlots = schedules.length;
-    const utilizationPercent = Math.round((usedSlots / totalSlots) * 100);
-    
-    return {
-      totalSlots,
-      usedSlots,
-      availableSlots: totalSlots - usedSlots,
-      utilizationPercent
-    };
-  }, [timeSlots.length, days.length]);
-
-  /**
-   * Calculate utilization statistics for a building
-   */
-  const getBuildingStats = useCallback((building) => {
-    const rooms = building.rooms || [];
-    const totalRooms = rooms.length;
-    const totalSlots = totalRooms * timeSlots.length * days.length;
-    const totalUsedSlots = rooms.reduce((sum, r) => sum + (r.schedules?.length || 0), 0);
-    const utilizationPercent = totalSlots > 0 ? Math.round((totalUsedSlots / totalSlots) * 100) : 0;
-    
-    return {
-      totalRooms,
-      totalUsedSlots,
-      utilizationPercent
-    };
-  }, [timeSlots.length, days.length]);
-
-  /**
-   * Filter buildings based on search term
-   */
   const filteredBuildings = useMemo(() => {
     return buildings.filter(b =>
       b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -4519,31 +11564,52 @@ const RoomManagement = () => {
     );
   }, [buildings, searchTerm]);
 
-  /**
-   * Calculate overall statistics
-   */
   const overallStats = useMemo(() => {
     const totalBuildings = buildings.length;
     const totalRooms = buildings.reduce((sum, b) => sum + (b.rooms?.length || 0), 0);
-    const totalSchedules = buildings.reduce((sum, b) =>
-      sum + (b.rooms?.reduce((roomSum, r) => roomSum + (r.schedules?.length || 0), 0) || 0),
-      0
-    );
     
-    return { totalBuildings, totalRooms, totalSchedules };
+    return { totalBuildings, totalRooms };
   }, [buildings]);
 
-  // Fetch buildings on mount
   useEffect(() => {
     fetchBuildings();
-  }, [fetchBuildings]);
+    fetchCourses();
+    fetchRoomAssignments();
+  }, [fetchBuildings, fetchCourses, fetchRoomAssignments]);
 
-  // Loading state
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
   if (loading) {
     return (
-      <div className="room-loading-container">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Loading facilities...</p>
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        background: "linear-gradient(135deg, #CAF0F8 0%, #ADE8F4 100%)",
+        color: "#0077B6"
+      }}>
+        <div style={{
+          width: "50px",
+          height: "50px",
+          border: "4px solid rgba(0, 119, 182, 0.2)",
+          borderTop: "4px solid #0077B6",
+          borderRadius: "50%",
+          animation: "spin 1s linear infinite"
+        }} />
+        <p style={{ marginTop: "1rem" }}>Loading facilities...</p>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -4551,17 +11617,15 @@ const RoomManagement = () => {
   return (
     <>
       <style>{`
-        /* ============================================
-           EduSched Room Management Styles
-           ============================================ */
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        
         .room-management-container {
           padding: 2rem;
           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
           min-height: 100vh;
         }
 
-        /* Page Header with Gradient */
         .page-header-room {
           margin-bottom: 2rem;
         }
@@ -4621,7 +11685,7 @@ const RoomManagement = () => {
           backdrop-filter: blur(10px);
         }
 
-        .action-btn:hover {
+        .action-btn:hover:not(:disabled) {
           background: rgba(255, 255, 255, 0.3);
           border-color: rgba(255, 255, 255, 0.5);
           transform: translateY(-2px);
@@ -4633,7 +11697,6 @@ const RoomManagement = () => {
           cursor: not-allowed;
         }
 
-        /* Statistics Section */
         .statistics-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -4676,7 +11739,6 @@ const RoomManagement = () => {
           color: #03045E;
         }
 
-        /* Search Section */
         .search-section {
           background: white;
           border-radius: 12px;
@@ -4713,7 +11775,6 @@ const RoomManagement = () => {
           pointer-events: none;
         }
 
-        /* Building Card */
         .building-card {
           background: white;
           border-radius: 12px;
@@ -4817,7 +11878,6 @@ const RoomManagement = () => {
           transform: rotate(180deg);
         }
 
-        /* Building Content */
         .building-content {
           padding: 1.5rem;
         }
@@ -4828,7 +11888,6 @@ const RoomManagement = () => {
           color: #999;
         }
 
-        /* Room Section */
         .room-section {
           margin-bottom: 2rem;
         }
@@ -4853,28 +11912,6 @@ const RoomManagement = () => {
           font-size: 1rem;
         }
 
-        .room-stats-custom {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
-        .room-stat-badge {
-          background: white;
-          padding: 0.4rem 0.8rem;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          font-weight: 500;
-          border: 1px solid #90E0EF;
-        }
-
-        .utilization-badge {
-          background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
-          color: white;
-          border: none;
-        }
-
-        /* Schedule Table */
         .room-table {
           border-collapse: collapse;
           width: 100%;
@@ -4898,11 +11935,10 @@ const RoomManagement = () => {
         }
 
         .room-table td {
-          padding: 0.75rem;
+          padding: 0.5rem 0.25rem;
           border: 1px solid #E8F4F8;
           text-align: center;
           vertical-align: middle;
-          transition: all 0.3s ease;
         }
 
         .room-table tbody tr:nth-child(odd) {
@@ -4913,32 +11949,397 @@ const RoomManagement = () => {
           background: #E8F4F8;
         }
 
-        .time-cell {
-          font-weight: 500;
-          color: #0077B6;
+        .time-slot-cell {
+          background: white;
+          color: #495057;
+          padding: 4px 6px;
+          border: 1px solid #dee2e6;
+          font-size: 0.65rem;
+          font-weight: 400;
+          white-space: nowrap;
+        }
+
+        .room-assignments-section {
+          margin-top: 3rem;
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+        }
+
+        .room-assignments-header {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 2rem;
+          padding-bottom: 1rem;
+          border-bottom: 2px solid #90E0EF;
+        }
+
+        .room-assignments-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #03045E;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .room-assignments-grid {
+          display: grid;
+          gap: 2rem;
+        }
+
+        .course-assignment-card {
+          background: #F8FCFD;
+          border-radius: 12px;
+          padding: 1.5rem;
+          border: 2px solid #CAF0F8;
+          transition: all 0.3s ease;
+        }
+
+        .course-assignment-card:hover {
+          border-color: #0077B6;
+          box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+        }
+
+        .course-assignment-header {
+          background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+          color: white;
+          padding: 1rem 1.5rem;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+          font-weight: 600;
+          font-size: 1.1rem;
+        }
+
+        .year-assignments-table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          font-size: 0.8rem;
+        }
+
+        .year-assignments-table th {
+          background: #CAF0F8;
+          color: #03045E;
+          padding: 0.75rem 0.5rem;
+          text-align: center;
+          font-weight: 600;
+          border: 1px solid #90E0EF;
+          font-size: 0.75rem;
+        }
+
+        .year-assignments-table th:first-child {
+          border-top-left-radius: 8px;
           text-align: left;
-          padding-left: 1rem;
+          padding-left: 1.5rem;
         }
 
-        .status-available {
-          background: linear-gradient(135deg, #90EE90 0%, #76D776 100%);
+        .year-assignments-table th:last-child {
+          border-top-right-radius: 8px;
+        }
+
+        .year-assignments-table td {
+          padding: 0.75rem 0.5rem;
+          text-align: center;
+          border: 1px solid #E8F4F8;
+          background: white;
+          vertical-align: top;
+        }
+
+        .year-assignments-table td:first-child {
+          text-align: left;
+          padding-left: 1.5rem;
+          font-weight: 600;
+          color: #0077B6;
+        }
+
+        .year-assignments-table tbody tr:last-child td:first-child {
+          border-bottom-left-radius: 8px;
+        }
+
+        .year-assignments-table tbody tr:last-child td:last-child {
+          border-bottom-right-radius: 8px;
+        }
+
+        .room-assignment-cell {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .assigned-rooms-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          width: 100%;
+          margin-bottom: 0.5rem;
+        }
+
+        .assigned-room-item {
+          background: #d4edda;
+          color: #155724;
+          padding: 0.4rem 0.75rem;
+          border-radius: 6px;
+          font-weight: 500;
+          font-size: 0.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+        }
+
+        .room-item-info {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .remove-room-icon-btn {
+          background: #c82333;
           color: white;
-          padding: 0.4rem 0.8rem;
+          border: none;
+          padding: 0.25rem;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .remove-room-icon-btn:hover {
+          background: #a71d2a;
+          transform: scale(1.1);
+        }
+
+        .select-room-btn, .manage-rooms-btn {
+          background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+          color: white;
+          border: none;
+          padding: 0.4rem 0.75rem;
           border-radius: 6px;
           font-weight: 600;
-          font-size: 0.8rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.75rem;
+          white-space: nowrap;
         }
 
-        .status-in-use {
-          background: linear-gradient(135deg, #FF6B6B 0%, #FF4444 100%);
+        .select-room-btn:hover, .manage-rooms-btn:hover {
+          background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
+        }
+
+        .room-selection-modal .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9998;
+          padding: 1rem;
+        }
+
+        .room-selection-modal .modal-content {
+          background: white;
+          border-radius: 16px;
+          width: 100%;
+          max-width: 800px;
+          max-height: 90vh;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translateY(50px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+
+        .modal-header-custom {
+          background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
           color: white;
-          padding: 0.4rem 0.8rem;
-          border-radius: 6px;
-          font-weight: 600;
-          font-size: 0.8rem;
+          padding: 1.5rem 2rem;
+          border-radius: 16px 16px 0 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
         }
 
-        /* Toast Notifications */
+        .modal-title {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          font-weight: 700;
+          font-size: 1.3rem;
+        }
+
+        .modal-subtitle {
+          font-size: 0.9rem;
+          font-weight: normal;
+          opacity: 0.9;
+        }
+
+        .modal-close-btn {
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          color: white;
+          padding: 0.5rem;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .modal-close-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-body-custom {
+          padding: 2rem;
+          overflow-y: auto;
+          flex: 1;
+        }
+
+        .building-rooms-group {
+          margin-bottom: 2rem;
+        }
+
+        .building-group-title {
+          background: #CAF0F8;
+          color: #03045E;
+          padding: 0.75rem 1rem;
+          border-radius: 8px;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .rooms-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 1rem;
+        }
+
+        .room-option-card {
+          background: white;
+          border: 2px solid #90E0EF;
+          padding: 1rem;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-align: center;
+          position: relative;
+        }
+
+        .room-option-card:hover {
+          border-color: #0077B6;
+          background: #F8FCFD;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+        }
+
+        .room-option-card.selected {
+          border-color: #0077B6;
+          background: #E8F4F8;
+          box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
+        }
+
+        .room-option-card.selected::after {
+          content: '✓';
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          background: #0077B6;
+          color: white;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+        }
+
+        .room-option-name {
+          font-weight: 600;
+          color: #03045E;
+          margin-bottom: 0.25rem;
+        }
+
+        .room-option-building {
+          font-size: 0.85rem;
+          color: #666;
+        }
+
+        .modal-footer-custom {
+          padding: 1.5rem 2rem;
+          border-top: 1px solid #E8F4F8;
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+        }
+
+        .btn-primary-custom {
+          background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 10px;
+          font-weight: 600;
+          color: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .btn-primary-custom:hover:not(:disabled) {
+          background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+        }
+
+        .btn-primary-custom:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .btn-secondary-custom {
+          background: white;
+          border: 2px solid #90E0EF;
+          color: #0077B6;
+          padding: 0.75rem 1.5rem;
+          border-radius: 10px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .btn-secondary-custom:hover {
+          background: #F8FCFD;
+          border-color: #0077B6;
+        }
+
         .edusched-toast {
           position: fixed;
           top: 2rem;
@@ -5009,97 +12410,6 @@ const RoomManagement = () => {
           color: #333;
         }
 
-        /* Modal Styles */
-        .edusched-modal .modal-content {
-          border-radius: 16px;
-          border: none;
-          overflow: hidden;
-        }
-
-        .modal-header-custom {
-          background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
-          color: white;
-          padding: 1.5rem 2rem;
-          border: none;
-        }
-
-        .modal-header-custom .modal-title {
-          display: flex;
-          align-items: center;
-          font-weight: 700;
-          font-size: 1.3rem;
-          gap: 0.75rem;
-        }
-
-        .modal-header-custom .btn-close {
-          filter: brightness(0) invert(1);
-        }
-
-        .modal-body-custom {
-          padding: 2rem;
-        }
-
-        .form-label-custom {
-          font-weight: 600;
-          color: #03045E;
-          margin-bottom: 0.5rem;
-        }
-
-        .form-input-custom {
-          border: 2px solid #90E0EF;
-          border-radius: 10px;
-          padding: 0.75rem;
-          transition: all 0.3s ease;
-        }
-
-        .form-input-custom:focus {
-          border-color: #0077B6;
-          box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
-          outline: none;
-        }
-
-        .modal-footer-custom {
-          padding: 1.5rem 2rem;
-          border-top: 1px solid #E8F4F8;
-        }
-
-        .btn-primary-custom {
-          background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
-          border: none;
-          padding: 0.75rem 1.5rem;
-          border-radius: 10px;
-          font-weight: 600;
-          color: white;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .btn-primary-custom:hover:not(:disabled) {
-          background: linear-gradient(135deg, #023E8A 0%, #0077B6 100%);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
-        }
-
-        .btn-secondary-custom {
-          background: white;
-          border: 2px solid #90E0EF;
-          color: #0077B6;
-          padding: 0.75rem 1.5rem;
-          border-radius: 10px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .btn-secondary-custom:hover {
-          background: #F8FCFD;
-          border-color: #0077B6;
-        }
-
-        /* Delete Confirmation Modal */
         .delete-modal-overlay {
           position: fixed;
           inset: 0;
@@ -5119,17 +12429,6 @@ const RoomManagement = () => {
           width: 100%;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
           animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-          from {
-            transform: translateY(50px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
         }
 
         .delete-modal-header {
@@ -5158,17 +12457,31 @@ const RoomManagement = () => {
           justify-content: flex-end;
         }
 
-        .room-loading-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          background: linear-gradient(135deg, #CAF0F8 0%, #ADE8F4 100%);
-          color: #0077B6;
+        .form-label-custom {
+          font-weight: 600;
+          color: #03045E;
+          margin-bottom: 0.5rem;
+          display: block;
         }
 
-        /* Responsive Design */
+        .form-input-custom, .form-select-custom {
+          border: 2px solid #90E0EF;
+          border-radius: 10px;
+          padding: 0.75rem;
+          width: 100%;
+          transition: all 0.3s ease;
+        }
+
+        .form-input-custom:focus, .form-select-custom:focus {
+          border-color: #0077B6;
+          box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+          outline: none;
+        }
+
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+
         @media (max-width: 992px) {
           .page-title-section-gradient-room {
             flex-direction: column;
@@ -5198,9 +12511,12 @@ const RoomManagement = () => {
             font-size: 0.8rem;
           }
 
-          .room-table th,
-          .room-table td {
-            padding: 0.5rem 0.25rem;
+          .year-assignments-table {
+            font-size: 0.85rem;
+          }
+
+          .rooms-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
           }
         }
 
@@ -5217,26 +12533,18 @@ const RoomManagement = () => {
             font-size: 2rem;
           }
 
-          .building-info {
-            flex-direction: column;
-            gap: 0.5rem;
-          }
-
-          .building-stat {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-          }
-
-          .room-table {
-            font-size: 0.75rem;
-            display: block;
-            overflow-x: auto;
-          }
-
           .edusched-toast {
             left: 1rem;
             right: 1rem;
             min-width: auto;
+          }
+
+          .rooms-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .room-assignments-section {
+            padding: 1rem;
           }
         }
 
@@ -5259,6 +12567,11 @@ const RoomManagement = () => {
 
           .delete-modal {
             padding: 1.5rem;
+          }
+
+          .time-slot-cell {
+            font-size: 0.5rem;
+            padding: 2px 3px;
           }
         }
       `}</style>
@@ -5306,24 +12619,14 @@ const RoomManagement = () => {
                   }}
                   disabled={deleteLoading}
                 >
-                  {deleteLoading ? (
-                    <>
-                      <Spinner animation="border" size="sm" />
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 size={18} />
-                      Delete
-                    </>
-                  )}
+                  {deleteLoading ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Page Header with Gradient */}
+        {/* Page Header */}
         <div className="page-header-room">
           <div className="page-title-section-gradient-room">
             <div className="page-title-content-room">
@@ -5340,7 +12643,11 @@ const RoomManagement = () => {
                 <Plus size={20} />
                 Add Building
               </button>
-              <button className="action-btn" onClick={fetchBuildings}>
+              <button className="action-btn" onClick={() => {
+                fetchBuildings();
+                fetchCourses();
+                fetchRoomAssignments();
+              }}>
                 <RotateCw size={20} />
                 Refresh
               </button>
@@ -5348,7 +12655,7 @@ const RoomManagement = () => {
           </div>
         </div>
 
-        {/* Statistics Section */}
+        {/* Statistics */}
         <div className="statistics-grid">
           <div className="stat-card">
             <div className="stat-label">Total Buildings</div>
@@ -5357,10 +12664,6 @@ const RoomManagement = () => {
           <div className="stat-card">
             <div className="stat-label">Total Rooms</div>
             <div className="stat-value">{overallStats.totalRooms}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Total Schedules</div>
-            <div className="stat-value">{overallStats.totalSchedules}</div>
           </div>
         </div>
 
@@ -5463,8 +12766,8 @@ const RoomManagement = () => {
 
         {/* Buildings List */}
         {!error && filteredBuildings.map(building => {
-          const buildingStats = getBuildingStats(building);
           const isExpanded = expandedBuildings[building.id] !== false;
+          const totalRooms = building.rooms?.length || 0;
 
           return (
             <div key={building.id} className="building-card">
@@ -5480,10 +12783,7 @@ const RoomManagement = () => {
                   <div className="building-stats">
                     <div className="building-stat">
                       <DoorOpen size={14} />
-                      {buildingStats.totalRooms} room{buildingStats.totalRooms !== 1 ? "s" : ""}
-                    </div>
-                    <div className="building-stat">
-                      Utilization: {buildingStats.utilizationPercent}%
+                      {totalRooms} room{totalRooms !== 1 ? "s" : ""}
                     </div>
                   </div>
                 </div>
@@ -5520,8 +12820,6 @@ const RoomManagement = () => {
                     </div>
                   ) : (
                     building.rooms.map(room => {
-                      const roomStats = getRoomStats(room);
-                      
                       return (
                         <div key={room.id} className="room-section">
                           <div className="room-header-custom">
@@ -5530,14 +12828,6 @@ const RoomManagement = () => {
                               {room.name}
                             </div>
                             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginLeft: "auto" }}>
-                              <div className="room-stats-custom">
-                                <div className="room-stat-badge">
-                                  {roomStats.usedSlots} / {roomStats.totalSlots} slots
-                                </div>
-                                <div className="room-stat-badge utilization-badge">
-                                  {roomStats.utilizationPercent}% utilized
-                                </div>
-                              </div>
                               <button
                                 className="icon-btn"
                                 onClick={() => setShowDeleteConfirm({ type: "room", id: room.id, buildingId: building.id })}
@@ -5553,28 +12843,21 @@ const RoomManagement = () => {
                             <table className="room-table">
                               <thead>
                                 <tr>
-                                  <th>Time</th>
                                   {days.map(day => (
-                                    <th key={day}>{day}</th>
+                                    <th key={day} style={{minWidth: '120px'}}>{day}</th>
                                   ))}
                                 </tr>
                               </thead>
                               <tbody>
                                 {timeSlots.map(slot => (
                                   <tr key={slot.start}>
-                                    <td className="time-cell">
-                                      {formatTime(slot.start)} - {formatTime(slot.end)}
-                                    </td>
-                                    {days.map(day => {
-                                      const inUse = isRoomInUse(room, day, slot.start, slot.end);
-                                      return (
-                                        <td key={day}>
-                                          <span className={inUse ? "status-in-use" : "status-available"}>
-                                            {inUse ? "In Use" : "Available"}
-                                          </span>
-                                        </td>
-                                      );
-                                    })}
+                                    {days.map(day => (
+                                      <td key={day}>
+                                        <div className="time-slot-cell">
+                                          {formatTime(slot.start)} - {formatTime(slot.end)}
+                                        </div>
+                                      </td>
+                                    ))}
                                   </tr>
                                 ))}
                               </tbody>
@@ -5590,118 +12873,332 @@ const RoomManagement = () => {
           );
         })}
 
+        {/* Room Assignments Section */}
+        <div className="room-assignments-section">
+          <div className="room-assignments-header">
+            <h2 className="room-assignments-title">
+              <DoorOpen size={28} />
+              Room Assignments by Course
+            </h2>
+          </div>
+
+          {courses.length === 0 ? (
+            <div style={{
+              textAlign: "center",
+              padding: "3rem",
+              color: "#999"
+            }}>
+              <BookOpen size={64} style={{ color: "#90E0EF", marginBottom: "1rem" }} />
+              <p>No courses available</p>
+            </div>
+          ) : (
+            <div className="room-assignments-grid">
+              {courses.map(course => (
+                <div key={course.id} className="course-assignment-card">
+                  <div className="course-assignment-header">
+                    {course.code} - {course.name}
+                  </div>
+                  
+                  <table className="year-assignments-table">
+                    <thead>
+                      <tr>
+                        <th>Building</th>
+                        <th>1st Year (1st Sem)</th>
+                        <th>1st Year (2nd Sem)</th>
+                        <th>2nd Year (1st Sem)</th>
+                        <th>2nd Year (2nd Sem)</th>
+                        <th>3rd Year (1st Sem)</th>
+                        <th>3rd Year (2nd Sem)</th>
+                        <th>4th Year (1st Sem)</th>
+                        <th>4th Year (2nd Sem)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {buildings.map(building => (
+                        <tr key={building.id}>
+                          <td>{building.name}</td>
+                          {[1, 2, 3, 4].map(year => (
+                            <>
+                              {['1', '2'].map(semester => {
+                                const assignedRooms = getAssignedRooms(course.id, year, semester, building.id);
+                                
+                                return (
+                                  <td key={`${year}-${semester}`}>
+                                    <div className="room-assignment-cell">
+                                      {assignedRooms.length > 0 ? (
+                                        <>
+                                          <div className="assigned-rooms-list">
+                                            {assignedRooms.map(room => (
+                                              <div key={room.assignmentId} className="assigned-room-item">
+                                                <div className="room-item-info">
+                                                  <DoorOpen size={14} />
+                                                  {room.roomName}
+                                                </div>
+                                                <button
+                                                  className="remove-room-icon-btn"
+                                                  onClick={() => handleUnassignRoom(room.assignmentId)}
+                                                  title="Remove room"
+                                                >
+                                                  <X size={14} />
+                                                </button>
+                                              </div>
+                                            ))}
+                                          </div>
+                                          <button
+                                            className="manage-rooms-btn"
+                                            onClick={() => handleOpenRoomAssignment(course.id, year, semester, building.id)}
+                                          >
+                                            <Edit size={14} />
+                                            Manage Rooms
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <button
+                                          className="select-room-btn"
+                                          onClick={() => handleOpenRoomAssignment(course.id, year, semester, building.id)}
+                                        >
+                                          <Plus size={14} />
+                                          Select Rooms
+                                        </button>
+                                      )}
+                                    </div>
+                                  </td>
+                                );
+                              })}
+                            </>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Add Building Modal */}
-        <Modal show={showBuildingModal} onHide={() => setShowBuildingModal(false)} centered className="edusched-modal">
-          <Modal.Header closeButton className="modal-header-custom">
-            <Modal.Title>
-              <Building2 size={24} />
-              Add New Building
-            </Modal.Title>
-          </Modal.Header>
-          <Form onSubmit={handleAddBuilding}>
-            <Modal.Body className="modal-body-custom">
-              <Form.Group>
-                <Form.Label className="form-label-custom">Building Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="e.g., Engineering Building A"
-                  value={newBuildingName}
-                  onChange={(e) => setNewBuildingName(e.target.value)}
-                  className="form-input-custom"
-                  disabled={modalLoading}
-                />
-              </Form.Group>
-            </Modal.Body>
-            <Modal.Footer className="modal-footer-custom">
-              <button
-                className="btn-secondary-custom"
-                onClick={() => setShowBuildingModal(false)}
-                disabled={modalLoading}
-              >
-                Cancel
-              </button>
-              <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
-                {modalLoading ? (
-                  <>
-                    <Spinner size="sm" animation="border" />
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <Plus size={18} />
-                    Add Building
-                  </>
-                )}
-              </button>
-            </Modal.Footer>
-          </Form>
-        </Modal>
+        {showBuildingModal && (
+          <div className="delete-modal-overlay" onClick={() => !modalLoading && setShowBuildingModal(false)}>
+            <div className="delete-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px" }}>
+              <div className="modal-header-custom">
+                <div className="modal-title">
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <Building2 size={24} />
+                    Add New Building
+                  </div>
+                </div>
+                <button className="modal-close-btn" onClick={() => setShowBuildingModal(false)}>
+                  <X size={20} />
+                </button>
+              </div>
+              <form onSubmit={handleAddBuilding}>
+                <div style={{ padding: "2rem" }}>
+                  <div className="form-group">
+                    <label className="form-label-custom">Building Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Engineering Building A"
+                      value={newBuildingName}
+                      onChange={(e) => setNewBuildingName(e.target.value)}
+                      className="form-input-custom"
+                      disabled={modalLoading}
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer-custom">
+                  <button
+                    type="button"
+                    className="btn-secondary-custom"
+                    onClick={() => setShowBuildingModal(false)}
+                    disabled={modalLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+                    {modalLoading ? "Adding..." : (
+                      <>
+                        <Plus size={18} />
+                        Add Building
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Add Room Modal */}
-        <Modal show={showRoomModal} onHide={() => setShowRoomModal(false)} centered className="edusched-modal">
-          <Modal.Header closeButton className="modal-header-custom">
-            <Modal.Title>
-              <DoorOpen size={24} />
-              Add New Room
-            </Modal.Title>
-          </Modal.Header>
-          <Form onSubmit={handleAddRoom}>
-            <Modal.Body className="modal-body-custom">
-              <Form.Group className="mb-3">
-                <Form.Label className="form-label-custom">Building</Form.Label>
-                <Form.Select
-                  value={newRoom.buildingId}
-                  onChange={(e) => setNewRoom({ ...newRoom, buildingId: e.target.value })}
-                  className="form-input-custom"
-                  disabled={modalLoading}
-                >
-                  <option value="">Select Building</option>
-                  {buildings
-                    .filter(b => !selectedBuildingForRoom || b.id === Number(selectedBuildingForRoom))
-                    .map(b => (
-                      <option key={b.id} value={b.id}>{b.name}</option>
-                    ))}
-                </Form.Select>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label className="form-label-custom">Room Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="e.g., Main-101"
-                  value={newRoom.name}
-                  onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
-                  className="form-input-custom"
-                  disabled={modalLoading}
-                />
-              </Form.Group>
-            </Modal.Body>
-            <Modal.Footer className="modal-footer-custom">
-              <button
-                className="btn-secondary-custom"
-                onClick={() => {
-                  setShowRoomModal(false);
-                  setSelectedBuildingForRoom(null);
-                }}
-                disabled={modalLoading}
-              >
-                Cancel
-              </button>
-              <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
-                {modalLoading ? (
-                  <>
-                    <Spinner size="sm" animation="border" />
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <Plus size={18} />
-                    Add Room
-                  </>
-                )}
-              </button>
-            </Modal.Footer>
-          </Form>
-        </Modal>
+        {showRoomModal && (
+          <div className="delete-modal-overlay" onClick={() => !modalLoading && setShowRoomModal(false)}>
+            <div className="delete-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px" }}>
+              <div className="modal-header-custom">
+                <div className="modal-title">
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <DoorOpen size={24} />
+                    Add New Room
+                  </div>
+                </div>
+                <button className="modal-close-btn" onClick={() => setShowRoomModal(false)}>
+                  <X size={20} />
+                </button>
+              </div>
+              <form onSubmit={handleAddRoom}>
+                <div style={{ padding: "2rem" }}>
+                  <div className="form-group">
+                    <label className="form-label-custom">Building</label>
+                    <select
+                      value={newRoom.buildingId}
+                      onChange={(e) => setNewRoom({ ...newRoom, buildingId: e.target.value })}
+                      className="form-select-custom"
+                      disabled={modalLoading}
+                    >
+                      <option value="">Select Building</option>
+                      {buildings
+                        .filter(b => !selectedBuildingForRoom || b.id === Number(selectedBuildingForRoom))
+                        .map(b => (
+                          <option key={b.id} value={b.id}>{b.name}</option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label-custom">Room Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Main-101"
+                      value={newRoom.name}
+                      onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
+                      className="form-input-custom"
+                      disabled={modalLoading}
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer-custom">
+                  <button
+                    type="button"
+                    className="btn-secondary-custom"
+                    onClick={() => {
+                      setShowRoomModal(false);
+                      setSelectedBuildingForRoom(null);
+                    }}
+                    disabled={modalLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button className="btn-primary-custom" type="submit" disabled={modalLoading}>
+                    {modalLoading ? "Adding..." : (
+                      <>
+                        <Plus size={18} />
+                        Add Room
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Room Assignment Modal */}
+        {showRoomAssignmentModal && selectedAssignment && (
+          <div className="room-selection-modal">
+            <div className="modal-overlay" onClick={() => {
+              setShowRoomAssignmentModal(false);
+              setSelectedAssignment(null);
+              setSelectedRooms([]);
+            }}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header-custom">
+                  <div className="modal-title">
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <DoorOpen size={24} />
+                      Select Rooms
+                    </div>
+                    <div className="modal-subtitle">
+                      {courses.find(c => c.id === selectedAssignment.courseId)?.code} - 
+                      Year {selectedAssignment.yearLevel} - 
+                      Semester {selectedAssignment.semester === '1' ? '1st' : selectedAssignment.semester === '2' ? '2nd' : selectedAssignment.semester} - 
+                      {buildings.find(b => b.id === selectedAssignment.buildingId)?.name}
+                    </div>
+                  </div>
+                  <button 
+                    className="modal-close-btn" 
+                    onClick={() => {
+                      setShowRoomAssignmentModal(false);
+                      setSelectedAssignment(null);
+                      setSelectedRooms([]);
+                    }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div className="modal-body-custom">
+                  {(() => {
+                    const selectedBuilding = buildings.find(b => b.id === selectedAssignment.buildingId);
+                    if (!selectedBuilding || !selectedBuilding.rooms || selectedBuilding.rooms.length === 0) {
+                      return (
+                        <div style={{ textAlign: "center", padding: "2rem", color: "#999" }}>
+                          <DoorOpen size={48} style={{ marginBottom: "1rem" }} />
+                          <p>No rooms available in {selectedBuilding?.name || 'this building'}</p>
+                        </div>
+                      );
+                    }
+                    
+                    return (
+                      <div className="building-rooms-group">
+                        <div className="building-group-title">
+                          <Building2 size={18} />
+                          {selectedBuilding.name}
+                        </div>
+                        <div className="rooms-grid">
+                          {selectedBuilding.rooms.map(room => {
+                            const isSelected = selectedRooms.includes(room.id);
+                            
+                            return (
+                              <div
+                                key={room.id}
+                                className={`room-option-card ${isSelected ? 'selected' : ''}`}
+                                onClick={() => handleToggleRoom(room.id)}
+                              >
+                                <div className="room-option-name">
+                                  <DoorOpen size={16} style={{ display: 'inline', marginRight: '0.25rem' }} />
+                                  {room.name}
+                                </div>
+                                <div className="room-option-building">{selectedBuilding.name}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+                
+                <div className="modal-footer-custom">
+                  <button
+                    className="btn-secondary-custom"
+                    onClick={() => {
+                      setShowRoomAssignmentModal(false);
+                      setSelectedAssignment(null);
+                      setSelectedRooms([]);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn-primary-custom"
+                    onClick={handleSaveRoomAssignments}
+                  >
+                    <CheckCircle size={18} />
+                    Save ({selectedRooms.length} room{selectedRooms.length !== 1 ? 's' : ''})
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

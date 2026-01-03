@@ -130,6 +130,7 @@
 
 // export default App;
 
+//VERY FUNCTION BUT DIRECTLY GO TO DASHBOARD AFTER SIGNUP
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -213,7 +214,7 @@ const App = () => {
           >
             <Route path="dashboard" element={<DeanDashboard />} />
             <Route path="instructors" element={<InstructorsPage />} />
-            <Route path="courses" element={<CoursesPage />} />
+            <Route path="subjects" element={<CoursesPage />} />
             <Route path="rooms" element={<RoomsPage />} />
             <Route path="reports" element={<SchedulePage />} />
             <Route path="profile" element={<ProfilePage />} />

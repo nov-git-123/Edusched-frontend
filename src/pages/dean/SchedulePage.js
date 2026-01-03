@@ -10388,8 +10388,10743 @@
 //     </>
 //   );
 // }
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { Calendar, Settings, CheckCircle, AlertTriangle, Clock, Users, BookOpen, Loader, Download, RefreshCw, Search, Filter, X, Plus, Building2, DoorOpen, ChevronDown, ChevronUp } from 'lucide-react';
+
+//WROKING IN PRE-ORAL
+
+// import React, { useEffect, useState, useMemo, useCallback } from 'react';
+// import { Calendar, Settings, CheckCircle, AlertTriangle, Clock, Users, BookOpen, Loader, Download, RefreshCw, Search, Filter, X, Plus, Building2, DoorOpen, ChevronDown, ChevronUp } from 'lucide-react';
+
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// // ============================================
+// // UTILITY FUNCTIONS
+// // ============================================
+
+// const formatTime = (time) => {
+//   const [hours, minutes] = time.split(':');
+//   const hour = parseInt(hours);
+//   const period = hour >= 12 ? 'PM' : 'AM';
+//   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+//   return `${displayHour}:${minutes} ${period}`;
+// };
+
+// const formatTimeRange = (startTime, endTime) => {
+//   return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+// };
+
+// const slotToTime = (slotIndex) => {
+//   const startHour = 7 + Number(slotIndex);
+//   const endHour = startHour + 1;
+//   const formatHour = (hour) => {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
+//     return `${adjusted}:00 ${period}`;
+//   };
+//   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+// };
+
+// // ============================================
+// // TOAST NOTIFICATION COMPONENT
+// // ============================================
+
+// const Toast = ({ message, type, onClose }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => {
+//       onClose();
+//     }, 5000);
+//     return () => clearTimeout(timer);
+//   }, [onClose]);
+
+//   return (
+//     <div className={`edusched-toast toast-${type}`}>
+//       <div className="toast-icon">
+//         {type === "success" ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+//       </div>
+//       <span className="toast-message">{message}</span>
+//       <button className="toast-close" onClick={onClose}>×</button>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // LOADING STATE COMPONENT
+// // ============================================
+
+// const LoadingState = ({ message = 'Loading...' }) => (
+//   <div style={{ textAlign: 'center', padding: '3rem' }}>
+//     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
+//     <p style={{ color: '#666', fontSize: '1rem' }}>{message}</p>
+//   </div>
+// );
+
+// // ============================================
+// // SCHEDULE FORM COMPONENT
+// // ============================================
+
+// const DeanScheduleForm = ({ 
+//   courses, 
+//   courseId, 
+//   setCourseId,
+//   yearLevel,
+//   setYearLevel,
+//   semester,
+//   setSemester,
+//   studentsCount,
+//   setStudentsCount,
+//   sectionCount,
+//   setSectionCount,
+//   considerAvailability,
+//   setConsiderAvailability,
+//   generating,
+//   availabilityLoaded,
+//   availabilityDataCount
+// }) => (
+//   <div className="config-card">
+//     <div className="config-card-header">
+//       <Settings size={20} />
+//       <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Schedule Configuration</h3>
+//     </div>
+//     <div className="config-card-body">
+//       <div className="form-grid">
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
+//             Course *
+//           </label>
+//           <select
+//             className="form-input-custom"
+//             value={courseId}
+//             onChange={e => setCourseId(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="">-- Select Course --</option>
+//             {courses.map(c => (
+//               <option key={c.id} value={c.id}>
+//                 {c.code} — {c.name}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Year Level *</label>
+//           <select
+//             className="form-input-custom"
+//             value={yearLevel}
+//             onChange={e => setYearLevel(Number(e.target.value))}
+//             disabled={generating}
+//           >
+//             {[1, 2, 3, 4].map(y => (
+//               <option key={y} value={y}>{y}</option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Semester *</label>
+//           <select
+//             className="form-input-custom"
+//             value={semester}
+//             onChange={e => setSemester(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="1">1st Semester</option>
+//             <option value="2">2nd Semester</option>
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <Users size={16} style={{ marginRight: '0.5rem' }} />
+//             Students per Section
+//           </label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             value={studentsCount}
+//             onChange={e => setStudentsCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Number of Sections</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             max="10"
+//             value={sectionCount}
+//             onChange={e => setSectionCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+//       </div>
+
+//       <div className="availability-section">
+//         <label className="checkbox-container">
+//           <input
+//             type="checkbox"
+//             checked={considerAvailability}
+//             onChange={e => setConsiderAvailability(e.target.checked)}
+//             disabled={generating}
+//           />
+//           <span className="checkbox-label">
+//             <strong>Consider Instructor Availability</strong>
+//             <br />
+//             <small style={{ color: '#666' }}>
+//               When enabled, only instructors with availability data will be scheduled.
+//               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+//             </small>
+//           </span>
+//         </label>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+// // ============================================
+// // SUBJECT LIST COMPONENT
+// // ============================================
+
+// const SubjectList = ({ 
+//   subjects, 
+//   selectedSubjects, 
+//   toggleSubject, 
+//   generating, 
+//   loading, 
+//   courseId 
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredSubjects = useMemo(() => {
+//     if (!searchTerm) return subjects;
+//     const term = searchTerm.toLowerCase();
+//     return subjects.filter(s => 
+//       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
+//       (s.description || '').toLowerCase().includes(term)
+//     );
+//   }, [subjects, searchTerm]);
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//           <BookOpen size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
+//           {subjects.length > 0 && (
+//             <span className="count-badge">
+//               {selectedSubjects.length} / {subjects.length}
+//             </span>
+//           )}
+//         </div>
+//         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//       </div>
+      
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {loading ? (
+//             <LoadingState message="Loading subjects..." />
+//           ) : !courseId ? (
+//             <div className="info-box">
+//               <AlertTriangle size={18} />
+//               <span>Please select a course first.</span>
+//             </div>
+//           ) : subjects.length === 0 ? (
+//             <div className="warning-box">
+//               No subjects available for this course, year, and semester.
+//             </div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search subjects..."
+//                   value={searchTerm}
+//                   onChange={e => setSearchTerm(e.target.value)}
+//                 />
+//                 {searchTerm && (
+//                   <button onClick={() => setSearchTerm('')} className="clear-btn">
+//                     <X size={16} />
+//                   </button>
+//                 )}
+//               </div>
+
+//               <div className="items-list">
+//                 {filteredSubjects.map(s => (
+//                   <label 
+//                     key={s.id} 
+//                     className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedSubjects.includes(s.id)}
+//                       onChange={() => toggleSubject(s.id)}
+//                       disabled={generating}
+//                     />
+//                     <div className="item-content">
+//                       <div>
+//                         <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+//                         <br />
+//                         <small style={{ color: '#666' }}>{s.description}</small>
+//                       </div>
+//                       <span className="units-badge">{s.units}u</span>
+//                     </div>
+//                   </label>
+//                 ))}
+//                 {filteredSubjects.length === 0 && (
+//                   <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
+//                     No subjects match your search
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // INSTRUCTOR LIST COMPONENT
+// // ============================================
+
+// const InstructorSubjectList = ({ 
+//   instructors, 
+//   selectedInstructorIds, 
+//   toggleInstructor, 
+//   selectAllInstructors,
+//   deselectAllInstructors,
+//   instructorAvailability,
+//   availabilityData,
+//   considerAvailability,
+//   generating, 
+//   courseId 
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredInstructors = useMemo(() => {
+//     if (!searchTerm) return instructors;
+//     const term = searchTerm.toLowerCase();
+//     return instructors.filter(i => 
+//       (i.name || i.instructor_name || '').toLowerCase().includes(term)
+//     );
+//   }, [instructors, searchTerm]);
+
+//   const getInstructorAvailabilityTimes = useCallback((instructor) => {
+//     const name = instructor.name || instructor.instructor_name;
+//     const slots = availabilityData[name] || [];
+//     const byDay = {};
+//     slots.forEach(slot => {
+//       const day = slot.day || 'Unknown';
+//       if (!byDay[day]) byDay[day] = [];
+//       byDay[day].push(`${slot.start_time} - ${slot.end_time}`);
+//     });
+//     return byDay;
+//   }, [availabilityData]);
+
+//   const getInstructorSlots = useCallback((instructor) => {
+//     const name = instructor.name || instructor.instructor_name;
+//     const slots = availabilityData[name] || [];
+//     return slots.length;
+//   }, [availabilityData]);
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+//           <Users size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Instructors *</h3>
+//           {considerAvailability && (
+//             <span className="warning-badge">Availability Enabled</span>
+//           )}
+//           {instructors.length > 0 && (
+//             <span className="count-badge" style={{ marginLeft: 'auto' }}>
+//               {selectedInstructorIds.length} / {instructors.length}
+//             </span>
+//           )}
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+//           {instructors.length > 0 && (
+//             <>
+//               <button 
+//                 className="small-btn" 
+//                 onClick={(e) => { e.stopPropagation(); selectAllInstructors(); }}
+//                 disabled={generating}
+//               >
+//                 Select All
+//               </button>
+//               <button 
+//                 className="small-btn" 
+//                 onClick={(e) => { e.stopPropagation(); deselectAllInstructors(); }}
+//                 disabled={generating}
+//               >
+//                 Clear
+//               </button>
+//             </>
+//           )}
+//           {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//         </div>
+//       </div>
+      
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {!courseId ? (
+//             <div className="info-box">
+//               <AlertTriangle size={18} />
+//               <span>Please select a course first.</span>
+//             </div>
+//           ) : instructors.length === 0 ? (
+//             <div className="warning-box">
+//               No instructors assigned to this course. Please assign instructors first.
+//             </div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search instructors..."
+//                   value={searchTerm}
+//                   onChange={e => setSearchTerm(e.target.value)}
+//                 />
+//                 {searchTerm && (
+//                   <button onClick={() => setSearchTerm('')} className="clear-btn">
+//                     <X size={16} />
+//                   </button>
+//                 )}
+//               </div>
+
+//               <div className="items-list">
+//                 {filteredInstructors.map(ins => (
+//                   <label 
+//                     key={ins.id} 
+//                     className={`item-checkbox ${selectedInstructorIds.includes(ins.id) ? 'selected' : ''}`}
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedInstructorIds.includes(ins.id)}
+//                       onChange={() => toggleInstructor(ins.id)}
+//                       disabled={generating}
+//                     />
+//                     <div className="item-content" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+//                       <strong style={{ color: COLORS.primary }}>{ins.name || ins.instructor_name}</strong>
+                      
+//                       {considerAvailability && (
+//                         <div style={{ marginTop: '0.5rem', width: '100%' }}>
+//                           {instructorAvailability[ins.id] ? (
+//                             <>
+//                               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+//                                 <CheckCircle size={14} style={{ color: '#10B981', marginRight: '0.5rem' }} />
+//                                 <small style={{ color: '#10B981', fontWeight: 600 }}>
+//                                   {getInstructorSlots(ins)} availability slots
+//                                 </small>
+//                               </div>
+//                               <div style={{ fontSize: '0.75rem', color: '#6B7280', paddingLeft: '1.5rem' }}>
+//                                 {Object.entries(getInstructorAvailabilityTimes(ins)).map(([day, times]) => (
+//                                   <div key={day} style={{ marginBottom: '0.25rem' }}>
+//                                     <strong>{day}:</strong>{' '}
+//                                     {times.map((t, idx) => {
+//                                       const [start, end] = t.split(' - ');
+//                                       return (
+//                                         <span key={idx}>
+//                                           {formatTimeRange(start, end)}
+//                                           {idx < times.length - 1 && ', '}
+//                                         </span>
+//                                       );
+//                                     })}
+//                                   </div>
+//                                 ))}
+//                               </div>
+//                             </>
+//                           ) : (
+//                             <div style={{ display: 'flex', alignItems: 'center' }}>
+//                               <AlertTriangle size={14} style={{ color: '#F59E0B', marginRight: '0.5rem' }} />
+//                               <small style={{ color: '#F59E0B' }}>No availability data</small>
+//                             </div>
+//                           )}
+//                         </div>
+//                       )}
+//                     </div>
+//                   </label>
+//                 ))}
+//                 {filteredInstructors.length === 0 && (
+//                   <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
+//                     No instructors match your search
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // SCHEDULE PREVIEW COMPONENT
+// // ============================================
+
+// const SchedulePreview = ({ 
+//   scheduleResult, 
+//   conflicts, 
+//   subjects, 
+//   instructors, 
+//   rooms, 
+//   onClear 
+// }) => {
+//   if (!scheduleResult?.assignments) return null;
+
+//   const grouped = {};
+//   scheduleResult.assignments.forEach(a => {
+//     if (!grouped[a.section_index]) grouped[a.section_index] = [];
+//     grouped[a.section_index].push(a);
+//   });
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   return (
+//     <div style={{ marginTop: '2rem' }}>
+//       {conflicts.length > 0 && (
+//         <div className="conflicts-box">
+//           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+//             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>
+//                 Schedule Conflicts Detected ({conflicts.length})
+//               </h4>
+//               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+//                 {conflicts.map((conflict, idx) => (
+//                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
+//                     <br />
+//                     <small style={{ color: '#666' }}>{conflict.details}</small>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="preview-header">
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//           <Calendar size={24} style={{ color: COLORS.accent }} />
+//           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>
+//             Generated Schedule
+//           </h3>
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+//           {scheduleResult.stats && (
+//             <>
+//               <span className="preview-badge success">
+//                 {scheduleResult.stats.totalAssignments} assignments
+//               </span>
+//               {conflicts.length === 0 ? (
+//                 <span className="preview-badge success">
+//                   <CheckCircle size={14} style={{ marginRight: '0.25rem' }} />
+//                   No Conflicts
+//                 </span>
+//               ) : (
+//                 <span className="preview-badge danger">
+//                   <AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />
+//                   {conflicts.length} Conflicts
+//                 </span>
+//               )}
+//             </>
+//           )}
+//           <button className="action-btn secondary" onClick={onClear}>
+//             <X size={16} />
+//             Clear
+//           </button>
+//         </div>
+//       </div>
+
+//       {Object.keys(grouped).map(secIdx => {
+//         const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+//         return (
+//           <div key={secIdx} className="section-card">
+//             <div className="section-header">
+//               <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Section {sectionLetter}</h4>
+//             </div>
+//             <div style={{ overflowX: 'auto' }}>
+//               <table className="schedule-table">
+//                 <thead>
+//                   <tr>
+//                     <th>Subject</th>
+//                     <th>Instructor</th>
+//                     <th>Room</th>
+//                     {days.map(d => (
+//                       <th key={d}>{d}</th>
+//                     ))}
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {grouped[secIdx].map((r, i) => {
+//                     const subject = subjects.find(s => s.id === r.subject_id);
+//                     const instructor = instructors.find(ins => ins.id === r.instructor_id);
+//                     const room = rooms.find(rm => rm.id === r.room_id);
+
+//                     return (
+//                       <tr key={i}>
+//                         <td>
+//                           <strong style={{ color: COLORS.accent }}>
+//                             {subject?.subject_code || r.subject_id}
+//                           </strong>
+//                           <br />
+//                           <small style={{ color: '#666' }}>{subject?.description}</small>
+//                         </td>
+//                         <td>{instructor?.name || instructor?.instructor_name || 'TBD'}</td>
+//                         <td>
+//                           <strong>{room?.name || 'TBD'}</strong>
+//                         </td>
+//                         {days.map(day => {
+//                           const matchingSlot = grouped[secIdx].find(
+//                             slot => slot.subject_id === r.subject_id && slot.day === day
+//                           );
+//                           return (
+//                             <td key={day}>
+//                               {matchingSlot ? (
+//                                 <span className="time-badge">
+//                                   <Clock size={12} />
+//                                   {slotToTime(matchingSlot.slot_index)}
+//                                 </span>
+//                               ) : (
+//                                 <span style={{ color: '#ccc' }}>—</span>
+//                               )}
+//                             </td>
+//                           );
+//                         })}
+//                       </tr>
+//                     );
+//                   })}
+//                 </tbody>
+//               </table>
+//             </div>
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // CONFIRMATION MODAL COMPONENT
+// // ============================================
+
+// const GenerateModal = ({ 
+//   show, 
+//   onHide, 
+//   onConfirm, 
+//   courses, 
+//   courseId, 
+//   yearLevel, 
+//   semester, 
+//   sectionCount, 
+//   studentsCount, 
+//   selectedSubjects, 
+//   selectedInstructorIds, 
+//   considerAvailability 
+// }) => {
+//   if (!show) return null;
+
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header-custom">
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <Settings size={24} />
+//             <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
+//               Confirm Schedule Generation
+//             </h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+//         <div className="modal-body-custom">
+//           <div className="modal-info-grid">
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Course:</strong>
+//               <p>{selectedCourse?.name || 'N/A'}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Year Level:</strong>
+//               <p>{yearLevel}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Semester:</strong>
+//               <p>{semester}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Sections:</strong>
+//               <p>{sectionCount}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Students/Section:</strong>
+//               <p>{studentsCount}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Subjects:</strong>
+//               <p>{selectedSubjects.length}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Instructors:</strong>
+//               <p>{selectedInstructorIds.length}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
+//               <p>
+//                 {considerAvailability ? (
+//                   <span className="modal-badge success">Enforced</span>
+//                 ) : (
+//                   <span className="modal-badge secondary">Ignored</span>
+//                 )}
+//               </p>
+//             </div>
+//           </div>
+//           <div className="modal-info-box">
+//             <AlertTriangle size={18} />
+//             <small>
+//               The system will automatically assign rooms and time slots (7 AM - 7 PM) 
+//               while preventing scheduling conflicts.
+//             </small>
+//           </div>
+//         </div>
+//         <div className="modal-footer-custom">
+//           <button className="action-btn secondary" onClick={onHide}>
+//             Cancel
+//           </button>
+//           <button className="action-btn primary" onClick={onConfirm}>
+//             <CheckCircle size={16} />
+//             Confirm & Generate
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // MAIN COMPONENT
+// // ============================================
+
+// export default function DeanSchedulePage() {
+//   // State Management
+//   const [courses, setCourses] = useState([]);
+//   const [courseId, setCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [studentsCount, setStudentsCount] = useState(30);
+//   const [sectionCount, setSectionCount] = useState(1);
+  
+//   const [subjects, setSubjects] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  
+//   const [allInstructors, setAllInstructors] = useState([]);
+//   const [courseInstructors, setCourseInstructors] = useState([]);
+//   const [selectedInstructorIds, setSelectedInstructorIds] = useState([]);
+//   const [instructorAvailability, setInstructorAvailability] = useState({});
+//   const [availabilityData, setAvailabilityData] = useState({});
+  
+//   const [rooms, setRooms] = useState([]);
+//   const [showConfirm, setShowConfirm] = useState(false);
+//   const [generating, setGenerating] = useState(false);
+//   const [scheduleResult, setScheduleResult] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const [considerAvailability, setConsiderAvailability] = useState(true);
+//   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+//   const [conflicts, setConflicts] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   // Fetch initial data on mount
+//   useEffect(() => {
+//     const initData = async () => {
+//       setLoading(true);
+//       await Promise.all([
+//         fetchCourses(),
+//         fetchAllInstructors(),
+//         fetchRooms(),
+//         fetchAvailabilityData()
+//       ]);
+//       setLoading(false);
+//     };
+//     initData();
+//   }, []);
+
+//   // API Fetch Functions
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching courses:', err);
+//       setCourses([]);
+//     }
+//   }, []);
+
+//   const fetchAllInstructors = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructors`);
+//       const data = await res.json();
+//       setAllInstructors(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching instructors:', err);
+//       setAllInstructors([]);
+//     }
+//   }, []);
+
+//   const fetchRooms = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/rooms`);
+//       if (res.ok) {
+//         const data = await res.json();
+//         setRooms(Array.isArray(data) ? data : []);
+//       }
+//     } catch (err) {
+//       console.error('Error fetching rooms:', err);
+//       setRooms([]);
+//     }
+//   }, []);
+
+//   const fetchAvailabilityData = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructor-availability`);
+//       if (!res.ok) throw new Error('Failed to fetch availability');
+//       const data = await res.json();
+      
+//       const availMap = {};
+//       if (Array.isArray(data)) {
+//         data.forEach(item => {
+//           const name = item.instructorName || 'Unknown';
+//           if (!availMap[name]) {
+//             availMap[name] = [];
+//           }
+//           availMap[name].push({
+//             day: item.day,
+//             start_time: item.start_time,
+//             end_time: item.end_time
+//           });
+//         });
+//       }
+//       setAvailabilityData(availMap);
+//       setAvailabilityLoaded(true);
+//     } catch (err) {
+//       console.error('Error fetching availability data:', err);
+//       setAvailabilityLoaded(true);
+//     }
+//   }, []);
+
+//   // Load subjects and instructors when course/year/semester changes
+//   useEffect(() => {
+//     if (!courseId) {
+//       setSubjects([]);
+//       setSelectedSubjects([]);
+//       setCourseInstructors([]);
+//       setSelectedInstructorIds([]);
+//       setInstructorAvailability({});
+//       return;
+//     }
+
+//     const loadSubjects = async () => {
+//       setLoadingSubjects(true);
+//       try {
+//         const q = new URLSearchParams({ courseId, yearLevel, semester }).toString();
+//         const res = await fetch(`${API}/api/subjects?${q}`);
+//         const data = await res.json();
+//         const arr = Array.isArray(data) ? data : [];
+//         setSubjects(arr);
+//         setSelectedSubjects(arr.map(s => s.id || s.subject_id).filter(Boolean));
+//       } catch (err) {
+//         console.error('Error loading subjects:', err);
+//         setSubjects([]);
+//       } finally {
+//         setLoadingSubjects(false);
+//       }
+//     };
+
+//     const loadCourseInstructors = async () => {
+//       // Filter instructors that match the selected course
+//       const filtered = allInstructors.filter(i => {
+//         const instructorCourseId = i.course_id || i.courseId;
+//         return String(instructorCourseId) === String(courseId);
+//       });
+      
+//       if (filtered.length > 0) {
+//         console.log(`Found ${filtered.length} instructors for course ${courseId}`);
+//         setCourseInstructors(filtered);
+//         initializeAvailability(filtered);
+//       } else {
+//         console.warn(`No instructors found for course ${courseId}`);
+//         setCourseInstructors([]);
+//         initializeAvailability([]);
+//       }
+//     };
+
+//     const initializeAvailability = (instructors) => {
+//       const availMap = {};
+//       instructors.forEach(i => {
+//         const hasAvailability = availabilityData[i.name || i.instructor_name] !== undefined;
+//         availMap[i.id] = hasAvailability;
+//       });
+//       setInstructorAvailability(availMap);
+//     };
+
+//     loadSubjects();
+//     loadCourseInstructors();
+//   }, [courseId, yearLevel, semester, allInstructors, availabilityData]);
+
+//   // Toggle Functions
+//   const toggleSubject = useCallback((id) => {
+//     setSelectedSubjects(prev =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   }, []);
+
+//   const toggleInstructor = useCallback((id) => {
+//     setSelectedInstructorIds(prev =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   }, []);
+
+//   const selectAllInstructors = useCallback(() => {
+//     setSelectedInstructorIds(courseInstructors.map(i => i.id));
+//   }, [courseInstructors]);
+
+//   const deselectAllInstructors = useCallback(() => {
+//     setSelectedInstructorIds([]);
+//   }, []);
+
+//   // Conflict Detection
+//   const detectConflicts = useCallback((assignments) => {
+//     const conflictList = [];
+//     const roomUsage = new Map();
+//     const instructorUsage = new Map();
+//     const sectionUsage = new Map();
+
+//     assignments.forEach((a) => {
+//       const room = rooms.find(r => r.id === a.room_id);
+//       const instructor = courseInstructors.find(i => i.id === a.instructor_id) || 
+//                          allInstructors.find(i => i.id === a.instructor_id);
+//       const subject = subjects.find(s => s.id === a.subject_id);
+
+//       // Check room conflicts
+//       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
+//       if (roomUsage.has(roomKey)) {
+//         const existing = roomUsage.get(roomKey);
+//         conflictList.push({
+//           type: 'room',
+//           message: `Room "${room?.name || a.room_id}" is double-booked on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Conflict between subjects: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+//         });
+//       }
+//       roomUsage.set(roomKey, { ...a, subject: subject?.subject_code });
+
+//       // Check instructor conflicts
+//       const instrKey = `${a.instructor_id}-${a.day}-${a.slot_index}`;
+//       if (instructorUsage.has(instrKey)) {
+//         const existing = instructorUsage.get(instrKey);
+//         conflictList.push({
+//           type: 'instructor',
+//           message: `Instructor "${instructor?.name || a.instructor_id}" is scheduled twice on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Teaching both: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+//         });
+//       }
+//       instructorUsage.set(instrKey, { ...a, subject: subject?.subject_code });
+
+//       // Check section conflicts
+//       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
+//       if (sectionUsage.has(sectionKey)) {
+//         const existing = sectionUsage.get(sectionKey);
+//         const sectionName = String.fromCharCode(65 + a.section_index);
+//         conflictList.push({
+//           type: 'section',
+//           message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Both: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+//         });
+//       }
+//       sectionUsage.set(sectionKey, { ...a, subject: subject?.subject_code });
+//     });
+
+//     return conflictList;
+//   }, [rooms, courseInstructors, allInstructors, subjects]);
+
+//   // Generate Schedule Handler
+//   const handleGenerate = useCallback(async () => {
+//     if (!courseId || selectedSubjects.length === 0) {
+//       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
+//       return;
+//     }
+
+//     if (selectedInstructorIds.length === 0) {
+//       setToast({ type: 'error', message: 'Please select at least one instructor for this course.' });
+//       return;
+//     }
+
+//     const selectedButUnavailable = selectedInstructorIds.filter(id => !instructorAvailability[id]);
+//     if (considerAvailability && selectedButUnavailable.length > 0) {
+//       setToast({ 
+//         type: 'error', 
+//         message: `${selectedButUnavailable.length} selected instructor(s) have no availability data. They will be excluded from scheduling.` 
+//       });
+//       return;
+//     }
+
+//     setShowConfirm(false);
+//     setGenerating(true);
+//     setToast(null);
+//     setScheduleResult(null);
+//     setConflicts([]);
+
+//     try {
+//       const instructorsPayload = selectedInstructorIds.map(id => ({
+//         id,
+//         available: instructorAvailability[id] || true
+//       }));
+
+//       const payload = {
+//         courseId: Number(courseId),
+//         yearLevel: Number(yearLevel),
+//         semester: String(semester),
+//         studentsCount: Number(studentsCount),
+//         sectionCount: Number(sectionCount),
+//         subjects: selectedSubjects,
+//         instructors: instructorsPayload,
+//         considerInstructorAvailability: considerAvailability
+//       };
+
+//       const res = await fetch(`${API}/api/scheduler/generate`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//       });
+
+//       const data = await res.json();
+
+//       if (!res.ok) {
+//         throw new Error(data.detail || data.error || 'Schedule generation failed');
+//       }
+
+//       const detectedConflicts = detectConflicts(data.assignments || []);
+//       setConflicts(detectedConflicts);
+//       setScheduleResult(data);
+      
+//       if (detectedConflicts.length > 0) {
+//         setToast({ 
+//           type: 'error', 
+//           message: `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` 
+//         });
+//       } else {
+//         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
+//       }
+//     } catch (err) {
+//       console.error('Error generating schedule:', err);
+//       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
+//     } finally {
+//       setGenerating(false);
+//     }
+//   }, [
+//     courseId, 
+//     selectedSubjects, 
+//     selectedInstructorIds, 
+//     instructorAvailability, 
+//     considerAvailability,
+//     yearLevel,
+//     semester,
+//     studentsCount,
+//     sectionCount,
+//     detectConflicts
+//   ]);
+
+//   // Memoized values
+//   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
+
+//   const overallStats = useMemo(() => {
+//     return {
+//       totalCourses: courses.length,
+//       totalSubjects: subjects.length,
+//       totalInstructors: courseInstructors.length,
+//       selectedSubjects: selectedSubjects.length,
+//       selectedInstructors: selectedInstructorIds.length
+//     };
+//   }, [courses.length, subjects.length, courseInstructors.length, selectedSubjects.length, selectedInstructorIds.length]);
+
+//   if (loading) {
+//     return (
+//       <div style={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         minHeight: '100vh',
+//         background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)`
+//       }}>
+//         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
+//         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         * {
+//           box-sizing: border-box;
+//         }
+
+//         body {
+//           margin: 0;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+//         }
+
+//         .schedule-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         .page-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           margin-bottom: 2rem;
+//           color: white;
+//         }
+
+//         .page-title-section {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           margin: 0 0 0.5rem 0;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           letter-spacing: -0.5px;
+//         }
+
+//         .page-subtitle {
+//           font-size: 1.05rem;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           font-size: 0.95rem;
+//         }
+
+//         .action-btn.primary {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//         }
+
+//         .action-btn.secondary {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover:not(:disabled) {
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn.primary:hover:not(:disabled) {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%);
+//         }
+
+//         .action-btn.secondary:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid ${COLORS.accent};
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(10px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//         }
+
+//         .config-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .config-card-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .config-card-body {
+//           padding: 2rem;
+//         }
+
+//         .form-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .form-group {
+//           display: flex;
+//           flex-direction: column;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.5rem;
+//           display: flex;
+//           align-items: center;
+//           font-size: 0.9rem;
+//         }
+
+//         .form-input-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//           background: white;
+//         }
+
+//         .form-input-custom:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .form-input-custom:disabled {
+//           background: #f5f5f5;
+//           cursor: not-allowed;
+//         }
+
+//         .availability-section {
+//           background: ${COLORS.lightest};
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//         }
+
+//         .checkbox-container {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-container input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-label {
+//           flex: 1;
+//           color: ${COLORS.primary};
+//         }
+
+//         .selection-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         .selection-card-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .selection-card-header:hover {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%);
+//         }
+
+//         .selection-card-body {
+//           padding: 1.5rem;
+//         }
+
+//         .count-badge {
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.3rem 0.75rem;
+//           border-radius: 12px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .warning-badge {
+//           background: #F59E0B;
+//           padding: 0.25rem 0.6rem;
+//           border-radius: 6px;
+//           font-size: 0.75rem;
+//           font-weight: 600;
+//         }
+
+//         .small-btn {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: none;
+//           color: white;
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-size: 0.8rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .small-btn:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//         }
+
+//         .small-btn:disabled {
+//           opacity: 0.5;
+//           cursor: not-allowed;
+//         }
+
+//         .search-box {
+//           position: relative;
+//           margin-bottom: 1rem;
+//         }
+
+//         .search-box input {
+//           width: 100%;
+//           padding: 0.75rem 1rem 0.75rem 2.75rem;
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-box input:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-inline {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: ${COLORS.accent};
+//           pointer-events: none;
+//         }
+
+//         .clear-btn {
+//           position: absolute;
+//           right: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           transition: color 0.3s ease;
+//         }
+
+//         .clear-btn:hover {
+//           color: ${COLORS.accent};
+//         }
+
+//         .items-list {
+//           max-height: 400px;
+//           overflow-y: auto;
+//         }
+
+//         .item-checkbox {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 1rem;
+//           padding: 1rem;
+//           margin-bottom: 0.75rem;
+//           border-radius: 10px;
+//           border: 2px solid #E9ECEF;
+//           background: #F8F9FA;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .item-checkbox.selected {
+//           background: #E6F7FF;
+//           border-color: ${COLORS.light};
+//         }
+
+//         .item-checkbox:hover {
+//           border-color: ${COLORS.accent};
+//           transform: translateX(4px);
+//         }
+
+//         .item-checkbox input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//           flex-shrink: 0;
+//         }
+
+//         .item-content {
+//           flex: 1;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .units-badge {
+//           background: #6c757d;
+//           color: white;
+//           padding: 0.25rem 0.6rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .warning-box {
+//           background: #FFF3CD;
+//           border: 2px solid #FFE69C;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           color: #856404;
+//         }
+
+//         .conflicts-box {
+//           background: #FFE6E6;
+//           border: 2px solid #FFB3B3;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-badge {
+//           padding: 0.5rem 1rem;
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .preview-badge.success {
+//           background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+//           color: white;
+//         }
+
+//         .preview-badge.danger {
+//           background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%);
+//           color: white;
+//         }
+
+//         .section-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//         }
+
+//         .section-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//         }
+
+//         .schedule-table {
+//           width: 100%;
+//           border-collapse: collapse;
+//           font-size: 0.9rem;
+//         }
+
+//         .schedule-table thead {
+//           background: ${COLORS.lightest};
+//           color: ${COLORS.primary};
+//         }
+
+//         .schedule-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .schedule-table td {
+//           padding: 0.75rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//           transition: all 0.3s ease;
+//         }
+
+//         .schedule-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .schedule-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-badge {
+//           background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%);
+//           color: ${COLORS.primary};
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           font-size: 0.8rem;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 600px;
+//           width: 100%;
+//           max-height: 90vh;
+//           overflow-y: auto;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from {
+//             transform: translateY(50px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateY(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .modal-close {
+//           background: none;
+//           border: none;
+//           color: white;
+//           font-size: 2rem;
+//           cursor: pointer;
+//           line-height: 1;
+//           padding: 0;
+//           transition: transform 0.3s ease;
+//         }
+
+//         .modal-close:hover {
+//           transform: scale(1.2);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//         }
+
+//         .modal-info-grid {
+//           display: grid;
+//           grid-template-columns: repeat(2, 1fr);
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .modal-info-grid > div {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//         }
+
+//         .modal-info-grid p {
+//           margin: 0;
+//           color: #333;
+//           font-size: 0.95rem;
+//         }
+
+//         .modal-badge {
+//           display: inline-block;
+//           padding: 0.25rem 0.75rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .modal-badge.success {
+//           background: #10B981;
+//           color: white;
+//         }
+
+//         .modal-badge.secondary {
+//           background: #6c757d;
+//           color: white;
+//         }
+
+//         .modal-info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1rem;
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 1rem;
+//         }
+
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from {
+//             transform: translateX(400px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateX(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .edusched-toast.toast-success { border-left-color: #10B981; }
+//         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
+
+//         .edusched-toast .toast-icon { display: flex; align-items: center; }
+//         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
+//         .edusched-toast .toast-close {
+//           background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280;
+//         }
+//         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
+
+//         .page-content-grid {
+//           display: grid;
+//           grid-template-columns: 1.15fr 1fr;
+//           gap: 1.5rem;
+//         }
+
+//         @media (max-width: 1100px) {
+//           .page-content-grid { grid-template-columns: 1fr; }
+//         }
+
+//         .left-col { display: flex; flex-direction: column; gap: 1.5rem; }
+//         .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+
+//         .footer-actions {
+//           display: flex;
+//           gap: 0.75rem;
+//           justify-content: flex-end;
+//           margin-top: 1rem;
+//         }
+
+//         .divider {
+//           height: 1px;
+//           background: #E8F4F8;
+//           margin: 1.25rem 0;
+//         }
+
+//         .animate-spin {
+//           animation: spin 1s linear infinite;
+//         }
+
+//         @keyframes spin {
+//           from {
+//             transform: rotate(0deg);
+//           }
+//           to {
+//             transform: rotate(360deg);
+//           }
+//         }
+//       `}</style>
+
+//       <div className="schedule-container">
+//         {/* HEADER */}
+//         <div className="page-header">
+//           <div className="page-title-section">
+//             <div>
+//               <h1 className="page-title">
+//                 <Calendar size={28} />
+//                 Schedule Generator
+//               </h1>
+//               <p className="page-subtitle">
+//                 Auto-assign rooms & times while preventing conflicts. Uses 7:00 AM – 7:00 PM slots (hourly).
+//               </p>
+//             </div>
+
+//             <div className="header-actions">
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={async () => {
+//                   setLoading(true);
+//                   await Promise.all([fetchCourses(), fetchAllInstructors(), fetchRooms(), fetchAvailabilityData()]);
+//                   setLoading(false);
+//                   setToast({ type: 'success', message: 'Data reloaded successfully.' });
+//                 }}
+//                 disabled={loading || generating}
+//                 title="Reload courses, instructors, rooms, availability"
+//               >
+//                 <RefreshCw size={16} />
+//                 Reload Data
+//               </button>
+
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setScheduleResult(null);
+//                   setConflicts([]);
+//                   setSelectedSubjects([]);
+//                   setSelectedInstructorIds([]);
+//                   setToast({ type: 'success', message: 'Selections cleared.' });
+//                 }}
+//                 disabled={generating}
+//                 title="Clear selections & preview"
+//               >
+//                 <X size={16} />
+//                 Reset Selections
+//               </button>
+
+//               <button
+//                 className="action-btn primary"
+//                 onClick={() => setShowConfirm(true)}
+//                 disabled={generating}
+//                 title="Generate schedule"
+//               >
+//                 <CheckCircle size={16} />
+//                 {generating ? 'Generating…' : 'Generate Schedule'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* TOP STATS */}
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label"><BookOpen size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Total Courses</div>
+//             <div className="stat-value">{overallStats.totalCourses}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label"><Users size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Course Instructors</div>
+//             <div className="stat-value">{overallStats.totalInstructors}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label"><DoorOpen size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Total Rooms</div>
+//             <div className="stat-value">{rooms.length}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Subjects</div>
+//             <div className="stat-value">{overallStats.selectedSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Instructors</div>
+//             <div className="stat-value">{overallStats.selectedInstructors}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Availability Records</div>
+//             <div className="stat-value">{availabilityDataCount}</div>
+//           </div>
+//         </div>
+
+//         {/* BODY GRID */}
+//         <div className="page-content-grid">
+//           <div className="left-col">
+//             <DeanScheduleForm
+//               courses={courses}
+//               courseId={courseId}
+//               setCourseId={setCourseId}
+//               yearLevel={yearLevel}
+//               setYearLevel={setYearLevel}
+//               semester={semester}
+//               setSemester={setSemester}
+//               studentsCount={studentsCount}
+//               setStudentsCount={setStudentsCount}
+//               sectionCount={sectionCount}
+//               setSectionCount={setSectionCount}
+//               considerAvailability={considerAvailability}
+//               setConsiderAvailability={setConsiderAvailability}
+//               generating={generating}
+//               availabilityLoaded={availabilityLoaded}
+//               availabilityDataCount={availabilityDataCount}
+//             />
+
+//             {/* Optional: quick rooms glance */}
+//             <div className="selection-card">
+//               <div className="selection-card-header" style={{ cursor: 'default' }}>
+//                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//                   <Building2 size={18} />
+//                   <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Rooms (Auto-assigned)</h3>
+//                 </div>
+//               </div>
+//               <div className="selection-card-body">
+//                 {rooms.length === 0 ? (
+//                   <div className="warning-box">No rooms found. Add rooms in the admin first.</div>
+//                 ) : (
+//                   <>
+//                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+//                       {rooms.slice(0, 18).map(r => (
+//                         <span
+//                           key={r.id}
+//                           className="preview-badge"
+//                           style={{ background: '#EEF8FF', color: COLORS.primary }}
+//                         >
+//                           {r.name}
+//                         </span>
+//                       ))}
+//                       {rooms.length > 18 && (
+//                         <span className="preview-badge" style={{ background: '#EEF8FF', color: COLORS.primary }}>
+//                           +{rooms.length - 18} more
+//                         </span>
+//                       )}
+//                     </div>
+//                     <div className="divider" />
+//                     <small style={{ color: '#6B7280' }}>
+//                       Rooms are assigned automatically to avoid conflicts.
+//                     </small>
+//                   </>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="right-col">
+//             <SubjectList
+//               subjects={subjects}
+//               selectedSubjects={selectedSubjects}
+//               toggleSubject={toggleSubject}
+//               generating={generating}
+//               loading={loadingSubjects}
+//               courseId={courseId}
+//             />
+
+//             <InstructorSubjectList
+//               instructors={courseInstructors}
+//               selectedInstructorIds={selectedInstructorIds}
+//               toggleInstructor={toggleInstructor}
+//               selectAllInstructors={selectAllInstructors}
+//               deselectAllInstructors={deselectAllInstructors}
+//               instructorAvailability={instructorAvailability}
+//               availabilityData={availabilityData}
+//               considerAvailability={considerAvailability}
+//               generating={generating}
+//               courseId={courseId}
+//             />
+
+//             <div className="footer-actions">
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setSelectedSubjects(subjects.map(s => s.id || s.subject_id).filter(Boolean));
+//                   setSelectedInstructorIds(courseInstructors.map(i => i.id));
+//                 }}
+//                 disabled={generating || subjects.length === 0 || courseInstructors.length === 0}
+//               >
+//                 <Plus size={16} />
+//                 Select All
+//               </button>
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setSelectedSubjects([]);
+//                   setSelectedInstructorIds([]);
+//                 }}
+//                 disabled={generating}
+//               >
+//                 <X size={16} />
+//                 Clear All
+//               </button>
+//               <button
+//                 className="action-btn primary"
+//                 onClick={() => setShowConfirm(true)}
+//                 disabled={generating}
+//               >
+//                 <CheckCircle size={16} />
+//                 {generating ? 'Generating…' : 'Generate'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* PREVIEW */}
+//         <SchedulePreview
+//           scheduleResult={scheduleResult}
+//           conflicts={conflicts}
+//           subjects={subjects}
+//           instructors={allInstructors}
+//           rooms={rooms}
+//           onClear={() => {
+//             setScheduleResult(null);
+//             setConflicts([]);
+//           }}
+//         />
+//       </div>
+
+//       {/* MODAL */}
+//       <GenerateModal
+//         show={showConfirm}
+//         onHide={() => setShowConfirm(false)}
+//         onConfirm={handleGenerate}
+//         courses={courses}
+//         courseId={courseId}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         sectionCount={sectionCount}
+//         studentsCount={studentsCount}
+//         selectedSubjects={selectedSubjects}
+//         selectedInstructorIds={selectedInstructorIds}
+//         considerAvailability={considerAvailability}
+//       />
+
+//       {/* TOAST */}
+//       {toast && (
+//         <Toast
+//           message={toast.message}
+//           type={toast.type === 'success' ? 'success' : 'error'}
+//           onClose={() => setToast(null)}
+//         />
+//       )}
+//     </>
+//   );
+// }
+
+//WORKING WITHOUT BTLED MAJOR FILTER 
+
+// import React, { useEffect, useState, useMemo, useCallback } from 'react';
+// import { Calendar, Settings, CheckCircle, AlertTriangle, Clock, BookOpen, Loader, RefreshCw, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
+
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// // ============================================
+// // UTILITY FUNCTIONS
+// // ============================================
+
+// const formatTime = (time) => {
+//   const [hours, minutes] = time.split(':');
+//   const hour = parseInt(hours);
+//   const period = hour >= 12 ? 'PM' : 'AM';
+//   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+//   return `${displayHour}:${minutes} ${period}`;
+// };
+
+// const formatTimeRange = (startTime, endTime) => {
+//   return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+// };
+
+// const slotToTime = (slotIndex) => {
+//   const startHour = 7 + Number(slotIndex);
+//   const endHour = startHour + 1;
+//   const formatHour = (hour) => {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
+//     return `${adjusted}:00 ${period}`;
+//   };
+//   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+// };
+
+// // ============================================
+// // TOAST NOTIFICATION COMPONENT
+// // ============================================
+
+// const Toast = ({ message, type, onClose }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => {
+//       onClose();
+//     }, 5000);
+//     return () => clearTimeout(timer);
+//   }, [onClose]);
+
+//   return (
+//     <div className={`edusched-toast toast-${type}`}>
+//       <div className="toast-icon">
+//         {type === "success" ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+//       </div>
+//       <span className="toast-message">{message}</span>
+//       <button className="toast-close" onClick={onClose}>×</button>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // LOADING STATE COMPONENT
+// // ============================================
+
+// const LoadingState = ({ message = 'Loading...' }) => (
+//   <div style={{ textAlign: 'center', padding: '3rem' }}>
+//     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
+//     <p style={{ color: '#666', fontSize: '1rem' }}>{message}</p>
+//   </div>
+// );
+
+// // ============================================
+// // SCHEDULE FORM COMPONENT
+// // ============================================
+
+// const DeanScheduleForm = ({ 
+//   courses, 
+//   courseId, 
+//   setCourseId,
+//   yearLevel,
+//   setYearLevel,
+//   semester,
+//   setSemester,
+//   studentsCount,
+//   setStudentsCount,
+//   sectionCount,
+//   setSectionCount,
+//   considerAvailability,
+//   setConsiderAvailability,
+//   generating,
+//   availabilityLoaded,
+//   availabilityDataCount
+// }) => (
+//   <div className="config-card">
+//     <div className="config-card-header">
+//       <Settings size={20} />
+//       <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Schedule Configuration</h3>
+//     </div>
+//     <div className="config-card-body">
+//       <div className="form-grid">
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
+//             Course *
+//           </label>
+//           <select
+//             className="form-input-custom"
+//             value={courseId}
+//             onChange={e => setCourseId(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="">-- Select Course --</option>
+//             {courses.map(c => (
+//               <option key={c.id} value={c.id}>
+//                 {c.code} — {c.name}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Year Level *</label>
+//           <select
+//             className="form-input-custom"
+//             value={yearLevel}
+//             onChange={e => setYearLevel(Number(e.target.value))}
+//             disabled={generating}
+//           >
+//             {[1, 2, 3, 4].map(y => (
+//               <option key={y} value={y}>{y}</option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Semester *</label>
+//           <select
+//             className="form-input-custom"
+//             value={semester}
+//             onChange={e => setSemester(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="1">1st Semester</option>
+//             <option value="2">2nd Semester</option>
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Students per Section</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             value={studentsCount}
+//             onChange={e => setStudentsCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Number of Sections</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             max="10"
+//             value={sectionCount}
+//             onChange={e => setSectionCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+//       </div>
+
+//       <div className="availability-section">
+//         <label className="checkbox-container">
+//           <input
+//             type="checkbox"
+//             checked={considerAvailability}
+//             onChange={e => setConsiderAvailability(e.target.checked)}
+//             disabled={generating}
+//           />
+//           <span className="checkbox-label">
+//             <strong>Consider Instructor Availability</strong>
+//             <br />
+//             <small style={{ color: '#666' }}>
+//               When enabled, schedule will respect instructor availability windows.
+//               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+//             </small>
+//           </span>
+//         </label>
+//         <div style={{ marginTop: '1rem', padding: '1rem', background: '#E3F2FD', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+//           <small style={{ color: '#1565C0', display: 'block', lineHeight: '1.6' }}>
+//             <strong>Schedule Pattern:</strong> The system will automatically determine the best pattern based on subject units and duration:
+//             <br />• <strong>MWF</strong> (Monday-Wednesday-Friday): For subjects requiring 3 sessions per week
+//             <br />• <strong>TTHS</strong> (Tuesday-Thursday-Saturday): For subjects requiring 2-3 sessions with longer durations
+//           </small>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+// // ============================================
+// // SUBJECT LIST COMPONENT
+// // ============================================
+
+// const SubjectList = ({ 
+//   subjects, 
+//   selectedSubjects, 
+//   toggleSubject, 
+//   generating, 
+//   loading, 
+//   courseId 
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredSubjects = useMemo(() => {
+//     if (!searchTerm) return subjects;
+//     const term = searchTerm.toLowerCase();
+//     return subjects.filter(s => 
+//       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
+//       (s.description || '').toLowerCase().includes(term)
+//     );
+//   }, [subjects, searchTerm]);
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//           <BookOpen size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
+//           {subjects.length > 0 && (
+//             <span className="count-badge">
+//               {selectedSubjects.length} / {subjects.length}
+//             </span>
+//           )}
+//         </div>
+//         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//       </div>
+      
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {loading ? (
+//             <LoadingState message="Loading subjects..." />
+//           ) : !courseId ? (
+//             <div className="info-box">
+//               <AlertTriangle size={18} />
+//               <span>Please select a course first.</span>
+//             </div>
+//           ) : subjects.length === 0 ? (
+//             <div className="warning-box">
+//               No subjects available for this course, year, and semester.
+//             </div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search subjects..."
+//                   value={searchTerm}
+//                   onChange={e => setSearchTerm(e.target.value)}
+//                 />
+//                 {searchTerm && (
+//                   <button onClick={() => setSearchTerm('')} className="clear-btn">
+//                     <X size={16} />
+//                   </button>
+//                 )}
+//               </div>
+
+//               <div className="items-list">
+//                 {filteredSubjects.map(s => (
+//                   <label 
+//                     key={s.id} 
+//                     className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedSubjects.includes(s.id)}
+//                       onChange={() => toggleSubject(s.id)}
+//                       disabled={generating}
+//                     />
+//                     <div className="item-content">
+//                       <div>
+//                         <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+//                         <br />
+//                         <small style={{ color: '#666' }}>{s.description}</small>
+//                         {s.teacher_name && (
+//                           <>
+//                             <br />
+//                             <small style={{ color: COLORS.accent, fontWeight: 600 }}>
+//                               Teacher: {s.teacher_name}
+//                             </small>
+//                           </>
+//                         )}
+//                         {s.duration && (
+//                           <>
+//                             <br />
+//                             <small style={{ color: '#999' }}>
+//                               Duration: {s.duration} hour{s.duration > 1 ? 's' : ''}
+//                             </small>
+//                           </>
+//                         )}
+//                       </div>
+//                       <span className="units-badge">{s.units}u</span>
+//                     </div>
+//                   </label>
+//                 ))}
+//                 {filteredSubjects.length === 0 && (
+//                   <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
+//                     No subjects match your search
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // SCHEDULE PREVIEW COMPONENT
+// // ============================================
+
+// const SchedulePreview = ({ 
+//   scheduleResult, 
+//   conflicts, 
+//   subjects, 
+//   rooms, 
+//   sectionCount,
+//   onClear 
+// }) => {
+//   if (!scheduleResult?.assignments) return null;
+
+//   const grouped = {};
+//   scheduleResult.assignments.forEach(a => {
+//     if (!grouped[a.section_index]) grouped[a.section_index] = [];
+//     grouped[a.section_index].push(a);
+//   });
+
+//   // Ensure all sections are represented
+//   for (let i = 0; i < sectionCount; i++) {
+//     if (!grouped[i]) grouped[i] = [];
+//   }
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   return (
+//     <div style={{ marginTop: '2rem' }}>
+//       {conflicts.length > 0 && (
+//         <div className="conflicts-box">
+//           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+//             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>
+//                 Schedule Conflicts Detected ({conflicts.length})
+//               </h4>
+//               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+//                 {conflicts.map((conflict, idx) => (
+//                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
+//                     <br />
+//                     <small style={{ color: '#666' }}>{conflict.details}</small>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="preview-header">
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//           <Calendar size={24} style={{ color: COLORS.accent }} />
+//           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>
+//             Generated Schedule
+//           </h3>
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+//           {scheduleResult.stats && (
+//             <>
+//               <span className="preview-badge success">
+//                 {scheduleResult.stats.totalAssignments} assignments
+//               </span>
+//               <span className="preview-badge success">
+//                 {sectionCount} section{sectionCount !== 1 ? 's' : ''}
+//               </span>
+//               {conflicts.length === 0 ? (
+//                 <span className="preview-badge success">
+//                   <CheckCircle size={14} style={{ marginRight: '0.25rem' }} />
+//                   No Conflicts
+//                 </span>
+//               ) : (
+//                 <span className="preview-badge danger">
+//                   <AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />
+//                   {conflicts.length} Conflicts
+//                 </span>
+//               )}
+//             </>
+//           )}
+//           <button className="action-btn secondary" onClick={onClear}>
+//             <X size={16} />
+//             Clear
+//           </button>
+//         </div>
+//       </div>
+
+//       {Object.keys(grouped).sort((a, b) => Number(a) - Number(b)).map(secIdx => {
+//         const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+//         const sectionAssignments = grouped[secIdx];
+        
+//         // Group assignments by subject to avoid duplicate rows
+//         const subjectMap = new Map();
+//         sectionAssignments.forEach(a => {
+//           if (!subjectMap.has(a.subject_id)) {
+//             subjectMap.set(a.subject_id, {
+//               subject_id: a.subject_id,
+//               instructor_name: a.instructor_name,
+//               room_id: a.room_id,
+//               slots: []
+//             });
+//           }
+//           subjectMap.get(a.subject_id).slots.push({
+//             day: a.day,
+//             slot_index: a.slot_index
+//           });
+//         });
+
+//         return (
+//           <div key={secIdx} className="section-card">
+//             <div className="section-header">
+//               <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Section {sectionLetter}</h4>
+//               <span style={{ opacity: 0.9, fontSize: '0.9rem' }}>
+//                 {sectionAssignments.length} time slot{sectionAssignments.length !== 1 ? 's' : ''} assigned
+//               </span>
+//             </div>
+//             {sectionAssignments.length === 0 ? (
+//               <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+//                 <Clock size={24} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+//                 <p>No classes assigned to this section yet</p>
+//               </div>
+//             ) : (
+//               <div style={{ overflowX: 'auto' }}>
+//                 <table className="schedule-table">
+//                   <thead>
+//                     <tr>
+//                       <th>Subject</th>
+//                       <th>Instructor</th>
+//                       <th>Room</th>
+//                       {days.map(d => (
+//                         <th key={d}>{d}</th>
+//                       ))}
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {Array.from(subjectMap.values()).map((subjectData, i) => {
+//                       const subject = subjects.find(s => s.id === subjectData.subject_id);
+//                       const room = rooms.find(rm => rm.id === subjectData.room_id);
+
+//                       return (
+//                         <tr key={i}>
+//                           <td>
+//                             <strong style={{ color: COLORS.accent }}>
+//                               {subject?.subject_code || subjectData.subject_id}
+//                             </strong>
+//                             <br />
+//                             <small style={{ color: '#666' }}>{subject?.description}</small>
+//                           </td>
+//                           <td>{subjectData.instructor_name || 'TBD'}</td>
+//                           <td>
+//                             <strong>{room?.name || 'TBD'}</strong>
+//                           </td>
+//                           {days.map(day => {
+//                             const daySlots = subjectData.slots.filter(slot => slot.day === day);
+//                             return (
+//                               <td key={day}>
+//                                 {daySlots.length > 0 ? (
+//                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+//                                     {daySlots.map((slot, idx) => (
+//                                       <span key={idx} className="time-badge">
+//                                         <Clock size={12} />
+//                                         {slotToTime(slot.slot_index)}
+//                                       </span>
+//                                     ))}
+//                                   </div>
+//                                 ) : (
+//                                   <span style={{ color: '#ccc' }}>—</span>
+//                                 )}
+//                               </td>
+//                             );
+//                           })}
+//                         </tr>
+//                       );
+//                     })}
+//                   </tbody>
+//                 </table>
+//               </div>
+//             )}
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // CONFIRMATION MODAL COMPONENT
+// // ============================================
+
+// const GenerateModal = ({ 
+//   show, 
+//   onHide, 
+//   onConfirm, 
+//   courses, 
+//   courseId, 
+//   yearLevel, 
+//   semester, 
+//   sectionCount, 
+//   studentsCount, 
+//   selectedSubjects, 
+//   schedulePattern,
+//   considerAvailability 
+// }) => {
+//   if (!show) return null;
+
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header-custom">
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <Settings size={24} />
+//             <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
+//               Confirm Schedule Generation
+//             </h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+//         <div className="modal-body-custom">
+//           <div className="modal-info-grid">
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Course:</strong>
+//               <p>{selectedCourse?.name || 'N/A'}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Year Level:</strong>
+//               <p>{yearLevel}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Semester:</strong>
+//               <p>{semester}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Sections:</strong>
+//               <p>{sectionCount} (Section {String.fromCharCode(65)} - Section {String.fromCharCode(65 + sectionCount - 1)})</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Students/Section:</strong>
+//               <p>{studentsCount}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Subjects:</strong>
+//               <p>{selectedSubjects.length}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Schedule Pattern:</strong>
+//               <p>Auto-determined (MWF/TTHS)</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
+//               <p>
+//                 {considerAvailability ? (
+//                   <span className="modal-badge success">Enforced</span>
+//                 ) : (
+//                   <span className="modal-badge secondary">Ignored</span>
+//                 )}
+//               </p>
+//             </div>
+//           </div>
+//           <div className="modal-info-box">
+//             <AlertTriangle size={18} />
+//             <small>
+//               The system will create {sectionCount} section{sectionCount !== 1 ? 's' : ''} and generate a complete schedule
+//               for each section using assigned teachers and rooms.
+//             </small>
+//           </div>
+//         </div>
+//         <div className="modal-footer-custom">
+//           <button className="action-btn secondary" onClick={onHide}>
+//             Cancel
+//           </button>
+//           <button className="action-btn primary" onClick={onConfirm}>
+//             <CheckCircle size={16} />
+//             Confirm & Generate
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // MAIN COMPONENT
+// // ============================================
+
+// export default function DeanSchedulePage() {
+//   // State Management
+//   const [courses, setCourses] = useState([]);
+//   const [courseId, setCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [studentsCount, setStudentsCount] = useState(30);
+//   const [sectionCount, setSectionCount] = useState(1);
+//   const [schedulePattern, setSchedulePattern] = useState('BOTH');
+  
+//   const [subjects, setSubjects] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  
+//   const [availabilityData, setAvailabilityData] = useState({});
+//   const [showConfirm, setShowConfirm] = useState(false);
+//   const [generating, setGenerating] = useState(false);
+//   const [scheduleResult, setScheduleResult] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const [considerAvailability, setConsiderAvailability] = useState(true);
+//   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+//   const [conflicts, setConflicts] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [rooms, setRooms] = useState([]);
+
+//   // Fetch initial data on mount
+//   useEffect(() => {
+//     const initData = async () => {
+//       setLoading(true);
+//       await Promise.all([
+//         fetchCourses(),
+//         fetchAvailabilityData(),
+//         fetchRooms()
+//       ]);
+//       setLoading(false);
+//     };
+//     initData();
+//   }, []);
+
+//   // API Fetch Functions
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching courses:', err);
+//       setCourses([]);
+//     }
+//   }, []);
+
+//   const fetchRooms = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/rooms`);
+//       const data = await res.json();
+//       setRooms(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching rooms:', err);
+//       setRooms([]);
+//     }
+//   }, []);
+
+//   const fetchAvailabilityData = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructor-availability`);
+//       if (!res.ok) throw new Error('Failed to fetch availability');
+//       const data = await res.json();
+      
+//       const availMap = {};
+//       if (Array.isArray(data)) {
+//         data.forEach(item => {
+//           const name = item.instructorName || 'Unknown';
+//           if (!availMap[name]) {
+//             availMap[name] = [];
+//           }
+//           availMap[name].push({
+//             day: item.day,
+//             start_time: item.start_time,
+//             end_time: item.end_time
+//           });
+//         });
+//       }
+//       setAvailabilityData(availMap);
+//       setAvailabilityLoaded(true);
+//     } catch (err) {
+//       console.error('Error fetching availability data:', err);
+//       setAvailabilityLoaded(true);
+//     }
+//   }, []);
+
+//   // Load subjects when course/year/semester changes
+//   useEffect(() => {
+//     if (!courseId) {
+//       setSubjects([]);
+//       setSelectedSubjects([]);
+//       return;
+//     }
+
+//     const loadSubjects = async () => {
+//       setLoadingSubjects(true);
+//       try {
+//         const q = new URLSearchParams({ courseId, yearLevel, semester }).toString();
+//         const res = await fetch(`${API}/api/subjects?${q}`);
+//         const data = await res.json();
+//         const arr = Array.isArray(data) ? data : [];
+//         setSubjects(arr);
+//         setSelectedSubjects(arr.map(s => s.id || s.subject_id).filter(Boolean));
+//       } catch (err) {
+//         console.error('Error loading subjects:', err);
+//         setSubjects([]);
+//       } finally {
+//         setLoadingSubjects(false);
+//       }
+//     };
+
+//     loadSubjects();
+//   }, [courseId, yearLevel, semester]);
+
+//   // Toggle Functions
+//   const toggleSubject = useCallback((id) => {
+//     setSelectedSubjects(prev =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   }, []);
+
+//   // Conflict Detection
+//   const detectConflicts = useCallback((assignments) => {
+//     const conflictList = [];
+//     const roomUsage = new Map();
+//     const instructorUsage = new Map();
+//     const sectionUsage = new Map();
+
+//     assignments.forEach((a) => {
+//       const room = rooms.find(r => r.id === a.room_id);
+
+//       // Check room conflicts
+//       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
+//       if (roomUsage.has(roomKey)) {
+//         conflictList.push({
+//           type: 'room',
+//           message: `Room "${room?.name || a.room_id}" is double-booked on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Conflict between subjects`
+//         });
+//       }
+//       roomUsage.set(roomKey, { ...a });
+
+//       // Check instructor conflicts
+//       const instrKey = `${a.instructor_name}-${a.day}-${a.slot_index}`;
+//       if (instructorUsage.has(instrKey)) {
+//         conflictList.push({
+//           type: 'instructor',
+//           message: `Instructor "${a.instructor_name}" is scheduled twice on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Teaching multiple classes`
+//         });
+//       }
+//       instructorUsage.set(instrKey, { ...a });
+
+//       // Check section conflicts
+//       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
+//       if (sectionUsage.has(sectionKey)) {
+//         const sectionName = String.fromCharCode(65 + a.section_index);
+//         conflictList.push({
+//           type: 'section',
+//           message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Multiple classes at same time`
+//         });
+//       }
+//       sectionUsage.set(sectionKey, { ...a });
+//     });
+
+//     return conflictList;
+//   }, [rooms]);
+
+//   // Generate Schedule Handler
+//   const handleGenerate = useCallback(async () => {
+//     if (!courseId || selectedSubjects.length === 0) {
+//       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
+//       return;
+//     }
+
+//     setShowConfirm(false);
+//     setGenerating(true);
+//     setToast(null);
+//     setScheduleResult(null);
+//     setConflicts([]);
+
+//     try {
+//       const payload = {
+//         courseId: Number(courseId),
+//         yearLevel: Number(yearLevel),
+//         semester: String(semester),
+//         studentsCount: Number(studentsCount),
+//         sectionCount: Number(sectionCount),
+//         subjects: selectedSubjects,
+//         schedulePattern: schedulePattern,
+//         considerInstructorAvailability: considerAvailability
+//       };
+
+//       const res = await fetch(`${API}/api/scheduler/generate`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//       });
+
+//       const data = await res.json();
+
+//       if (!res.ok) {
+//         throw new Error(data.detail || data.error || 'Schedule generation failed');
+//       }
+
+//       const detectedConflicts = detectConflicts(data.assignments || []);
+//       setConflicts(detectedConflicts);
+//       setScheduleResult(data);
+      
+//       if (detectedConflicts.length > 0) {
+//         setToast({ 
+//           type: 'error', 
+//           message: `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` 
+//         });
+//       } else {
+//         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
+//       }
+//     } catch (err) {
+//       console.error('Error generating schedule:', err);
+//       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
+//     } finally {
+//       setGenerating(false);
+//     }
+//   }, [
+//     courseId, 
+//     selectedSubjects, 
+//     considerAvailability,
+//     yearLevel,
+//     semester,
+//     studentsCount,
+//     sectionCount,
+//     schedulePattern,
+//     detectConflicts
+//   ]);
+
+//   // Memoized values
+//   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
+
+//   const overallStats = useMemo(() => {
+//     return {
+//       totalCourses: courses.length,
+//       totalSubjects: subjects.length,
+//       selectedSubjects: selectedSubjects.length
+//     };
+//   }, [courses.length, subjects.length, selectedSubjects.length]);
+
+//   if (loading) {
+//     return (
+//       <div style={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         minHeight: '100vh',
+//         background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)`
+//       }}>
+//         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
+//         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         * {
+//           box-sizing: border-box;
+//         }
+
+//         body {
+//           margin: 0;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+//         }
+
+//         .schedule-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         .page-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           margin-bottom: 2rem;
+//           color: white;
+//         }
+
+//         .page-title-section {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           margin: 0 0 0.5rem 0;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           letter-spacing: -0.5px;
+//         }
+
+//         .page-subtitle {
+//           font-size: 1.05rem;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           font-size: 0.95rem;
+//         }
+
+//         .action-btn.primary {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//         }
+
+//         .action-btn.secondary {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover:not(:disabled) {
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn.primary:hover:not(:disabled) {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%);
+//         }
+
+//         .action-btn.secondary:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid ${COLORS.accent};
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(10px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//         }
+
+//         .config-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from {
+//             opacity: 0;
+//             transform: translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .config-card-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .config-card-body {
+//           padding: 2rem;
+//         }
+
+//         .form-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .form-group {
+//           display: flex;
+//           flex-direction: column;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.5rem;
+//           display: flex;
+//           align-items: center;
+//           font-size: 0.9rem;
+//         }
+
+//         .form-input-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//           background: white;
+//         }
+
+//         .form-input-custom:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .form-input-custom:disabled {
+//           background: #f5f5f5;
+//           cursor: not-allowed;
+//         }
+
+//         .availability-section {
+//           background: ${COLORS.lightest};
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//         }
+
+//         .checkbox-container {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-container input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-label {
+//           flex: 1;
+//           color: ${COLORS.primary};
+//         }
+
+//         .selection-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         .selection-card-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .selection-card-header:hover {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%);
+//         }
+
+//         .selection-card-body {
+//           padding: 1.5rem;
+//         }
+
+//         .count-badge {
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.3rem 0.75rem;
+//           border-radius: 12px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .search-box {
+//           position: relative;
+//           margin-bottom: 1rem;
+//         }
+
+//         .search-box input {
+//           width: 100%;
+//           padding: 0.75rem 1rem 0.75rem 2.75rem;
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-box input:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-inline {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: ${COLORS.accent};
+//           pointer-events: none;
+//         }
+
+//         .clear-btn {
+//           position: absolute;
+//           right: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           transition: color 0.3s ease;
+//         }
+
+//         .clear-btn:hover {
+//           color: ${COLORS.accent};
+//         }
+
+//         .items-list {
+//           max-height: 400px;
+//           overflow-y: auto;
+//         }
+
+//         .item-checkbox {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 1rem;
+//           padding: 1rem;
+//           margin-bottom: 0.75rem;
+//           border-radius: 10px;
+//           border: 2px solid #E9ECEF;
+//           background: #F8F9FA;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .item-checkbox.selected {
+//           background: #E6F7FF;
+//           border-color: ${COLORS.light};
+//         }
+
+//         .item-checkbox:hover {
+//           border-color: ${COLORS.accent};
+//           transform: translateX(4px);
+//         }
+
+//         .item-checkbox input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//           flex-shrink: 0;
+//         }
+
+//         .item-content {
+//           flex: 1;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .units-badge {
+//           background: #6c757d;
+//           color: white;
+//           padding: 0.25rem 0.6rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .warning-box {
+//           background: #FFF3CD;
+//           border: 2px solid #FFE69C;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           color: #856404;
+//         }
+
+//         .conflicts-box {
+//           background: #FFE6E6;
+//           border: 2px solid #FFB3B3;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-badge {
+//           padding: 0.5rem 1rem;
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .preview-badge.success {
+//           background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+//           color: white;
+//         }
+
+//         .preview-badge.danger {
+//           background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%);
+//           color: white;
+//         }
+
+//         .section-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//         }
+
+//         .section-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .schedule-table {
+//           width: 100%;
+//           border-collapse: collapse;
+//           font-size: 0.9rem;
+//         }
+
+//         .schedule-table thead {
+//           background: ${COLORS.lightest};
+//           color: ${COLORS.primary};
+//         }
+
+//         .schedule-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .schedule-table td {
+//           padding: 0.75rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//           transition: all 0.3s ease;
+//         }
+
+//         .schedule-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .schedule-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-badge {
+//           background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%);
+//           color: ${COLORS.primary};
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           font-size: 0.8rem;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 600px;
+//           width: 100%;
+//           max-height: 90vh;
+//           overflow-y: auto;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from {
+//             transform: translateY(50px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateY(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .modal-close {
+//           background: none;
+//           border: none;
+//           color: white;
+//           font-size: 2rem;
+//           cursor: pointer;
+//           line-height: 1;
+//           padding: 0;
+//           transition: transform 0.3s ease;
+//         }
+
+//         .modal-close:hover {
+//           transform: scale(1.2);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//         }
+
+//         .modal-info-grid {
+//           display: grid;
+//           grid-template-columns: repeat(2, 1fr);
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .modal-info-grid > div {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//         }
+
+//         .modal-info-grid p {
+//           margin: 0;
+//           color: #333;
+//           font-size: 0.95rem;
+//         }
+
+//         .modal-badge {
+//           display: inline-block;
+//           padding: 0.25rem 0.75rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .modal-badge.success {
+//           background: #10B981;
+//           color: white;
+//         }
+
+//         .modal-badge.secondary {
+//           background: #6c757d;
+//           color: white;
+//         }
+
+//         .modal-info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1rem;
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 1rem;
+//         }
+
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from {
+//             transform: translateX(400px);
+//             opacity: 0;
+//           }
+//           to {
+//             transform: translateX(0);
+//             opacity: 1;
+//           }
+//         }
+
+//         .edusched-toast.toast-success { border-left-color: #10B981; }
+//         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
+
+//         .edusched-toast .toast-icon { display: flex; align-items: center; }
+//         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
+//         .edusched-toast .toast-close {
+//           background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280;
+//         }
+//         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
+
+//         .page-content-grid {
+//           display: grid;
+//           gap: 1.5rem;
+//         }
+
+//         .animate-spin {
+//           animation: spin 1s linear infinite;
+//         }
+
+//         @keyframes spin {
+//           from {
+//             transform: rotate(0deg);
+//           }
+//           to {
+//             transform: rotate(360deg);
+//           }
+//         }
+
+//         @media (max-width: 768px) {
+//           .schedule-container {
+//             padding: 1rem;
+//           }
+
+//           .page-title {
+//             font-size: 2rem;
+//           }
+
+//           .form-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .modal-info-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .statistics-grid {
+//             grid-template-columns: repeat(2, 1fr);
+//           }
+//         }
+//       `}</style>
+
+//       <div className="schedule-container">
+//         {/* HEADER */}
+//         <div className="page-header">
+//           <div className="page-title-section">
+//             <div>
+//               <h1 className="page-title">
+//                 <Calendar size={28} />
+//                 AI Schedule Generator
+//               </h1>
+//               <p className="page-subtitle">
+//                 Smart scheduling with teacher assignments and room allocations
+//               </p>
+//             </div>
+
+//             <div className="header-actions">
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={async () => {
+//                   setLoading(true);
+//                   await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+//                   setLoading(false);
+//                   setToast({ type: 'success', message: 'Data reloaded successfully.' });
+//                 }}
+//                 disabled={loading || generating}
+//               >
+//                 <RefreshCw size={16} />
+//                 Reload Data
+//               </button>
+
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setScheduleResult(null);
+//                   setConflicts([]);
+//                   setSelectedSubjects([]);
+//                   setToast({ type: 'success', message: 'Selections cleared.' });
+//                 }}
+//                 disabled={generating}
+//               >
+//                 <X size={16} />
+//                 Reset
+//               </button>
+
+//               <button
+//                 className="action-btn primary"
+//                 onClick={() => setShowConfirm(true)}
+//                 disabled={generating || !courseId || selectedSubjects.length === 0}
+//               >
+//                 <CheckCircle size={16} />
+//                 {generating ? 'Generating…' : 'Generate Schedule'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* TOP STATS */}
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Courses</div>
+//             <div className="stat-value">{overallStats.totalCourses}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Available Subjects</div>
+//             <div className="stat-value">{overallStats.totalSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Subjects</div>
+//             <div className="stat-value">{overallStats.selectedSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Availability Records</div>
+//             <div className="stat-value">{availabilityDataCount}</div>
+//           </div>
+//         </div>
+
+//         {/* BODY GRID */}
+//         <div className="page-content-grid">
+//           <DeanScheduleForm
+//             courses={courses}
+//             courseId={courseId}
+//             setCourseId={setCourseId}
+//             yearLevel={yearLevel}
+//             setYearLevel={setYearLevel}
+//             semester={semester}
+//             setSemester={setSemester}
+//             studentsCount={studentsCount}
+//             setStudentsCount={setStudentsCount}
+//             sectionCount={sectionCount}
+//             setSectionCount={setSectionCount}
+//             considerAvailability={considerAvailability}
+//             setConsiderAvailability={setConsiderAvailability}
+//             generating={generating}
+//             availabilityLoaded={availabilityLoaded}
+//             availabilityDataCount={availabilityDataCount}
+//           />
+
+//           <SubjectList
+//             subjects={subjects}
+//             selectedSubjects={selectedSubjects}
+//             toggleSubject={toggleSubject}
+//             generating={generating}
+//             loading={loadingSubjects}
+//             courseId={courseId}
+//           />
+//         </div>
+
+//         {/* PREVIEW */}
+//         <SchedulePreview
+//           scheduleResult={scheduleResult}
+//           conflicts={conflicts}
+//           subjects={subjects}
+//           rooms={rooms}
+//           sectionCount={sectionCount}
+//           onClear={() => {
+//             setScheduleResult(null);
+//             setConflicts([]);
+//           }}
+//         />
+//       </div>
+
+//       {/* MODAL */}
+//       <GenerateModal
+//         show={showConfirm}
+//         onHide={() => setShowConfirm(false)}
+//         onConfirm={handleGenerate}
+//         courses={courses}
+//         courseId={courseId}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         sectionCount={sectionCount}
+//         studentsCount={studentsCount}
+//         selectedSubjects={selectedSubjects}
+//         schedulePattern={schedulePattern}
+//         considerAvailability={considerAvailability}
+//       />
+
+//       {/* TOAST */}
+//       {toast && (
+//         <Toast
+//           message={toast.message}
+//           type={toast.type === 'success' ? 'success' : 'error'}
+//           onClose={() => setToast(null)}
+//         />
+//       )}
+//     </>
+//   );
+// }
+
+//FUNCTIONAL WITHOUT SHOWING CLASS DUARTION 3 HOUR
+
+// import React, { useEffect, useState, useMemo, useCallback } from 'react';
+// import { 
+//   Calendar, Settings, CheckCircle, AlertTriangle, Clock, BookOpen, 
+//   Loader, RefreshCw, Search, X, ChevronDown, ChevronUp, Award 
+// } from 'lucide-react';
+
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// const BTLED_MAJORS = [
+//   { value: 'ICT', label: 'ICT - Information and Communication Technology' },
+//   { value: 'HE', label: 'HE - Home Economics' }
+// ];
+
+// // ============================================
+// // UTILITY FUNCTIONS
+// // ============================================
+
+// const formatTime = (time) => {
+//   const [hours, minutes] = time.split(':');
+//   const hour = parseInt(hours);
+//   const period = hour >= 12 ? 'PM' : 'AM';
+//   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+//   return `${displayHour}:${minutes} ${period}`;
+// };
+
+// const formatTimeRange = (startTime, endTime) => {
+//   return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+// };
+
+// const slotToTime = (slotIndex) => {
+//   const startHour = 7 + Number(slotIndex);
+//   const endHour = startHour + 1;
+//   const formatHour = (hour) => {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
+//     return `${adjusted}:00 ${period}`;
+//   };
+//   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+// };
+
+// const isBTLEDCourse = (courseCode) => {
+//   return courseCode === 'BTLED' || courseCode?.startsWith('BTLED');
+// };
+
+// // ============================================
+// // TOAST NOTIFICATION COMPONENT
+// // ============================================
+
+// const Toast = ({ message, type, onClose }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => onClose(), 5000);
+//     return () => clearTimeout(timer);
+//   }, [onClose]);
+
+//   return (
+//     <div className={`edusched-toast toast-${type}`}>
+//       <div className="toast-icon">
+//         {type === "success" ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+//       </div>
+//       <span className="toast-message">{message}</span>
+//       <button className="toast-close" onClick={onClose}>×</button>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // LOADING STATE COMPONENT
+// // ============================================
+
+// const LoadingState = ({ message = 'Loading...' }) => (
+//   <div style={{ textAlign: 'center', padding: '3rem' }}>
+//     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
+//     <p style={{ color: '#666', fontSize: '1rem' }}>{message}</p>
+//   </div>
+// );
+
+// // ============================================
+// // BTLED MAJOR SELECTOR COMPONENT
+// // ============================================
+
+// const BTLEDMajorSelector = React.memo(({ major, onChange, show }) => {
+//   if (!show) return null;
+
+//   return (
+//     <div className="config-card" style={{ gridColumn: '1 / -1' }}>
+//       <div className="config-card-header">
+//         <Award size={20} />
+//         <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>BTLED Major</h3>
+//       </div>
+//       <div className="config-card-body">
+//         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+//           {BTLED_MAJORS.map(m => (
+//             <button
+//               key={m.value}
+//               className={`action-btn ${major === m.value ? 'primary' : 'secondary'}`}
+//               onClick={() => onChange(m.value)}
+//               style={{ flex: 1, minWidth: '200px' }}
+//             >
+//               {m.label}
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ============================================
+// // SCHEDULE FORM COMPONENT
+// // ============================================
+
+// const DeanScheduleForm = ({ 
+//   courses, 
+//   courseId, 
+//   setCourseId,
+//   yearLevel,
+//   setYearLevel,
+//   semester,
+//   setSemester,
+//   studentsCount,
+//   setStudentsCount,
+//   sectionCount,
+//   setSectionCount,
+//   considerAvailability,
+//   setConsiderAvailability,
+//   generating,
+//   availabilityLoaded,
+//   availabilityDataCount
+// }) => (
+//   <div className="config-card">
+//     <div className="config-card-header">
+//       <Settings size={20} />
+//       <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Schedule Configuration</h3>
+//     </div>
+//     <div className="config-card-body">
+//       <div className="form-grid">
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
+//             Course *
+//           </label>
+//           <select
+//             className="form-input-custom"
+//             value={courseId}
+//             onChange={e => setCourseId(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="">-- Select Course --</option>
+//             {courses.map(c => (
+//               <option key={c.id} value={c.id}>
+//                 {c.code} — {c.name}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Year Level *</label>
+//           <select
+//             className="form-input-custom"
+//             value={yearLevel}
+//             onChange={e => setYearLevel(Number(e.target.value))}
+//             disabled={generating}
+//           >
+//             {[1, 2, 3, 4].map(y => (
+//               <option key={y} value={y}>{y}</option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Semester *</label>
+//           <select
+//             className="form-input-custom"
+//             value={semester}
+//             onChange={e => setSemester(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="1">1st Semester</option>
+//             <option value="2">2nd Semester</option>
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Students per Section</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             value={studentsCount}
+//             onChange={e => setStudentsCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Number of Sections</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             max="10"
+//             value={sectionCount}
+//             onChange={e => setSectionCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+//       </div>
+
+//       <div className="availability-section">
+//         <label className="checkbox-container">
+//           <input
+//             type="checkbox"
+//             checked={considerAvailability}
+//             onChange={e => setConsiderAvailability(e.target.checked)}
+//             disabled={generating}
+//           />
+//           <span className="checkbox-label">
+//             <strong>Consider Instructor Availability</strong>
+//             <br />
+//             <small style={{ color: '#666' }}>
+//               When enabled, schedule will respect instructor availability windows.
+//               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+//             </small>
+//           </span>
+//         </label>
+//         <div style={{ marginTop: '1rem', padding: '1rem', background: '#E3F2FD', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+//           <small style={{ color: '#1565C0', display: 'block', lineHeight: '1.6' }}>
+//             <strong>Schedule Pattern:</strong> The system will automatically determine the best pattern based on subject units and duration:
+//             <br />• <strong>MWF</strong> (Monday-Wednesday-Friday): For subjects requiring 3 sessions per week
+//             <br />• <strong>TTHS</strong> (Tuesday-Thursday-Saturday): For subjects requiring 2-3 sessions with longer durations
+//           </small>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+// // ============================================
+// // SUBJECT LIST COMPONENT
+// // ============================================
+
+// const SubjectList = ({ 
+//   subjects, 
+//   selectedSubjects, 
+//   toggleSubject, 
+//   generating, 
+//   loading, 
+//   courseId 
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredSubjects = useMemo(() => {
+//     if (!searchTerm) return subjects;
+//     const term = searchTerm.toLowerCase();
+//     return subjects.filter(s => 
+//       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
+//       (s.description || '').toLowerCase().includes(term)
+//     );
+//   }, [subjects, searchTerm]);
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//           <BookOpen size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
+//           {subjects.length > 0 && (
+//             <span className="count-badge">
+//               {selectedSubjects.length} / {subjects.length}
+//             </span>
+//           )}
+//         </div>
+//         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//       </div>
+      
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {loading ? (
+//             <LoadingState message="Loading subjects..." />
+//           ) : !courseId ? (
+//             <div className="info-box">
+//               <AlertTriangle size={18} />
+//               <span>Please select a course first.</span>
+//             </div>
+//           ) : subjects.length === 0 ? (
+//             <div className="warning-box">
+//               No subjects available for this course, year, and semester.
+//             </div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search subjects..."
+//                   value={searchTerm}
+//                   onChange={e => setSearchTerm(e.target.value)}
+//                 />
+//                 {searchTerm && (
+//                   <button onClick={() => setSearchTerm('')} className="clear-btn">
+//                     <X size={16} />
+//                   </button>
+//                 )}
+//               </div>
+
+//               <div className="items-list">
+//                 {filteredSubjects.map(s => (
+//                   <label 
+//                     key={s.id} 
+//                     className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedSubjects.includes(s.id)}
+//                       onChange={() => toggleSubject(s.id)}
+//                       disabled={generating}
+//                     />
+//                     <div className="item-content">
+//                       <div>
+//                         <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+//                         <br />
+//                         <small style={{ color: '#666' }}>{s.description}</small>
+//                         {s.teacher_name && (
+//                           <>
+//                             <br />
+//                             <small style={{ color: COLORS.accent, fontWeight: 600 }}>
+//                               Teacher: {s.teacher_name}
+//                             </small>
+//                           </>
+//                         )}
+//                         {s.duration && (
+//                           <>
+//                             <br />
+//                             <small style={{ color: '#999' }}>
+//                               Duration: {s.duration} hour{s.duration > 1 ? 's' : ''}
+//                             </small>
+//                           </>
+//                         )}
+//                       </div>
+//                       <span className="units-badge">{s.units}u</span>
+//                     </div>
+//                   </label>
+//                 ))}
+//                 {filteredSubjects.length === 0 && (
+//                   <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
+//                     No subjects match your search
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // SCHEDULE PREVIEW COMPONENT (unchanged)
+// // ============================================
+
+// const SchedulePreview = ({ 
+//   scheduleResult, 
+//   conflicts, 
+//   subjects, 
+//   rooms, 
+//   sectionCount,
+//   onClear 
+// }) => {
+//   if (!scheduleResult?.assignments) return null;
+
+//   const grouped = {};
+//   scheduleResult.assignments.forEach(a => {
+//     if (!grouped[a.section_index]) grouped[a.section_index] = [];
+//     grouped[a.section_index].push(a);
+//   });
+
+//   for (let i = 0; i < sectionCount; i++) {
+//     if (!grouped[i]) grouped[i] = [];
+//   }
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   return (
+//     <div style={{ marginTop: '2rem' }}>
+//       {conflicts.length > 0 && (
+//         <div className="conflicts-box">
+//           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+//             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>
+//                 Schedule Conflicts Detected ({conflicts.length})
+//               </h4>
+//               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+//                 {conflicts.map((conflict, idx) => (
+//                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
+//                     <br />
+//                     <small style={{ color: '#666' }}>{conflict.details}</small>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="preview-header">
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//           <Calendar size={24} style={{ color: COLORS.accent }} />
+//           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>
+//             Generated Schedule
+//           </h3>
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+//           {scheduleResult.stats && (
+//             <>
+//               <span className="preview-badge success">
+//                 {scheduleResult.stats.totalAssignments} assignments
+//               </span>
+//               <span className="preview-badge success">
+//                 {sectionCount} section{sectionCount !== 1 ? 's' : ''}
+//               </span>
+//               {conflicts.length === 0 ? (
+//                 <span className="preview-badge success">
+//                   <CheckCircle size={14} style={{ marginRight: '0.25rem' }} />
+//                   No Conflicts
+//                 </span>
+//               ) : (
+//                 <span className="preview-badge danger">
+//                   <AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />
+//                   {conflicts.length} Conflicts
+//                 </span>
+//               )}
+//             </>
+//           )}
+//           <button className="action-btn secondary" onClick={onClear}>
+//             <X size={16} />
+//             Clear
+//           </button>
+//         </div>
+//       </div>
+
+//       {Object.keys(grouped).sort((a, b) => Number(a) - Number(b)).map(secIdx => {
+//         const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+//         const sectionAssignments = grouped[secIdx];
+        
+//         const subjectMap = new Map();
+//         sectionAssignments.forEach(a => {
+//           if (!subjectMap.has(a.subject_id)) {
+//             subjectMap.set(a.subject_id, {
+//               subject_id: a.subject_id,
+//               instructor_name: a.instructor_name,
+//               room_id: a.room_id,
+//               slots: []
+//             });
+//           }
+//           subjectMap.get(a.subject_id).slots.push({
+//             day: a.day,
+//             slot_index: a.slot_index
+//           });
+//         });
+
+//         return (
+//           <div key={secIdx} className="section-card">
+//             <div className="section-header">
+//               <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Section {sectionLetter}</h4>
+//               <span style={{ opacity: 0.9, fontSize: '0.9rem' }}>
+//                 {sectionAssignments.length} time slot{sectionAssignments.length !== 1 ? 's' : ''} assigned
+//               </span>
+//             </div>
+//             {sectionAssignments.length === 0 ? (
+//               <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+//                 <Clock size={24} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+//                 <p>No classes assigned to this section yet</p>
+//               </div>
+//             ) : (
+//               <div style={{ overflowX: 'auto' }}>
+//                 <table className="schedule-table">
+//                   <thead>
+//                     <tr>
+//                       <th>Subject</th>
+//                       <th>Instructor</th>
+//                       <th>Room</th>
+//                       {days.map(d => (
+//                         <th key={d}>{d}</th>
+//                       ))}
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {Array.from(subjectMap.values()).map((subjectData, i) => {
+//                       const subject = subjects.find(s => s.id === subjectData.subject_id);
+//                       const room = rooms.find(rm => rm.id === subjectData.room_id);
+
+//                       return (
+//                         <tr key={i}>
+//                           <td>
+//                             <strong style={{ color: COLORS.accent }}>
+//                               {subject?.subject_code || subjectData.subject_id}
+//                             </strong>
+//                             <br />
+//                             <small style={{ color: '#666' }}>{subject?.description}</small>
+//                           </td>
+//                           <td>{subjectData.instructor_name || 'TBD'}</td>
+//                           <td>
+//                             <strong>{room?.name || 'TBD'}</strong>
+//                           </td>
+//                           {days.map(day => {
+//                             const daySlots = subjectData.slots.filter(slot => slot.day === day);
+//                             return (
+//                               <td key={day}>
+//                                 {daySlots.length > 0 ? (
+//                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+//                                     {daySlots.map((slot, idx) => (
+//                                       <span key={idx} className="time-badge">
+//                                         <Clock size={12} />
+//                                         {slotToTime(slot.slot_index)}
+//                                       </span>
+//                                     ))}
+//                                   </div>
+//                                 ) : (
+//                                   <span style={{ color: '#ccc' }}>—</span>
+//                                 )}
+//                               </td>
+//                             );
+//                           })}
+//                         </tr>
+//                       );
+//                     })}
+//                   </tbody>
+//                 </table>
+//               </div>
+//             )}
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // CONFIRMATION MODAL COMPONENT (unchanged)
+// // ============================================
+
+// const GenerateModal = ({ 
+//   show, 
+//   onHide, 
+//   onConfirm, 
+//   courses, 
+//   courseId, 
+//   yearLevel, 
+//   semester, 
+//   sectionCount, 
+//   studentsCount, 
+//   selectedSubjects, 
+//   schedulePattern,
+//   considerAvailability 
+// }) => {
+//   if (!show) return null;
+
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header-custom">
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <Settings size={24} />
+//             <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
+//               Confirm Schedule Generation
+//             </h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+//         <div className="modal-body-custom">
+//           <div className="modal-info-grid">
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Course:</strong>
+//               <p>{selectedCourse?.name || 'N/A'}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Year Level:</strong>
+//               <p>{yearLevel}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Semester:</strong>
+//               <p>{semester}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Sections:</strong>
+//               <p>{sectionCount} (Section {String.fromCharCode(65)} - Section {String.fromCharCode(65 + sectionCount - 1)})</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Students/Section:</strong>
+//               <p>{studentsCount}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Subjects:</strong>
+//               <p>{selectedSubjects.length}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Schedule Pattern:</strong>
+//               <p>Auto-determined (MWF/TTHS)</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
+//               <p>
+//                 {considerAvailability ? (
+//                   <span className="modal-badge success">Enforced</span>
+//                 ) : (
+//                   <span className="modal-badge secondary">Ignored</span>
+//                 )}
+//               </p>
+//             </div>
+//           </div>
+//           <div className="modal-info-box">
+//             <AlertTriangle size={18} />
+//             <small>
+//               The system will create {sectionCount} section{sectionCount !== 1 ? 's' : ''} and generate a complete schedule
+//               for each section using assigned teachers and rooms.
+//             </small>
+//           </div>
+//         </div>
+//         <div className="modal-footer-custom">
+//           <button className="action-btn secondary" onClick={onHide}>
+//             Cancel
+//           </button>
+//           <button className="action-btn primary" onClick={onConfirm}>
+//             <CheckCircle size={16} />
+//             Confirm & Generate
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // MAIN COMPONENT
+// // ============================================
+
+// export default function DeanSchedulePage() {
+//   const [courses, setCourses] = useState([]);
+//   const [courseId, setCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [btledMajor, setBtledMajor] = useState('ICT');
+//   const [studentsCount, setStudentsCount] = useState(30);
+//   const [sectionCount, setSectionCount] = useState(1);
+//   const [schedulePattern, setSchedulePattern] = useState('BOTH');
+  
+//   const [subjects, setSubjects] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  
+//   const [availabilityData, setAvailabilityData] = useState({});
+//   const [showConfirm, setShowConfirm] = useState(false);
+//   const [generating, setGenerating] = useState(false);
+//   const [scheduleResult, setScheduleResult] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const [considerAvailability, setConsiderAvailability] = useState(true);
+//   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+//   const [conflicts, setConflicts] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [rooms, setRooms] = useState([]);
+
+//   useEffect(() => {
+//     const initData = async () => {
+//       setLoading(true);
+//       await Promise.all([
+//         fetchCourses(),
+//         fetchAvailabilityData(),
+//         fetchRooms()
+//       ]);
+//       setLoading(false);
+//     };
+//     initData();
+//   }, []);
+
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching courses:', err);
+//       setCourses([]);
+//     }
+//   }, []);
+
+//   const fetchRooms = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/rooms`);
+//       const data = await res.json();
+//       setRooms(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching rooms:', err);
+//       setRooms([]);
+//     }
+//   }, []);
+
+//   const fetchAvailabilityData = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructor-availability`);
+//       if (!res.ok) throw new Error('Failed to fetch availability');
+//       const data = await res.json();
+      
+//       const availMap = {};
+//       if (Array.isArray(data)) {
+//         data.forEach(item => {
+//           const name = item.instructorName || 'Unknown';
+//           if (!availMap[name]) availMap[name] = [];
+//           availMap[name].push({
+//             day: item.day,
+//             start_time: item.start_time,
+//             end_time: item.end_time
+//           });
+//         });
+//       }
+//       setAvailabilityData(availMap);
+//       setAvailabilityLoaded(true);
+//     } catch (err) {
+//       console.error('Error fetching availability data:', err);
+//       setAvailabilityLoaded(true);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     if (!courseId) {
+//       setSubjects([]);
+//       setSelectedSubjects([]);
+//       return;
+//     }
+
+//     const loadSubjects = async () => {
+//       setLoadingSubjects(true);
+//       try {
+//         const params = new URLSearchParams({
+//           courseId,
+//           yearLevel,
+//           semester
+//         });
+
+//         const selectedCourse = courses.find(c => c.id === Number(courseId));
+//         const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+//         if (isBTLED && yearLevel === 3) {
+//           params.append('major', btledMajor);
+//         }
+
+//         const res = await fetch(`${API}/api/subjects?${params}`);
+//         const data = await res.json();
+//         const arr = Array.isArray(data) ? data : [];
+//         setSubjects(arr);
+//         setSelectedSubjects(arr.map(s => s.id || s.subject_id).filter(Boolean));
+//       } catch (err) {
+//         console.error('Error loading subjects:', err);
+//         setSubjects([]);
+//       } finally {
+//         setLoadingSubjects(false);
+//       }
+//     };
+
+//     loadSubjects();
+//   }, [courseId, yearLevel, semester, btledMajor, courses]);
+
+//   const toggleSubject = useCallback((id) => {
+//     setSelectedSubjects(prev =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   }, []);
+
+//   const detectConflicts = useCallback((assignments) => {
+//     const conflictList = [];
+//     const roomUsage = new Map();
+//     const instructorUsage = new Map();
+//     const sectionUsage = new Map();
+
+//     assignments.forEach((a) => {
+//       const room = rooms.find(r => r.id === a.room_id);
+
+//       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
+//       if (roomUsage.has(roomKey)) {
+//         conflictList.push({
+//           type: 'room',
+//           message: `Room "${room?.name || a.room_id}" is double-booked on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Conflict between subjects`
+//         });
+//       }
+//       roomUsage.set(roomKey, { ...a });
+
+//       const instrKey = `${a.instructor_name}-${a.day}-${a.slot_index}`;
+//       if (instructorUsage.has(instrKey)) {
+//         conflictList.push({
+//           type: 'instructor',
+//           message: `Instructor "${a.instructor_name}" is scheduled twice on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Teaching multiple classes`
+//         });
+//       }
+//       instructorUsage.set(instrKey, { ...a });
+
+//       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
+//       if (sectionUsage.has(sectionKey)) {
+//         const sectionName = String.fromCharCode(65 + a.section_index);
+//         conflictList.push({
+//           type: 'section',
+//           message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTime(a.slot_index)}`,
+//           details: `Multiple classes at same time`
+//         });
+//       }
+//       sectionUsage.set(sectionKey, { ...a });
+//     });
+
+//     return conflictList;
+//   }, [rooms]);
+
+//   const handleGenerate = useCallback(async () => {
+//     if (!courseId || selectedSubjects.length === 0) {
+//       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
+//       return;
+//     }
+
+//     setShowConfirm(false);
+//     setGenerating(true);
+//     setToast(null);
+//     setScheduleResult(null);
+//     setConflicts([]);
+
+//     try {
+//       const selectedCourse = courses.find(c => c.id === Number(courseId));
+//       const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+//       const payload = {
+//         courseId: Number(courseId),
+//         yearLevel: Number(yearLevel),
+//         semester: String(semester),
+//         studentsCount: Number(studentsCount),
+//         sectionCount: Number(sectionCount),
+//         subjects: selectedSubjects,
+//         schedulePattern: schedulePattern,
+//         considerInstructorAvailability: considerAvailability,
+//         major: isBTLED && yearLevel === 3 ? btledMajor : undefined
+//       };
+
+//       const res = await fetch(`${API}/api/scheduler/generate`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//       });
+
+//       const data = await res.json();
+
+//       if (!res.ok) {
+//         throw new Error(data.detail || data.error || 'Schedule generation failed');
+//       }
+
+//       const detectedConflicts = detectConflicts(data.assignments || []);
+//       setConflicts(detectedConflicts);
+//       setScheduleResult(data);
+      
+//       if (detectedConflicts.length > 0) {
+//         setToast({ 
+//           type: 'error', 
+//           message: `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` 
+//         });
+//       } else {
+//         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
+//       }
+//     } catch (err) {
+//       console.error('Error generating schedule:', err);
+//       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
+//     } finally {
+//       setGenerating(false);
+//     }
+//   }, [
+//     courseId, selectedSubjects, considerAvailability, yearLevel, semester,
+//     studentsCount, sectionCount, schedulePattern, btledMajor, courses, detectConflicts
+//   ]);
+
+//   const selectedCourse = useMemo(() => courses.find(c => c.id === Number(courseId)), [courses, courseId]);
+//   const isBTLED = useMemo(() => selectedCourse && isBTLEDCourse(selectedCourse.code), [selectedCourse]);
+//   const showMajorSelector = isBTLED && yearLevel === 3;
+
+//   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
+
+//   const overallStats = useMemo(() => {
+//     return {
+//       totalCourses: courses.length,
+//       totalSubjects: subjects.length,
+//       selectedSubjects: selectedSubjects.length
+//     };
+//   }, [courses.length, subjects.length, selectedSubjects.length]);
+
+//   if (loading) {
+//     return (
+//       <div style={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         minHeight: '100vh',
+//         background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)`
+//       }}>
+//         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
+//         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         * {
+//           box-sizing: border-box;
+//         }
+
+//         body {
+//           margin: 0;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+//         }
+
+//         .schedule-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         .page-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           margin-bottom: 2rem;
+//           color: white;
+//         }
+
+//         .page-title-section {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           margin: 0 0 0.5rem 0;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           letter-spacing: -0.5px;
+//         }
+
+//         .page-subtitle {
+//           font-size: 1.05rem;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           font-size: 0.95rem;
+//         }
+
+//         .action-btn.primary {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//         }
+
+//         .action-btn.secondary {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover:not(:disabled) {
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn.primary:hover:not(:disabled) {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%);
+//         }
+
+//         .action-btn.secondary:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid ${COLORS.accent};
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from { opacity: 0; transform: translateY(10px); }
+//           to { opacity: 1; transform: translateY(0); }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//         }
+
+//         .config-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from { opacity: 0; transform: translateY(20px); }
+//           to { opacity: 1; transform: translateY(0); }
+//         }
+
+//         .config-card-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .config-card-body {
+//           padding: 2rem;
+//         }
+
+//         .form-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .form-group {
+//           display: flex;
+//           flex-direction: column;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.5rem;
+//           display: flex;
+//           align-items: center;
+//           font-size: 0.9rem;
+//         }
+
+//         .form-input-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//           background: white;
+//         }
+
+//         .form-input-custom:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .form-input-custom:disabled {
+//           background: #f5f5f5;
+//           cursor: not-allowed;
+//         }
+
+//         .availability-section {
+//           background: ${COLORS.lightest};
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//         }
+
+//         .checkbox-container {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-container input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-label {
+//           flex: 1;
+//           color: ${COLORS.primary};
+//         }
+
+//         .selection-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         .selection-card-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .selection-card-header:hover {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%);
+//         }
+
+//         .selection-card-body {
+//           padding: 1.5rem;
+//         }
+
+//         .count-badge {
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.3rem 0.75rem;
+//           border-radius: 12px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .search-box {
+//           position: relative;
+//           margin-bottom: 1rem;
+//         }
+
+//         .search-box input {
+//           width: 100%;
+//           padding: 0.75rem 1rem 0.75rem 2.75rem;
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-box input:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-inline {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: ${COLORS.accent};
+//           pointer-events: none;
+//         }
+
+//         .clear-btn {
+//           position: absolute;
+//           right: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           transition: color 0.3s ease;
+//         }
+
+//         .clear-btn:hover {
+//           color: ${COLORS.accent};
+//         }
+
+//         .items-list {
+//           max-height: 400px;
+//           overflow-y: auto;
+//         }
+
+//         .item-checkbox {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 1rem;
+//           padding: 1rem;
+//           margin-bottom: 0.75rem;
+//           border-radius: 10px;
+//           border: 2px solid #E9ECEF;
+//           background: #F8F9FA;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .item-checkbox.selected {
+//           background: #E6F7FF;
+//           border-color: ${COLORS.light};
+//         }
+
+//         .item-checkbox:hover {
+//           border-color: ${COLORS.accent};
+//           transform: translateX(4px);
+//         }
+
+//         .item-checkbox input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//           flex-shrink: 0;
+//         }
+
+//         .item-content {
+//           flex: 1;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .units-badge {
+//           background: #6c757d;
+//           color: white;
+//           padding: 0.25rem 0.6rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .warning-box {
+//           background: #FFF3CD;
+//           border: 2px solid #FFE69C;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           color: #856404;
+//         }
+
+//         .conflicts-box {
+//           background: #FFE6E6;
+//           border: 2px solid #FFB3B3;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-badge {
+//           padding: 0.5rem 1rem;
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .preview-badge.success {
+//           background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+//           color: white;
+//         }
+
+//         .preview-badge.danger {
+//           background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%);
+//           color: white;
+//         }
+
+//         .section-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//         }
+
+//         .section-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .schedule-table {
+//           width: 100%;
+//           border-collapse: collapse;
+//           font-size: 0.9rem;
+//         }
+
+//         .schedule-table thead {
+//           background: ${COLORS.lightest};
+//           color: ${COLORS.primary};
+//         }
+
+//         .schedule-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .schedule-table td {
+//           padding: 0.75rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//           transition: all 0.3s ease;
+//         }
+
+//         .schedule-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .schedule-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-badge {
+//           background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%);
+//           color: ${COLORS.primary};
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           font-size: 0.8rem;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 600px;
+//           width: 100%;
+//           max-height: 90vh;
+//           overflow-y: auto;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from { transform: translateY(50px); opacity: 0; }
+//           to { transform: translateY(0); opacity: 1; }
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .modal-close {
+//           background: none;
+//           border: none;
+//           color: white;
+//           font-size: 2rem;
+//           cursor: pointer;
+//           line-height: 1;
+//           padding: 0;
+//           transition: transform 0.3s ease;
+//         }
+
+//         .modal-close:hover {
+//           transform: scale(1.2);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//         }
+
+//         .modal-info-grid {
+//           display: grid;
+//           grid-template-columns: repeat(2, 1fr);
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .modal-info-grid > div {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//         }
+
+//         .modal-info-grid p {
+//           margin: 0;
+//           color: #333;
+//           font-size: 0.95rem;
+//         }
+
+//         .modal-badge {
+//           display: inline-block;
+//           padding: 0.25rem 0.75rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .modal-badge.success {
+//           background: #10B981;
+//           color: white;
+//         }
+
+//         .modal-badge.secondary {
+//           background: #6c757d;
+//           color: white;
+//         }
+
+//         .modal-info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1rem;
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 1rem;
+//         }
+
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from { transform: translateX(400px); opacity: 0; }
+//           to { transform: translateX(0); opacity: 1; }
+//         }
+
+//         .edusched-toast.toast-success { border-left-color: #10B981; }
+//         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
+
+//         .edusched-toast .toast-icon { display: flex; align-items: center; }
+//         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
+//         .edusched-toast .toast-close {
+//           background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280;
+//         }
+//         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
+
+//         .page-content-grid {
+//           display: grid;
+//           gap: 1.5rem;
+//         }
+
+//         .animate-spin {
+//           animation: spin 1s linear infinite;
+//         }
+
+//         @keyframes spin {
+//           from { transform: rotate(0deg); }
+//           to { transform: rotate(360deg); }
+//         }
+
+//         @media (max-width: 768px) {
+//           .schedule-container { padding: 1rem; }
+//           .page-title { font-size: 2rem; }
+//           .form-grid { grid-template-columns: 1fr; }
+//           .modal-info-grid { grid-template-columns: 1fr; }
+//           .statistics-grid { grid-template-columns: repeat(2, 1fr); }
+//         }
+//       `}</style>
+
+//       <div className="schedule-container">
+//         <div className="page-header">
+//           <div className="page-title-section">
+//             <div>
+//               <h1 className="page-title">
+//                 <Calendar size={28} />
+//                 AI Schedule Generator
+//               </h1>
+//               <p className="page-subtitle">
+//                 Smart scheduling with teacher assignments and room allocations
+//                 {isBTLED && yearLevel === 3 && (
+//                   <span style={{ marginLeft: '1rem', background: 'rgba(255,255,255,0.2)', padding: '0.25rem 0.75rem', borderRadius: '20px' }}>
+//                     Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}
+//                   </span>
+//                 )}
+//               </p>
+//             </div>
+
+//             <div className="header-actions">
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={async () => {
+//                   setLoading(true);
+//                   await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+//                   setLoading(false);
+//                   setToast({ type: 'success', message: 'Data reloaded successfully.' });
+//                 }}
+//                 disabled={loading || generating}
+//               >
+//                 <RefreshCw size={16} />
+//                 Reload Data
+//               </button>
+
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setScheduleResult(null);
+//                   setConflicts([]);
+//                   setSelectedSubjects([]);
+//                   setToast({ type: 'success', message: 'Selections cleared.' });
+//                 }}
+//                 disabled={generating}
+//               >
+//                 <X size={16} />
+//                 Reset
+//               </button>
+
+//               <button
+//                 className="action-btn primary"
+//                 onClick={() => setShowConfirm(true)}
+//                 disabled={generating || !courseId || selectedSubjects.length === 0}
+//               >
+//                 <CheckCircle size={16} />
+//                 {generating ? 'Generating…' : 'Generate Schedule'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Courses</div>
+//             <div className="stat-value">{overallStats.totalCourses}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Available Subjects</div>
+//             <div className="stat-value">{overallStats.totalSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Subjects</div>
+//             <div className="stat-value">{overallStats.selectedSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Availability Records</div>
+//             <div className="stat-value">{availabilityDataCount}</div>
+//           </div>
+//         </div>
+
+//         <div className="page-content-grid">
+//           <DeanScheduleForm
+//             courses={courses}
+//             courseId={courseId}
+//             setCourseId={setCourseId}
+//             yearLevel={yearLevel}
+//             setYearLevel={setYearLevel}
+//             semester={semester}
+//             setSemester={setSemester}
+//             studentsCount={studentsCount}
+//             setStudentsCount={setStudentsCount}
+//             sectionCount={sectionCount}
+//             setSectionCount={setSectionCount}
+//             considerAvailability={considerAvailability}
+//             setConsiderAvailability={setConsiderAvailability}
+//             generating={generating}
+//             availabilityLoaded={availabilityLoaded}
+//             availabilityDataCount={availabilityDataCount}
+//           />
+
+//           <BTLEDMajorSelector
+//             major={btledMajor}
+//             onChange={setBtledMajor}
+//             show={showMajorSelector}
+//           />
+
+//           <SubjectList
+//             subjects={subjects}
+//             selectedSubjects={selectedSubjects}
+//             toggleSubject={toggleSubject}
+//             generating={generating}
+//             loading={loadingSubjects}
+//             courseId={courseId}
+//           />
+//         </div>
+
+//         <SchedulePreview
+//           scheduleResult={scheduleResult}
+//           conflicts={conflicts}
+//           subjects={subjects}
+//           rooms={rooms}
+//           sectionCount={sectionCount}
+//           onClear={() => {
+//             setScheduleResult(null);
+//             setConflicts([]);
+//           }}
+//         />
+//       </div>
+
+//       <GenerateModal
+//         show={showConfirm}
+//         onHide={() => setShowConfirm(false)}
+//         onConfirm={handleGenerate}
+//         courses={courses}
+//         courseId={courseId}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         sectionCount={sectionCount}
+//         studentsCount={studentsCount}
+//         selectedSubjects={selectedSubjects}
+//         schedulePattern={schedulePattern}
+//         considerAvailability={considerAvailability}
+//       />
+
+//       {toast && (
+//         <Toast
+//           message={toast.message}
+//           type={toast.type === 'success' ? 'success' : 'error'}
+//           onClose={() => setToast(null)}
+//         />
+//       )}
+//     </>
+//   );
+// }
+
+//WORKING BUT WITHOUT DOWNLOAD BUTTON
+
+// import React, { useEffect, useState, useMemo, useCallback } from 'react';
+// import { 
+//   Calendar, Settings, CheckCircle, AlertTriangle, Clock, BookOpen, 
+//   Loader, RefreshCw, Search, X, ChevronDown, ChevronUp, Award 
+// } from 'lucide-react';
+
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// const BTLED_MAJORS = [
+//   { value: 'ICT', label: 'ICT - Information and Communication Technology' },
+//   { value: 'HE', label: 'HE - Home Economics' }
+// ];
+
+// // ============================================
+// // UTILITY FUNCTIONS
+// // ============================================
+
+// const formatTime = (time) => {
+//   const [hours, minutes] = time.split(':');
+//   const hour = parseInt(hours);
+//   const period = hour >= 12 ? 'PM' : 'AM';
+//   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+//   return `${displayHour}:${minutes} ${period}`;
+// };
+
+// const formatTimeRange = (startTime, endTime) => {
+//   return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+// };
+
+// // FIXED: Duration-aware time range display
+// const slotToTimeRange = (slotIndex, durationHours) => {
+//   const duration = Number(durationHours) || 1;
+//   const startHour = 7 + Number(slotIndex);
+//   const endHour = startHour + duration;
+
+//   const formatHour = (hour) => {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
+//     return `${adjusted}:00 ${period}`;
+//   };
+
+//   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+// };
+
+// const isBTLEDCourse = (courseCode) => {
+//   return courseCode === 'BTLED' || courseCode?.startsWith('BTLED');
+// };
+
+// // ============================================
+// // TOAST NOTIFICATION COMPONENT
+// // ============================================
+
+// const Toast = ({ message, type, onClose }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => onClose(), 5000);
+//     return () => clearTimeout(timer);
+//   }, [onClose]);
+
+//   return (
+//     <div className={`edusched-toast toast-${type}`}>
+//       <div className="toast-icon">
+//         {type === "success" ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+//       </div>
+//       <span className="toast-message">{message}</span>
+//       <button className="toast-close" onClick={onClose}>×</button>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // LOADING STATE COMPONENT
+// // ============================================
+
+// const LoadingState = ({ message = 'Loading...' }) => (
+//   <div style={{ textAlign: 'center', padding: '3rem' }}>
+//     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
+//     <p style={{ color: '#666', fontSize: '1rem' }}>{message}</p>
+//   </div>
+// );
+
+// // ============================================
+// // BTLED MAJOR SELECTOR COMPONENT
+// // ============================================
+
+// const BTLEDMajorSelector = React.memo(({ major, onChange, show }) => {
+//   if (!show) return null;
+
+//   return (
+//     <div className="config-card" style={{ gridColumn: '1 / -1' }}>
+//       <div className="config-card-header">
+//         <Award size={20} />
+//         <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>BTLED Major</h3>
+//       </div>
+//       <div className="config-card-body">
+//         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+//           {BTLED_MAJORS.map(m => (
+//             <button
+//               key={m.value}
+//               className={`action-btn ${major === m.value ? 'primary' : 'secondary'}`}
+//               onClick={() => onChange(m.value)}
+//               style={{ flex: 1, minWidth: '200px' }}
+//             >
+//               {m.label}
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ============================================
+// // SCHEDULE FORM COMPONENT
+// // ============================================
+
+// const DeanScheduleForm = ({ 
+//   courses, 
+//   courseId, 
+//   setCourseId,
+//   yearLevel,
+//   setYearLevel,
+//   semester,
+//   setSemester,
+//   studentsCount,
+//   setStudentsCount,
+//   sectionCount,
+//   setSectionCount,
+//   considerAvailability,
+//   setConsiderAvailability,
+//   generating,
+//   availabilityLoaded,
+//   availabilityDataCount
+// }) => (
+//   <div className="config-card">
+//     <div className="config-card-header">
+//       <Settings size={20} />
+//       <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Schedule Configuration</h3>
+//     </div>
+//     <div className="config-card-body">
+//       <div className="form-grid">
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
+//             Course *
+//           </label>
+//           <select
+//             className="form-input-custom"
+//             value={courseId}
+//             onChange={e => setCourseId(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="">-- Select Course --</option>
+//             {courses.map(c => (
+//               <option key={c.id} value={c.id}>
+//                 {c.code} — {c.name}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Year Level *</label>
+//           <select
+//             className="form-input-custom"
+//             value={yearLevel}
+//             onChange={e => setYearLevel(Number(e.target.value))}
+//             disabled={generating}
+//           >
+//             {[1, 2, 3, 4].map(y => (
+//               <option key={y} value={y}>{y}</option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Semester *</label>
+//           <select
+//             className="form-input-custom"
+//             value={semester}
+//             onChange={e => setSemester(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="1">1st Semester</option>
+//             <option value="2">2nd Semester</option>
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Students per Section</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             value={studentsCount}
+//             onChange={e => setStudentsCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Number of Sections</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             max="10"
+//             value={sectionCount}
+//             onChange={e => setSectionCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+//       </div>
+
+//       <div className="availability-section">
+//         <label className="checkbox-container">
+//           <input
+//             type="checkbox"
+//             checked={considerAvailability}
+//             onChange={e => setConsiderAvailability(e.target.checked)}
+//             disabled={generating}
+//           />
+//           <span className="checkbox-label">
+//             <strong>Consider Instructor Availability</strong>
+//             <br />
+//             <small style={{ color: '#666' }}>
+//               When enabled, schedule will respect instructor availability windows.
+//               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+//             </small>
+//           </span>
+//         </label>
+//         <div style={{ marginTop: '1rem', padding: '1rem', background: '#E3F2FD', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+//           <small style={{ color: '#1565C0', display: 'block', lineHeight: '1.6' }}>
+//             <strong>Schedule Pattern:</strong> The system will automatically determine the best pattern based on subject units and duration:
+//             <br />• <strong>MWF</strong> (Monday-Wednesday-Friday): For subjects requiring 3 sessions per week
+//             <br />• <strong>TTHS</strong> (Tuesday-Thursday-Saturday): For subjects requiring 2-3 sessions with longer durations
+//           </small>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+// // ============================================
+// // SUBJECT LIST COMPONENT
+// // ============================================
+
+// const SubjectList = ({ 
+//   subjects, 
+//   selectedSubjects, 
+//   toggleSubject, 
+//   generating, 
+//   loading, 
+//   courseId 
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredSubjects = useMemo(() => {
+//     if (!searchTerm) return subjects;
+//     const term = searchTerm.toLowerCase();
+//     return subjects.filter(s => 
+//       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
+//       (s.description || '').toLowerCase().includes(term)
+//     );
+//   }, [subjects, searchTerm]);
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//           <BookOpen size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
+//           {subjects.length > 0 && (
+//             <span className="count-badge">
+//               {selectedSubjects.length} / {subjects.length}
+//             </span>
+//           )}
+//         </div>
+//         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//       </div>
+      
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {loading ? (
+//             <LoadingState message="Loading subjects..." />
+//           ) : !courseId ? (
+//             <div className="info-box">
+//               <AlertTriangle size={18} />
+//               <span>Please select a course first.</span>
+//             </div>
+//           ) : subjects.length === 0 ? (
+//             <div className="warning-box">
+//               No subjects available for this course, year, and semester.
+//             </div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search subjects..."
+//                   value={searchTerm}
+//                   onChange={e => setSearchTerm(e.target.value)}
+//                 />
+//                 {searchTerm && (
+//                   <button onClick={() => setSearchTerm('')} className="clear-btn">
+//                     <X size={16} />
+//                   </button>
+//                 )}
+//               </div>
+
+//               <div className="items-list">
+//                 {filteredSubjects.map(s => (
+//                   <label 
+//                     key={s.id} 
+//                     className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedSubjects.includes(s.id)}
+//                       onChange={() => toggleSubject(s.id)}
+//                       disabled={generating}
+//                     />
+//                     <div className="item-content">
+//                       <div>
+//                         <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+//                         <br />
+//                         <small style={{ color: '#666' }}>{s.description}</small>
+//                         {s.teacher_name && (
+//                           <>
+//                             <br />
+//                             <small style={{ color: COLORS.accent, fontWeight: 600 }}>
+//                               Teacher: {s.teacher_name}
+//                             </small>
+//                           </>
+//                         )}
+//                         {s.duration && (
+//                           <>
+//                             <br />
+//                             <small style={{ color: '#999' }}>
+//                               Duration: {Number(s.duration)} hour{Number(s.duration) > 1 ? 's' : ''} per session
+//                             </small>
+//                           </>
+//                         )}
+//                       </div>
+//                       <span className="units-badge">{s.units}u</span>
+//                     </div>
+//                   </label>
+//                 ))}
+//                 {filteredSubjects.length === 0 && (
+//                   <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
+//                     No subjects match your search
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // SCHEDULE PREVIEW COMPONENT (FIXED)
+// // ============================================
+
+// const SchedulePreview = ({ 
+//   scheduleResult, 
+//   conflicts, 
+//   subjects, 
+//   rooms, 
+//   sectionCount,
+//   onClear 
+// }) => {
+//   if (!scheduleResult?.assignments) return null;
+
+//   const grouped = {};
+//   scheduleResult.assignments.forEach(a => {
+//     if (!grouped[a.section_index]) grouped[a.section_index] = [];
+//     grouped[a.section_index].push(a);
+//   });
+
+//   for (let i = 0; i < sectionCount; i++) {
+//     if (!grouped[i]) grouped[i] = [];
+//   }
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   return (
+//     <div style={{ marginTop: '2rem' }}>
+//       {conflicts.length > 0 && (
+//         <div className="conflicts-box">
+//           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+//             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>
+//                 Schedule Conflicts Detected ({conflicts.length})
+//               </h4>
+//               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+//                 {conflicts.map((conflict, idx) => (
+//                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
+//                     <br />
+//                     <small style={{ color: '#666' }}>{conflict.details}</small>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="preview-header">
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//           <Calendar size={24} style={{ color: COLORS.accent }} />
+//           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>
+//             Generated Schedule
+//           </h3>
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+//           {scheduleResult.stats && (
+//             <>
+//               <span className="preview-badge success">
+//                 {scheduleResult.stats.totalAssignments} assignments
+//               </span>
+//               <span className="preview-badge success">
+//                 {sectionCount} section{sectionCount !== 1 ? 's' : ''}
+//               </span>
+//               {conflicts.length === 0 ? (
+//                 <span className="preview-badge success">
+//                   <CheckCircle size={14} style={{ marginRight: '0.25rem' }} />
+//                   No Conflicts
+//                 </span>
+//               ) : (
+//                 <span className="preview-badge danger">
+//                   <AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />
+//                   {conflicts.length} Conflicts
+//                 </span>
+//               )}
+//             </>
+//           )}
+//           <button className="action-btn secondary" onClick={onClear}>
+//             <X size={16} />
+//             Clear
+//           </button>
+//         </div>
+//       </div>
+
+//       {Object.keys(grouped).sort((a, b) => Number(a) - Number(b)).map(secIdx => {
+//         const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+//         const sectionAssignments = grouped[secIdx];
+        
+//         const subjectMap = new Map();
+//         sectionAssignments.forEach(a => {
+//           if (!subjectMap.has(a.subject_id)) {
+//             subjectMap.set(a.subject_id, {
+//               subject_id: a.subject_id,
+//               instructor_name: a.instructor_name,
+//               room_id: a.room_id,
+//               slots: []
+//             });
+//           }
+//           subjectMap.get(a.subject_id).slots.push({
+//             day: a.day,
+//             slot_index: a.slot_index
+//           });
+//         });
+
+//         return (
+//           <div key={secIdx} className="section-card">
+//             <div className="section-header">
+//               <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Section {sectionLetter}</h4>
+//               <span style={{ opacity: 0.9, fontSize: '0.9rem' }}>
+//                 {sectionAssignments.length} time slot{sectionAssignments.length !== 1 ? 's' : ''} assigned
+//               </span>
+//             </div>
+//             {sectionAssignments.length === 0 ? (
+//               <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+//                 <Clock size={24} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+//                 <p>No classes assigned to this section yet</p>
+//               </div>
+//             ) : (
+//               <div style={{ overflowX: 'auto' }}>
+//                 <table className="schedule-table">
+//                   <thead>
+//                     <tr>
+//                       <th>Subject</th>
+//                       <th>Instructor</th>
+//                       <th>Room</th>
+//                       {days.map(d => (
+//                         <th key={d}>{d}</th>
+//                       ))}
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {Array.from(subjectMap.values()).map((subjectData, i) => {
+//                       const subject = subjects.find(s => s.id === subjectData.subject_id);
+//                       const room = rooms.find(rm => rm.id === subjectData.room_id);
+
+//                       return (
+//                         <tr key={i}>
+//                           <td>
+//                             <strong style={{ color: COLORS.accent }}>
+//                               {subject?.subject_code || subjectData.subject_id}
+//                             </strong>
+//                             <br />
+//                             <small style={{ color: '#666' }}>{subject?.description}</small>
+//                             {subject?.duration > 1 && (
+//                               <>
+//                                 <br />
+//                                 <small style={{ color: COLORS.secondary, fontWeight: 600 }}>
+//                                   {Number(subject.duration)}-hour session
+//                                 </small>
+//                               </>
+//                             )}
+//                           </td>
+//                           <td>{subjectData.instructor_name || 'TBD'}</td>
+//                           <td>
+//                             <strong>{room?.name || 'TBD'}</strong>
+//                           </td>
+//                           {days.map(day => {
+//                             const daySlots = subjectData.slots.filter(slot => slot.day === day);
+//                             return (
+//                               <td key={day}>
+//                                 {daySlots.length > 0 ? (
+//                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+//                                     {daySlots.map((slot, idx) => {
+//                                       // Find the assignment to get duration info
+//                                       const assignment = sectionAssignments.find(a => 
+//                                         a.day === day && a.slot_index === slot.slot_index && a.subject_id === subjectData.subject_id
+//                                       );
+                                      
+//                                       // Get duration from assignment or subject
+//                                       let duration = 1;
+//                                       if (assignment?.duration) {
+//                                         duration = Number(assignment.duration);
+//                                       } else {
+//                                         const subjDetail = subjects.find(s => s.id === subjectData.subject_id);
+//                                         duration = subjDetail?.duration ? Number(subjDetail.duration) : 1;
+//                                       }
+
+//                                       return (
+//                                         <span key={idx} className="time-badge">
+//                                           <Clock size={12} />
+//                                           {slotToTimeRange(slot.slot_index, duration)}
+//                                         </span>
+//                                       );
+//                                     })}
+//                                   </div>
+//                                 ) : (
+//                                   <span style={{ color: '#ccc' }}>—</span>
+//                                 )}
+//                               </td>
+//                             );
+//                           })}
+//                         </tr>
+//                       );
+//                     })}
+//                   </tbody>
+//                 </table>
+//               </div>
+//             )}
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // CONFIRMATION MODAL COMPONENT
+// // ============================================
+
+// const GenerateModal = ({ 
+//   show, 
+//   onHide, 
+//   onConfirm, 
+//   courses, 
+//   courseId, 
+//   yearLevel, 
+//   semester, 
+//   sectionCount, 
+//   studentsCount, 
+//   selectedSubjects, 
+//   schedulePattern,
+//   considerAvailability 
+// }) => {
+//   if (!show) return null;
+
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header-custom">
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <Settings size={24} />
+//             <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
+//               Confirm Schedule Generation
+//             </h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+//         <div className="modal-body-custom">
+//           <div className="modal-info-grid">
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Course:</strong>
+//               <p>{selectedCourse?.name || 'N/A'}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Year Level:</strong>
+//               <p>{yearLevel}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Semester:</strong>
+//               <p>{semester}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Sections:</strong>
+//               <p>{sectionCount} (Section {String.fromCharCode(65)} - Section {String.fromCharCode(65 + sectionCount - 1)})</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Students/Section:</strong>
+//               <p>{studentsCount}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Subjects:</strong>
+//               <p>{selectedSubjects.length}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Schedule Pattern:</strong>
+//               <p>Auto-determined (MWF/TTHS)</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
+//               <p>
+//                 {considerAvailability ? (
+//                   <span className="modal-badge success">Enforced</span>
+//                 ) : (
+//                   <span className="modal-badge secondary">Ignored</span>
+//                 )}
+//               </p>
+//             </div>
+//           </div>
+//           <div className="modal-info-box">
+//             <AlertTriangle size={18} />
+//             <small>
+//               The system will create {sectionCount} section{sectionCount !== 1 ? 's' : ''} and generate a complete schedule
+//               for each section using assigned teachers and rooms.
+//             </small>
+//           </div>
+//         </div>
+//         <div className="modal-footer-custom">
+//           <button className="action-btn secondary" onClick={onHide}>
+//             Cancel
+//           </button>
+//           <button className="action-btn primary" onClick={onConfirm}>
+//             <CheckCircle size={16} />
+//             Confirm & Generate
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // MAIN COMPONENT
+// // ============================================
+
+// export default function DeanSchedulePage() {
+//   const [courses, setCourses] = useState([]);
+//   const [courseId, setCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [btledMajor, setBtledMajor] = useState('ICT');
+//   const [studentsCount, setStudentsCount] = useState(30);
+//   const [sectionCount, setSectionCount] = useState(1);
+//   const [schedulePattern, setSchedulePattern] = useState('BOTH');
+  
+//   const [subjects, setSubjects] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  
+//   const [availabilityData, setAvailabilityData] = useState({});
+//   const [showConfirm, setShowConfirm] = useState(false);
+//   const [generating, setGenerating] = useState(false);
+//   const [scheduleResult, setScheduleResult] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const [considerAvailability, setConsiderAvailability] = useState(true);
+//   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+//   const [conflicts, setConflicts] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [rooms, setRooms] = useState([]);
+
+//   useEffect(() => {
+//     const initData = async () => {
+//       setLoading(true);
+//       await Promise.all([
+//         fetchCourses(),
+//         fetchAvailabilityData(),
+//         fetchRooms()
+//       ]);
+//       setLoading(false);
+//     };
+//     initData();
+//   }, []);
+
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching courses:', err);
+//       setCourses([]);
+//     }
+//   }, []);
+
+//   const fetchRooms = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/rooms`);
+//       const data = await res.json();
+//       setRooms(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching rooms:', err);
+//       setRooms([]);
+//     }
+//   }, []);
+
+//   const fetchAvailabilityData = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructor-availability`);
+//       if (!res.ok) throw new Error('Failed to fetch availability');
+//       const data = await res.json();
+      
+//       const availMap = {};
+//       if (Array.isArray(data)) {
+//         data.forEach(item => {
+//           const name = item.instructorName || 'Unknown';
+//           if (!availMap[name]) availMap[name] = [];
+//           availMap[name].push({
+//             day: item.day,
+//             start_time: item.start_time,
+//             end_time: item.end_time
+//           });
+//         });
+//       }
+//       setAvailabilityData(availMap);
+//       setAvailabilityLoaded(true);
+//     } catch (err) {
+//       console.error('Error fetching availability data:', err);
+//       setAvailabilityLoaded(true);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     if (!courseId) {
+//       setSubjects([]);
+//       setSelectedSubjects([]);
+//       return;
+//     }
+
+//     const loadSubjects = async () => {
+//       setLoadingSubjects(true);
+//       try {
+//         const params = new URLSearchParams({
+//           courseId,
+//           yearLevel,
+//           semester
+//         });
+
+//         const selectedCourse = courses.find(c => c.id === Number(courseId));
+//         const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+//         if (isBTLED && yearLevel === 3) {
+//           params.append('major', btledMajor);
+//         }
+
+//         const res = await fetch(`${API}/api/subjects?${params}`);
+//         const data = await res.json();
+//         const arr = Array.isArray(data) ? data : [];
+//         setSubjects(arr);
+//         setSelectedSubjects(arr.map(s => s.id || s.subject_id).filter(Boolean));
+//       } catch (err) {
+//         console.error('Error loading subjects:', err);
+//         setSubjects([]);
+//       } finally {
+//         setLoadingSubjects(false);
+//       }
+//     };
+
+//     loadSubjects();
+//   }, [courseId, yearLevel, semester, btledMajor, courses]);
+
+//   const toggleSubject = useCallback((id) => {
+//     setSelectedSubjects(prev =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   }, []);
+
+//   const detectConflicts = useCallback((assignments) => {
+//     const conflictList = [];
+//     const roomUsage = new Map();
+//     const instructorUsage = new Map();
+//     const sectionUsage = new Map();
+
+//     assignments.forEach((a) => {
+//       const room = rooms.find(r => r.id === a.room_id);
+
+//       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
+//       if (roomUsage.has(roomKey)) {
+//         conflictList.push({
+//           type: 'room',
+//           message: `Room "${room?.name || a.room_id}" is double-booked on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Conflict between subjects`
+//         });
+//       }
+//       roomUsage.set(roomKey, { ...a });
+
+//       const instrKey = `${a.instructor_name}-${a.day}-${a.slot_index}`;
+//       if (instructorUsage.has(instrKey)) {
+//         conflictList.push({
+//           type: 'instructor',
+//           message: `Instructor "${a.instructor_name}" is scheduled twice on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Teaching multiple classes`
+//         });
+//       }
+//       instructorUsage.set(instrKey, { ...a });
+
+//       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
+//       if (sectionUsage.has(sectionKey)) {
+//         const sectionName = String.fromCharCode(65 + a.section_index);
+//         conflictList.push({
+//           type: 'section',
+//           message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Multiple classes at same time`
+//         });
+//       }
+//       sectionUsage.set(sectionKey, { ...a });
+//     });
+
+//     return conflictList;
+//   }, [rooms]);
+
+//   const handleGenerate = useCallback(async () => {
+//     if (!courseId || selectedSubjects.length === 0) {
+//       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
+//       return;
+//     }
+
+//     setShowConfirm(false);
+//     setGenerating(true);
+//     setToast(null);
+//     setScheduleResult(null);
+//     setConflicts([]);
+
+//     try {
+//       const selectedCourse = courses.find(c => c.id === Number(courseId));
+//       const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+//       const payload = {
+//         courseId: Number(courseId),
+//         yearLevel: Number(yearLevel),
+//         semester: String(semester),
+//         studentsCount: Number(studentsCount),
+//         sectionCount: Number(sectionCount),
+//         subjects: selectedSubjects,
+//         schedulePattern: schedulePattern,
+//         considerInstructorAvailability: considerAvailability,
+//         major: isBTLED && yearLevel === 3 ? btledMajor : undefined
+//       };
+
+//       const res = await fetch(`${API}/api/scheduler/generate`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//       });
+
+//       const data = await res.json();
+
+//       if (!res.ok) {
+//         throw new Error(data.detail || data.error || 'Schedule generation failed');
+//       }
+
+//       const detectedConflicts = detectConflicts(data.assignments || []);
+//       setConflicts(detectedConflicts);
+//       setScheduleResult(data);
+      
+//       if (detectedConflicts.length > 0) {
+//         setToast({ 
+//           type: 'error', 
+//           message: `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` 
+//         });
+//       } else {
+//         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
+//       }
+//     } catch (err) {
+//       console.error('Error generating schedule:', err);
+//       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
+//     } finally {
+//       setGenerating(false);
+//     }
+//   }, [
+//     courseId, selectedSubjects, considerAvailability, yearLevel, semester,
+//     studentsCount, sectionCount, schedulePattern, btledMajor, courses, detectConflicts
+//   ]);
+
+//   const selectedCourse = useMemo(() => courses.find(c => c.id === Number(courseId)), [courses, courseId]);
+//   const isBTLED = useMemo(() => selectedCourse && isBTLEDCourse(selectedCourse.code), [selectedCourse]);
+//   const showMajorSelector = isBTLED && yearLevel === 3;
+
+//   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
+
+//   const overallStats = useMemo(() => {
+//     return {
+//       totalCourses: courses.length,
+//       totalSubjects: subjects.length,
+//       selectedSubjects: selectedSubjects.length
+//     };
+//   }, [courses.length, subjects.length, selectedSubjects.length]);
+
+//   if (loading) {
+//     return (
+//       <div style={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         minHeight: '100vh',
+//         background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)`
+//       }}>
+//         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
+//         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         * {
+//           box-sizing: border-box;
+//         }
+
+//         body {
+//           margin: 0;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+//         }
+
+//         .schedule-container {
+//           padding: 2rem;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           min-height: 100vh;
+//         }
+
+//         .page-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           margin-bottom: 2rem;
+//           color: white;
+//         }
+
+//         .page-title-section {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//         }
+
+//         .page-title {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           margin: 0 0 0.5rem 0;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           letter-spacing: -0.5px;
+//         }
+
+//         .page-subtitle {
+//           font-size: 1.05rem;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn {
+//           border: none;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           font-size: 0.95rem;
+//         }
+
+//         .action-btn.primary {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//         }
+
+//         .action-btn.secondary {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           backdrop-filter: blur(10px);
+//         }
+
+//         .action-btn:hover:not(:disabled) {
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn.primary:hover:not(:disabled) {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%);
+//         }
+
+//         .action-btn.secondary:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//         }
+
+//         .action-btn:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         .statistics-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stat-card {
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           border-left: 4px solid ${COLORS.accent};
+//           animation: fadeIn 0.5s ease;
+//         }
+
+//         @keyframes fadeIn {
+//           from { opacity: 0; transform: translateY(10px); }
+//           to { opacity: 1; transform: translateY(0); }
+//         }
+
+//         .stat-label {
+//           color: #666;
+//           font-size: 0.85rem;
+//           font-weight: 500;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .stat-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//         }
+
+//         .config-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         @keyframes slideIn {
+//           from { opacity: 0; transform: translateY(20px); }
+//           to { opacity: 1; transform: translateY(0); }
+//         }
+
+//         .config-card-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .config-card-body {
+//           padding: 2rem;
+//         }
+
+//         .form-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .form-group {
+//           display: flex;
+//           flex-direction: column;
+//         }
+
+//         .form-label-custom {
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.5rem;
+//           display: flex;
+//           align-items: center;
+//           font-size: 0.9rem;
+//         }
+
+//         .form-input-custom {
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 0.75rem;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//           background: white;
+//         }
+
+//         .form-input-custom:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .form-input-custom:disabled {
+//           background: #f5f5f5;
+//           cursor: not-allowed;
+//         }
+
+//         .availability-section {
+//           background: ${COLORS.lightest};
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//         }
+
+//         .checkbox-container {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-container input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//         }
+
+//         .checkbox-label {
+//           flex: 1;
+//           color: ${COLORS.primary};
+//         }
+
+//         .selection-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           overflow: hidden;
+//           animation: slideIn 0.3s ease;
+//         }
+
+//         .selection-card-header {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           cursor: pointer;
+//           user-select: none;
+//           transition: all 0.3s ease;
+//         }
+
+//         .selection-card-header:hover {
+//           background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%);
+//         }
+
+//         .selection-card-body {
+//           padding: 1.5rem;
+//         }
+
+//         .count-badge {
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.3rem 0.75rem;
+//           border-radius: 12px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .search-box {
+//           position: relative;
+//           margin-bottom: 1rem;
+//         }
+
+//         .search-box input {
+//           width: 100%;
+//           padding: 0.75rem 1rem 0.75rem 2.75rem;
+//           border: 2px solid #90E0EF;
+//           border-radius: 10px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .search-box input:focus {
+//           outline: none;
+//           border-color: ${COLORS.accent};
+//           box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
+//         }
+
+//         .search-icon-inline {
+//           position: absolute;
+//           left: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: ${COLORS.accent};
+//           pointer-events: none;
+//         }
+
+//         .clear-btn {
+//           position: absolute;
+//           right: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           color: #999;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           transition: color 0.3s ease;
+//         }
+
+//         .clear-btn:hover {
+//           color: ${COLORS.accent};
+//         }
+
+//         .items-list {
+//           max-height: 400px;
+//           overflow-y: auto;
+//         }
+
+//         .item-checkbox {
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 1rem;
+//           padding: 1rem;
+//           margin-bottom: 0.75rem;
+//           border-radius: 10px;
+//           border: 2px solid #E9ECEF;
+//           background: #F8F9FA;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .item-checkbox.selected {
+//           background: #E6F7FF;
+//           border-color: ${COLORS.light};
+//         }
+
+//         .item-checkbox:hover {
+//           border-color: ${COLORS.accent};
+//           transform: translateX(4px);
+//         }
+
+//         .item-checkbox input[type="checkbox"] {
+//           margin-top: 0.25rem;
+//           width: 18px;
+//           height: 18px;
+//           cursor: pointer;
+//           flex-shrink: 0;
+//         }
+
+//         .item-content {
+//           flex: 1;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .units-badge {
+//           background: #6c757d;
+//           color: white;
+//           padding: 0.25rem 0.6rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .warning-box {
+//           background: #FFF3CD;
+//           border: 2px solid #FFE69C;
+//           border-radius: 10px;
+//           padding: 1.5rem;
+//           color: #856404;
+//         }
+
+//         .conflicts-box {
+//           background: #FFE6E6;
+//           border: 2px solid #FFB3B3;
+//           border-radius: 12px;
+//           padding: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .preview-badge {
+//           padding: 0.5rem 1rem;
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .preview-badge.success {
+//           background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+//           color: white;
+//         }
+
+//         .preview-badge.danger {
+//           background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%);
+//           color: white;
+//         }
+
+//         .section-card {
+//           background: white;
+//           border-radius: 12px;
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+//           margin-bottom: 2rem;
+//           overflow: hidden;
+//         }
+
+//         .section-header {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.25rem 1.5rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .schedule-table {
+//           width: 100%;
+//           border-collapse: collapse;
+//           font-size: 0.9rem;
+//         }
+
+//         .schedule-table thead {
+//           background: ${COLORS.lightest};
+//           color: ${COLORS.primary};
+//         }
+
+//         .schedule-table th {
+//           padding: 0.75rem;
+//           font-weight: 600;
+//           text-align: center;
+//           border: 1px solid #90E0EF;
+//           font-size: 0.85rem;
+//           text-transform: uppercase;
+//           letter-spacing: 0.5px;
+//         }
+
+//         .schedule-table td {
+//           padding: 0.75rem;
+//           border: 1px solid #E8F4F8;
+//           text-align: center;
+//           vertical-align: middle;
+//           transition: all 0.3s ease;
+//         }
+
+//         .schedule-table tbody tr:nth-child(odd) {
+//           background: #FAFCFD;
+//         }
+
+//         .schedule-table tbody tr:hover {
+//           background: #E8F4F8;
+//         }
+
+//         .time-badge {
+//           background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%);
+//           color: ${COLORS.primary};
+//           padding: 0.4rem 0.8rem;
+//           border-radius: 6px;
+//           font-weight: 600;
+//           font-size: 0.8rem;
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.25rem;
+//         }
+
+//         .modal-overlay {
+//           position: fixed;
+//           inset: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9998;
+//           padding: 1rem;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 600px;
+//           width: 100%;
+//           max-height: 90vh;
+//           overflow-y: auto;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+//           animation: slideUp 0.3s ease;
+//         }
+
+//         @keyframes slideUp {
+//           from { transform: translateY(50px); opacity: 0; }
+//           to { transform: translateY(0); opacity: 1; }
+//         }
+
+//         .modal-header-custom {
+//           background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
+//           color: white;
+//           padding: 1.5rem 2rem;
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .modal-close {
+//           background: none;
+//           border: none;
+//           color: white;
+//           font-size: 2rem;
+//           cursor: pointer;
+//           line-height: 1;
+//           padding: 0;
+//           transition: transform 0.3s ease;
+//         }
+
+//         .modal-close:hover {
+//           transform: scale(1.2);
+//         }
+
+//         .modal-body-custom {
+//           padding: 2rem;
+//         }
+
+//         .modal-info-grid {
+//           display: grid;
+//           grid-template-columns: repeat(2, 1fr);
+//           gap: 1.5rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .modal-info-grid > div {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//         }
+
+//         .modal-info-grid p {
+//           margin: 0;
+//           color: #333;
+//           font-size: 0.95rem;
+//         }
+
+//         .modal-badge {
+//           display: inline-block;
+//           padding: 0.25rem 0.75rem;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .modal-badge.success {
+//           background: #10B981;
+//           color: white;
+//         }
+
+//         .modal-badge.secondary {
+//           background: #6c757d;
+//           color: white;
+//         }
+
+//         .modal-info-box {
+//           background: #E3F2FD;
+//           border: 2px solid #90CAF9;
+//           border-radius: 10px;
+//           padding: 1rem;
+//           display: flex;
+//           align-items: flex-start;
+//           gap: 0.75rem;
+//           color: #1565C0;
+//         }
+
+//         .modal-footer-custom {
+//           padding: 1.5rem 2rem;
+//           border-top: 1px solid #E8F4F8;
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 1rem;
+//         }
+
+//         .edusched-toast {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           min-width: 320px;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 1rem 1.5rem;
+//           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           z-index: 9999;
+//           animation: slideInToast 0.3s ease;
+//           border-left: 4px solid;
+//         }
+
+//         @keyframes slideInToast {
+//           from { transform: translateX(400px); opacity: 0; }
+//           to { transform: translateX(0); opacity: 1; }
+//         }
+
+//         .edusched-toast.toast-success { border-left-color: #10B981; }
+//         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
+
+//         .edusched-toast .toast-icon { display: flex; align-items: center; }
+//         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
+//         .edusched-toast .toast-close {
+//           background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280;
+//         }
+//         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
+
+//         .page-content-grid {
+//           display: grid;
+//           gap: 1.5rem;
+//         }
+
+//         .animate-spin {
+//           animation: spin 1s linear infinite;
+//         }
+
+//         @keyframes spin {
+//           from { transform: rotate(0deg); }
+//           to { transform: rotate(360deg); }
+//         }
+
+//         @media (max-width: 768px) {
+//           .schedule-container { padding: 1rem; }
+//           .page-title { font-size: 2rem; }
+//           .form-grid { grid-template-columns: 1fr; }
+//           .modal-info-grid { grid-template-columns: 1fr; }
+//           .statistics-grid { grid-template-columns: repeat(2, 1fr); }
+//         }
+//       `}</style>
+
+//       <div className="schedule-container">
+//         <div className="page-header">
+//           <div className="page-title-section">
+//             <div>
+//               <h1 className="page-title">
+//                 <Calendar size={28} />
+//                 AI Schedule Generator
+//               </h1>
+//               <p className="page-subtitle">
+//                 Smart scheduling with teacher assignments and room allocations
+//                 {isBTLED && yearLevel === 3 && (
+//                   <span style={{ marginLeft: '1rem', background: 'rgba(255,255,255,0.2)', padding: '0.25rem 0.75rem', borderRadius: '20px' }}>
+//                     Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}
+//                   </span>
+//                 )}
+//               </p>
+//             </div>
+
+//             <div className="header-actions">
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={async () => {
+//                   setLoading(true);
+//                   await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+//                   setLoading(false);
+//                   setToast({ type: 'success', message: 'Data reloaded successfully.' });
+//                 }}
+//                 disabled={loading || generating}
+//               >
+//                 <RefreshCw size={16} />
+//                 Reload Data
+//               </button>
+
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setScheduleResult(null);
+//                   setConflicts([]);
+//                   setSelectedSubjects([]);
+//                   setToast({ type: 'success', message: 'Selections cleared.' });
+//                 }}
+//                 disabled={generating}
+//               >
+//                 <X size={16} />
+//                 Reset
+//               </button>
+
+//               <button
+//                 className="action-btn primary"
+//                 onClick={() => setShowConfirm(true)}
+//                 disabled={generating || !courseId || selectedSubjects.length === 0}
+//               >
+//                 <CheckCircle size={16} />
+//                 {generating ? 'Generating…' : 'Generate Schedule'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Courses</div>
+//             <div className="stat-value">{overallStats.totalCourses}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Available Subjects</div>
+//             <div className="stat-value">{overallStats.totalSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Subjects</div>
+//             <div className="stat-value">{overallStats.selectedSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Availability Records</div>
+//             <div className="stat-value">{availabilityDataCount}</div>
+//           </div>
+//         </div>
+
+//         <div className="page-content-grid">
+//           <DeanScheduleForm
+//             courses={courses}
+//             courseId={courseId}
+//             setCourseId={setCourseId}
+//             yearLevel={yearLevel}
+//             setYearLevel={setYearLevel}
+//             semester={semester}
+//             setSemester={setSemester}
+//             studentsCount={studentsCount}
+//             setStudentsCount={setStudentsCount}
+//             sectionCount={sectionCount}
+//             setSectionCount={setSectionCount}
+//             considerAvailability={considerAvailability}
+//             setConsiderAvailability={setConsiderAvailability}
+//             generating={generating}
+//             availabilityLoaded={availabilityLoaded}
+//             availabilityDataCount={availabilityDataCount}
+//           />
+
+//           <BTLEDMajorSelector
+//             major={btledMajor}
+//             onChange={setBtledMajor}
+//             show={showMajorSelector}
+//           />
+
+//           <SubjectList
+//             subjects={subjects}
+//             selectedSubjects={selectedSubjects}
+//             toggleSubject={toggleSubject}
+//             generating={generating}
+//             loading={loadingSubjects}
+//             courseId={courseId}
+//           />
+//         </div>
+
+//         <SchedulePreview
+//           scheduleResult={scheduleResult}
+//           conflicts={conflicts}
+//           subjects={subjects}
+//           rooms={rooms}
+//           sectionCount={sectionCount}
+//           onClear={() => {
+//             setScheduleResult(null);
+//             setConflicts([]);
+//           }}
+//         />
+//       </div>
+
+//       <GenerateModal
+//         show={showConfirm}
+//         onHide={() => setShowConfirm(false)}
+//         onConfirm={handleGenerate}
+//         courses={courses}
+//         courseId={courseId}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         sectionCount={sectionCount}
+//         studentsCount={studentsCount}
+//         selectedSubjects={selectedSubjects}
+//         schedulePattern={schedulePattern}
+//         considerAvailability={considerAvailability}
+//       />
+
+//       {toast && (
+//         <Toast
+//           message={toast.message}
+//           type={toast.type === 'success' ? 'success' : 'error'}
+//           onClose={() => setToast(null)}
+//         />
+//       )}
+//     </>
+//   );
+// }
+
+//FUNCTIONAL WITHOUT DOWNLOAD IMAGE
+
+// import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+// import { 
+//   Calendar, Settings, CheckCircle, AlertTriangle, Clock, BookOpen, 
+//   Loader, RefreshCw, Search, X, ChevronDown, ChevronUp, Award, Download 
+// } from 'lucide-react';
+
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// const BTLED_MAJORS = [
+//   { value: 'ICT', label: 'ICT - Information and Communication Technology' },
+//   { value: 'HE', label: 'HE - Home Economics' }
+// ];
+
+// // ============================================
+// // UTILITY FUNCTIONS
+// // ============================================
+
+// const formatTime = (time) => {
+//   const [hours, minutes] = time.split(':');
+//   const hour = parseInt(hours);
+//   const period = hour >= 12 ? 'PM' : 'AM';
+//   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+//   return `${displayHour}:${minutes} ${period}`;
+// };
+
+// const formatTimeRange = (startTime, endTime) => {
+//   return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+// };
+
+// // FIXED: Duration-aware time range display
+// const slotToTimeRange = (slotIndex, durationHours) => {
+//   const duration = Number(durationHours) || 1;
+//   const startHour = 7 + Number(slotIndex);
+//   const endHour = startHour + duration;
+
+//   const formatHour = (hour) => {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
+//     return `${adjusted}:00 ${period}`;
+//   };
+
+//   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+// };
+
+// const isBTLEDCourse = (courseCode) => {
+//   return courseCode === 'BTLED' || courseCode?.startsWith('BTLED');
+// };
+
+// // ============================================
+// // TOAST NOTIFICATION COMPONENT
+// // ============================================
+
+// const Toast = ({ message, type, onClose }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => onClose(), 5000);
+//     return () => clearTimeout(timer);
+//   }, [onClose]);
+
+//   return (
+//     <div className={`edusched-toast toast-${type}`}>
+//       <div className="toast-icon">
+//         {type === "success" ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+//       </div>
+//       <span className="toast-message">{message}</span>
+//       <button className="toast-close" onClick={onClose}>×</button>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // LOADING STATE COMPONENT
+// // ============================================
+
+// const LoadingState = ({ message = 'Loading...' }) => (
+//   <div style={{ textAlign: 'center', padding: '3rem' }}>
+//     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
+//     <p style={{ color: '#666', fontSize: '1rem' }}>{message}</p>
+//   </div>
+// );
+
+// // ============================================
+// // BTLED MAJOR SELECTOR COMPONENT
+// // ============================================
+
+// const BTLEDMajorSelector = React.memo(({ major, onChange, show }) => {
+//   if (!show) return null;
+
+//   return (
+//     <div className="config-card" style={{ gridColumn: '1 / -1' }}>
+//       <div className="config-card-header">
+//         <Award size={20} />
+//         <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>BTLED Major</h3>
+//       </div>
+//       <div className="config-card-body">
+//         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+//           {BTLED_MAJORS.map(m => (
+//             <button
+//               key={m.value}
+//               className={`action-btn ${major === m.value ? 'primary' : 'secondary'}`}
+//               onClick={() => onChange(m.value)}
+//               style={{ flex: 1, minWidth: '200px' }}
+//             >
+//               {m.label}
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ============================================
+// // SCHEDULE FORM COMPONENT
+// // ============================================
+
+// const DeanScheduleForm = ({ 
+//   courses, 
+//   courseId, 
+//   setCourseId,
+//   yearLevel,
+//   setYearLevel,
+//   semester,
+//   setSemester,
+//   studentsCount,
+//   setStudentsCount,
+//   sectionCount,
+//   setSectionCount,
+//   considerAvailability,
+//   setConsiderAvailability,
+//   generating,
+//   availabilityLoaded,
+//   availabilityDataCount
+// }) => (
+//   <div className="config-card">
+//     <div className="config-card-header">
+//       <Settings size={20} />
+//       <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Schedule Configuration</h3>
+//     </div>
+//     <div className="config-card-body">
+//       <div className="form-grid">
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
+//             Course *
+//           </label>
+//           <select
+//             className="form-input-custom"
+//             value={courseId}
+//             onChange={e => setCourseId(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="">-- Select Course --</option>
+//             {courses.map(c => (
+//               <option key={c.id} value={c.id}>
+//                 {c.code} — {c.name}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Year Level *</label>
+//           <select
+//             className="form-input-custom"
+//             value={yearLevel}
+//             onChange={e => setYearLevel(Number(e.target.value))}
+//             disabled={generating}
+//           >
+//             {[1, 2, 3, 4].map(y => (
+//               <option key={y} value={y}>{y}</option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Semester *</label>
+//           <select
+//             className="form-input-custom"
+//             value={semester}
+//             onChange={e => setSemester(e.target.value)}
+//             disabled={generating}
+//           >
+//             <option value="1">1st Semester</option>
+//             <option value="2">2nd Semester</option>
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Students per Section</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             value={studentsCount}
+//             onChange={e => setStudentsCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label className="form-label-custom">Number of Sections</label>
+//           <input
+//             type="number"
+//             className="form-input-custom"
+//             min="1"
+//             max="10"
+//             value={sectionCount}
+//             onChange={e => setSectionCount(Number(e.target.value))}
+//             disabled={generating}
+//           />
+//         </div>
+//       </div>
+
+//       <div className="availability-section">
+//         <label className="checkbox-container">
+//           <input
+//             type="checkbox"
+//             checked={considerAvailability}
+//             onChange={e => setConsiderAvailability(e.target.checked)}
+//             disabled={generating}
+//           />
+//           <span className="checkbox-label">
+//             <strong>Consider Instructor Availability</strong>
+//             <br />
+//             <small style={{ color: '#666' }}>
+//               When enabled, schedule will respect instructor availability windows.
+//               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+//             </small>
+//           </span>
+//         </label>
+//         <div style={{ marginTop: '1rem', padding: '1rem', background: '#E3F2FD', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+//           <small style={{ color: '#1565C0', display: 'block', lineHeight: '1.6' }}>
+//             <strong>Schedule Pattern:</strong> The system will automatically determine the best pattern based on subject units and duration:
+//             <br />• <strong>MWF</strong> (Monday-Wednesday-Friday): For subjects requiring 3 sessions per week
+//             <br />• <strong>TTHS</strong> (Tuesday-Thursday-Saturday): For subjects requiring 2-3 sessions with longer durations
+//           </small>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+// // ============================================
+// // SUBJECT LIST COMPONENT
+// // ============================================
+
+// const SubjectList = ({ 
+//   subjects, 
+//   selectedSubjects, 
+//   toggleSubject, 
+//   generating, 
+//   loading, 
+//   courseId 
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredSubjects = useMemo(() => {
+//     if (!searchTerm) return subjects;
+//     const term = searchTerm.toLowerCase();
+//     return subjects.filter(s => 
+//       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
+//       (s.description || '').toLowerCase().includes(term)
+//     );
+//   }, [subjects, searchTerm]);
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//           <BookOpen size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
+//           {subjects.length > 0 && (
+//             <span className="count-badge">
+//               {selectedSubjects.length} / {subjects.length}
+//             </span>
+//           )}
+//         </div>
+//         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//       </div>
+      
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {loading ? (
+//             <LoadingState message="Loading subjects..." />
+//           ) : !courseId ? (
+//             <div className="info-box">
+//               <AlertTriangle size={18} />
+//               <span>Please select a course first.</span>
+//             </div>
+//           ) : subjects.length === 0 ? (
+//             <div className="warning-box">
+//               No subjects available for this course, year, and semester.
+//             </div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search subjects..."
+//                   value={searchTerm}
+//                   onChange={e => setSearchTerm(e.target.value)}
+//                 />
+//                 {searchTerm && (
+//                   <button onClick={() => setSearchTerm('')} className="clear-btn">
+//                     <X size={16} />
+//                   </button>
+//                 )}
+//               </div>
+
+//               <div className="items-list">
+//                 {filteredSubjects.map(s => (
+//                   <label 
+//                     key={s.id} 
+//                     className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedSubjects.includes(s.id)}
+//                       onChange={() => toggleSubject(s.id)}
+//                       disabled={generating}
+//                     />
+//                     <div className="item-content">
+//                       <div>
+//                         <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+//                         <br />
+//                         <small style={{ color: '#666' }}>{s.description}</small>
+//                         {s.teacher_name && (
+//                           <>
+//                             <br />
+//                             <small style={{ color: COLORS.accent, fontWeight: 600 }}>
+//                               Teacher: {s.teacher_name}
+//                             </small>
+//                           </>
+//                         )}
+//                         {s.duration && (
+//                           <>
+//                             <br />
+//                             <small style={{ color: '#999' }}>
+//                               Duration: {Number(s.duration)} hour{Number(s.duration) > 1 ? 's' : ''} per session
+//                             </small>
+//                           </>
+//                         )}
+//                       </div>
+//                       <span className="units-badge">{s.units}u</span>
+//                     </div>
+//                   </label>
+//                 ))}
+//                 {filteredSubjects.length === 0 && (
+//                   <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
+//                     No subjects match your search
+//                   </div>
+//                 )}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // SCHEDULE PREVIEW COMPONENT (WITH DOWNLOAD BUTTON)
+// // ============================================
+
+// const SchedulePreview = ({ 
+//   scheduleResult, 
+//   conflicts, 
+//   subjects, 
+//   rooms, 
+//   sectionCount,
+//   onClear 
+// }) => {
+//   const previewRef = useRef(null);
+
+//   const handleDownload = async () => {
+//     if (!previewRef.current) return;
+
+//     try {
+//       const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
+//       const element = previewRef.current;
+
+//       // Clone to remove buttons from image
+//       const clone = element.cloneNode(true);
+//       const buttons = clone.querySelectorAll('.action-btn.secondary');
+//       buttons.forEach(btn => btn.remove());
+
+//       const container = document.createElement('div');
+//       container.style.position = 'absolute';
+//       container.style.left = '-9999px';
+//       container.style.background = 'white';
+//       container.style.padding = '40px';
+//       container.style.width = 'fit-content';
+//       container.appendChild(clone);
+//       document.body.appendChild(container);
+
+//       const canvas = await html2canvas(clone, {
+//         backgroundColor: '#ffffff',
+//         scale: 2,
+//         logging: false,
+//         useCORS: true
+//       });
+
+//       document.body.removeChild(container);
+
+//       const image = canvas.toDataURL('image/png');
+//       const link = document.createElement('a');
+//       link.href = image;
+//       link.download = `Generated_Schedule_${new Date().toISOString().slice(0,10)}.png`;
+//       link.click();
+//     } catch (error) {
+//       console.error('Download error:', error);
+//       alert('Failed to download schedule. Please try again.');
+//     }
+//   };
+
+//   if (!scheduleResult?.assignments) return null;
+
+//   const grouped = {};
+//   scheduleResult.assignments.forEach(a => {
+//     if (!grouped[a.section_index]) grouped[a.section_index] = [];
+//     grouped[a.section_index].push(a);
+//   });
+
+//   for (let i = 0; i < sectionCount; i++) {
+//     if (!grouped[i]) grouped[i] = [];
+//   }
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   return (
+//     <div style={{ marginTop: '2rem' }} ref={previewRef}>
+//       {conflicts.length > 0 && (
+//         <div className="conflicts-box">
+//           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+//             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>
+//                 Schedule Conflicts Detected ({conflicts.length})
+//               </h4>
+//               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+//                 {conflicts.map((conflict, idx) => (
+//                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
+//                     <br />
+//                     <small style={{ color: '#666' }}>{conflict.details}</small>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="preview-header">
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//           <Calendar size={24} style={{ color: COLORS.accent }} />
+//           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>
+//             Generated Schedule
+//           </h3>
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+//           {scheduleResult.stats && (
+//             <>
+//               <span className="preview-badge success">
+//                 {scheduleResult.stats.totalAssignments} assignments
+//               </span>
+//               <span className="preview-badge success">
+//                 {sectionCount} section{sectionCount !== 1 ? 's' : ''}
+//               </span>
+//               {conflicts.length === 0 ? (
+//                 <span className="preview-badge success">
+//                   <CheckCircle size={14} style={{ marginRight: '0.25rem' }} />
+//                   No Conflicts
+//                 </span>
+//               ) : (
+//                 <span className="preview-badge danger">
+//                   <AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />
+//                   {conflicts.length} Conflicts
+//                 </span>
+//               )}
+//             </>
+//           )}
+//           {/* NEW: Download Button */}
+//           <button className="action-btn secondary" onClick={handleDownload}>
+//             <Download size={16} />
+//             Download as Image
+//           </button>
+//           <button className="action-btn secondary" onClick={onClear}>
+//             <X size={16} />
+//             Clear
+//           </button>
+//         </div>
+//       </div>
+
+//       {Object.keys(grouped).sort((a, b) => Number(a) - Number(b)).map(secIdx => {
+//         const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+//         const sectionAssignments = grouped[secIdx];
+        
+//         const subjectMap = new Map();
+//         sectionAssignments.forEach(a => {
+//           if (!subjectMap.has(a.subject_id)) {
+//             subjectMap.set(a.subject_id, {
+//               subject_id: a.subject_id,
+//               instructor_name: a.instructor_name,
+//               room_id: a.room_id,
+//               slots: []
+//             });
+//           }
+//           subjectMap.get(a.subject_id).slots.push({
+//             day: a.day,
+//             slot_index: a.slot_index
+//           });
+//         });
+
+//         return (
+//           <div key={secIdx} className="section-card">
+//             <div className="section-header">
+//               <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Section {sectionLetter}</h4>
+//               <span style={{ opacity: 0.9, fontSize: '0.9rem' }}>
+//                 {sectionAssignments.length} time slot{sectionAssignments.length !== 1 ? 's' : ''} assigned
+//               </span>
+//             </div>
+//             {sectionAssignments.length === 0 ? (
+//               <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+//                 <Clock size={24} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+//                 <p>No classes assigned to this section yet</p>
+//               </div>
+//             ) : (
+//               <div style={{ overflowX: 'auto' }}>
+//                 <table className="schedule-table">
+//                   <thead>
+//                     <tr>
+//                       <th>Subject</th>
+//                       <th>Instructor</th>
+//                       <th>Room</th>
+//                       {days.map(d => (
+//                         <th key={d}>{d}</th>
+//                       ))}
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {Array.from(subjectMap.values()).map((subjectData, i) => {
+//                       const subject = subjects.find(s => s.id === subjectData.subject_id);
+//                       const room = rooms.find(rm => rm.id === subjectData.room_id);
+
+//                       return (
+//                         <tr key={i}>
+//                           <td>
+//                             <strong style={{ color: COLORS.accent }}>
+//                               {subject?.subject_code || subjectData.subject_id}
+//                             </strong>
+//                             <br />
+//                             <small style={{ color: '#666' }}>{subject?.description}</small>
+//                             {subject?.duration > 1 && (
+//                               <>
+//                                 <br />
+//                                 <small style={{ color: COLORS.secondary, fontWeight: 600 }}>
+//                                   {Number(subject.duration)}-hour session
+//                                 </small>
+//                               </>
+//                             )}
+//                           </td>
+//                           <td>{subjectData.instructor_name || 'TBD'}</td>
+//                           <td>
+//                             <strong>{room?.name || 'TBD'}</strong>
+//                           </td>
+//                           {days.map(day => {
+//                             const daySlots = subjectData.slots.filter(slot => slot.day === day);
+//                             return (
+//                               <td key={day}>
+//                                 {daySlots.length > 0 ? (
+//                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+//                                     {daySlots.map((slot, idx) => {
+//                                       const assignment = sectionAssignments.find(a => 
+//                                         a.day === day && a.slot_index === slot.slot_index && a.subject_id === subjectData.subject_id
+//                                       );
+                                      
+//                                       let duration = 1;
+//                                       if (assignment?.duration) {
+//                                         duration = Number(assignment.duration);
+//                                       } else {
+//                                         const subjDetail = subjects.find(s => s.id === subjectData.subject_id);
+//                                         duration = subjDetail?.duration ? Number(subjDetail.duration) : 1;
+//                                       }
+
+//                                       return (
+//                                         <span key={idx} className="time-badge">
+//                                           <Clock size={12} />
+//                                           {slotToTimeRange(slot.slot_index, duration)}
+//                                         </span>
+//                                       );
+//                                     })}
+//                                   </div>
+//                                 ) : (
+//                                   <span style={{ color: '#ccc' }}>—</span>
+//                                 )}
+//                               </td>
+//                             );
+//                           })}
+//                         </tr>
+//                       );
+//                     })}
+//                   </tbody>
+//                 </table>
+//               </div>
+//             )}
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // CONFIRMATION MODAL COMPONENT
+// // ============================================
+
+// const GenerateModal = ({ 
+//   show, 
+//   onHide, 
+//   onConfirm, 
+//   courses, 
+//   courseId, 
+//   yearLevel, 
+//   semester, 
+//   sectionCount, 
+//   studentsCount, 
+//   selectedSubjects, 
+//   schedulePattern,
+//   considerAvailability 
+// }) => {
+//   if (!show) return null;
+
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header-custom">
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <Settings size={24} />
+//             <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
+//               Confirm Schedule Generation
+//             </h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+//         <div className="modal-body-custom">
+//           <div className="modal-info-grid">
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Course:</strong>
+//               <p>{selectedCourse?.name || 'N/A'}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Year Level:</strong>
+//               <p>{yearLevel}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Semester:</strong>
+//               <p>{semester}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Sections:</strong>
+//               <p>{sectionCount} (Section {String.fromCharCode(65)} - Section {String.fromCharCode(65 + sectionCount - 1)})</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Students/Section:</strong>
+//               <p>{studentsCount}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Subjects:</strong>
+//               <p>{selectedSubjects.length}</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Schedule Pattern:</strong>
+//               <p>Auto-determined (MWF/TTHS)</p>
+//             </div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
+//               <p>
+//                 {considerAvailability ? (
+//                   <span className="modal-badge success">Enforced</span>
+//                 ) : (
+//                   <span className="modal-badge secondary">Ignored</span>
+//                 )}
+//               </p>
+//             </div>
+//           </div>
+//           <div className="modal-info-box">
+//             <AlertTriangle size={18} />
+//             <small>
+//               The system will create {sectionCount} section{sectionCount !== 1 ? 's' : ''} and generate a complete schedule
+//               for each section using assigned teachers and rooms.
+//             </small>
+//           </div>
+//         </div>
+//         <div className="modal-footer-custom">
+//           <button className="action-btn secondary" onClick={onHide}>
+//             Cancel
+//           </button>
+//           <button className="action-btn primary" onClick={onConfirm}>
+//             <CheckCircle size={16} />
+//             Confirm & Generate
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // MAIN COMPONENT
+// // ============================================
+
+// export default function DeanSchedulePage() {
+//   const [courses, setCourses] = useState([]);
+//   const [courseId, setCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [btledMajor, setBtledMajor] = useState('ICT');
+//   const [studentsCount, setStudentsCount] = useState(30);
+//   const [sectionCount, setSectionCount] = useState(1);
+//   const [schedulePattern, setSchedulePattern] = useState('BOTH');
+  
+//   const [subjects, setSubjects] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  
+//   const [availabilityData, setAvailabilityData] = useState({});
+//   const [showConfirm, setShowConfirm] = useState(false);
+//   const [generating, setGenerating] = useState(false);
+//   const [scheduleResult, setScheduleResult] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const [considerAvailability, setConsiderAvailability] = useState(true);
+//   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+//   const [conflicts, setConflicts] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [rooms, setRooms] = useState([]);
+
+//   useEffect(() => {
+//     const initData = async () => {
+//       setLoading(true);
+//       await Promise.all([
+//         fetchCourses(),
+//         fetchAvailabilityData(),
+//         fetchRooms()
+//       ]);
+//       setLoading(false);
+//     };
+//     initData();
+//   }, []);
+
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching courses:', err);
+//       setCourses([]);
+//     }
+//   }, []);
+
+//   const fetchRooms = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/rooms`);
+//       const data = await res.json();
+//       setRooms(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching rooms:', err);
+//       setRooms([]);
+//     }
+//   }, []);
+
+//   const fetchAvailabilityData = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructor-availability`);
+//       if (!res.ok) throw new Error('Failed to fetch availability');
+//       const data = await res.json();
+      
+//       const availMap = {};
+//       if (Array.isArray(data)) {
+//         data.forEach(item => {
+//           const name = item.instructorName || 'Unknown';
+//           if (!availMap[name]) availMap[name] = [];
+//           availMap[name].push({
+//             day: item.day,
+//             start_time: item.start_time,
+//             end_time: item.end_time
+//           });
+//         });
+//       }
+//       setAvailabilityData(availMap);
+//       setAvailabilityLoaded(true);
+//     } catch (err) {
+//       console.error('Error fetching availability data:', err);
+//       setAvailabilityLoaded(true);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     if (!courseId) {
+//       setSubjects([]);
+//       setSelectedSubjects([]);
+//       return;
+//     }
+
+//     const loadSubjects = async () => {
+//       setLoadingSubjects(true);
+//       try {
+//         const params = new URLSearchParams({
+//           courseId,
+//           yearLevel,
+//           semester
+//         });
+
+//         const selectedCourse = courses.find(c => c.id === Number(courseId));
+//         const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+//         if (isBTLED && yearLevel === 3) {
+//           params.append('major', btledMajor);
+//         }
+
+//         const res = await fetch(`${API}/api/subjects?${params}`);
+//         const data = await res.json();
+//         const arr = Array.isArray(data) ? data : [];
+//         setSubjects(arr);
+//         setSelectedSubjects(arr.map(s => s.id || s.subject_id).filter(Boolean));
+//       } catch (err) {
+//         console.error('Error loading subjects:', err);
+//         setSubjects([]);
+//       } finally {
+//         setLoadingSubjects(false);
+//       }
+//     };
+
+//     loadSubjects();
+//   }, [courseId, yearLevel, semester, btledMajor, courses]);
+
+//   const toggleSubject = useCallback((id) => {
+//     setSelectedSubjects(prev =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   }, []);
+
+//   const detectConflicts = useCallback((assignments) => {
+//     const conflictList = [];
+//     const roomUsage = new Map();
+//     const instructorUsage = new Map();
+//     const sectionUsage = new Map();
+
+//     assignments.forEach((a) => {
+//       const room = rooms.find(r => r.id === a.room_id);
+
+//       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
+//       if (roomUsage.has(roomKey)) {
+//         conflictList.push({
+//           type: 'room',
+//           message: `Room "${room?.name || a.room_id}" is double-booked on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Conflict between subjects`
+//         });
+//       }
+//       roomUsage.set(roomKey, { ...a });
+
+//       const instrKey = `${a.instructor_name}-${a.day}-${a.slot_index}`;
+//       if (instructorUsage.has(instrKey)) {
+//         conflictList.push({
+//           type: 'instructor',
+//           message: `Instructor "${a.instructor_name}" is scheduled twice on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Teaching multiple classes`
+//         });
+//       }
+//       instructorUsage.set(instrKey, { ...a });
+
+//       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
+//       if (sectionUsage.has(sectionKey)) {
+//         const sectionName = String.fromCharCode(65 + a.section_index);
+//         conflictList.push({
+//           type: 'section',
+//           message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Multiple classes at same time`
+//         });
+//       }
+//       sectionUsage.set(sectionKey, { ...a });
+//     });
+
+//     return conflictList;
+//   }, [rooms]);
+
+//   const handleGenerate = useCallback(async () => {
+//     if (!courseId || selectedSubjects.length === 0) {
+//       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
+//       return;
+//     }
+
+//     setShowConfirm(false);
+//     setGenerating(true);
+//     setToast(null);
+//     setScheduleResult(null);
+//     setConflicts([]);
+
+//     try {
+//       const selectedCourse = courses.find(c => c.id === Number(courseId));
+//       const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+//       const payload = {
+//         courseId: Number(courseId),
+//         yearLevel: Number(yearLevel),
+//         semester: String(semester),
+//         studentsCount: Number(studentsCount),
+//         sectionCount: Number(sectionCount),
+//         subjects: selectedSubjects,
+//         schedulePattern: schedulePattern,
+//         considerInstructorAvailability: considerAvailability,
+//         major: isBTLED && yearLevel === 3 ? btledMajor : undefined
+//       };
+
+//       const res = await fetch(`${API}/api/scheduler/generate`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//       });
+
+//       const data = await res.json();
+
+//       if (!res.ok) {
+//         throw new Error(data.detail || data.error || 'Schedule generation failed');
+//       }
+
+//       const detectedConflicts = detectConflicts(data.assignments || []);
+//       setConflicts(detectedConflicts);
+//       setScheduleResult(data);
+      
+//       if (detectedConflicts.length > 0) {
+//         setToast({ 
+//           type: 'error', 
+//           message: `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` 
+//         });
+//       } else {
+//         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
+//       }
+//     } catch (err) {
+//       console.error('Error generating schedule:', err);
+//       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
+//     } finally {
+//       setGenerating(false);
+//     }
+//   }, [
+//     courseId, selectedSubjects, considerAvailability, yearLevel, semester,
+//     studentsCount, sectionCount, schedulePattern, btledMajor, courses, detectConflicts
+//   ]);
+
+//   const selectedCourse = useMemo(() => courses.find(c => c.id === Number(courseId)), [courses, courseId]);
+//   const isBTLED = useMemo(() => selectedCourse && isBTLEDCourse(selectedCourse.code), [selectedCourse]);
+//   const showMajorSelector = isBTLED && yearLevel === 3;
+
+//   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
+
+//   const overallStats = useMemo(() => {
+//     return {
+//       totalCourses: courses.length,
+//       totalSubjects: subjects.length,
+//       selectedSubjects: selectedSubjects.length
+//     };
+//   }, [courses.length, subjects.length, selectedSubjects.length]);
+
+//   if (loading) {
+//     return (
+//       <div style={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         minHeight: '100vh',
+//         background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)`
+//       }}>
+//         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
+//         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         /* Your full original styles here - unchanged */
+//         * { box-sizing: border-box; }
+//         body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; }
+//         .schedule-container { padding: 2rem; background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%); min-height: 100vh; }
+//         .page-header { background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%); padding: 2rem; border-radius: 16px; box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15); margin-bottom: 2rem; color: white; }
+//         .page-title-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+//         .page-title { font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.75rem; letter-spacing: -0.5px; }
+//         .page-subtitle { font-size: 1.05rem; margin: 0; opacity: 0.9; }
+//         .header-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+//         .action-btn { border: none; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem; }
+//         .action-btn.primary { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; }
+//         .action-btn.secondary { background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: white; backdrop-filter: blur(10px); }
+//         .action-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2); }
+//         .action-btn.primary:hover:not(:disabled) { background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%); }
+//         .action-btn.secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.5); }
+//         .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+//         .statistics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+//         .stat-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); border-left: 4px solid ${COLORS.accent}; animation: fadeIn 0.5s ease; }
+//         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+//         .stat-label { color: #666; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+//         .stat-value { font-size: 2rem; font-weight: 700; color: ${COLORS.primary}; }
+//         .config-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); margin-bottom: 2rem; overflow: hidden; animation: slideIn 0.3s ease; }
+//         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+//         .config-card-header { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+//         .config-card-body { padding: 2rem; }
+//         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+//         .form-group { display: flex; flex-direction: column; }
+//         .form-label-custom { font-weight: 600; color: ${COLORS.primary}; margin-bottom: 0.5rem; display: flex; align-items: center; font-size: 0.9rem; }
+//         .form-input-custom { border: 2px solid #90E0EF; border-radius: 10px; padding: 0.75rem; font-size: 0.95rem; transition: all 0.3s ease; background: white; }
+//         .form-input-custom:focus { outline: none; border-color: ${COLORS.accent}; box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25); }
+//         .form-input-custom:disabled { background: #f5f5f5; cursor: not-allowed; }
+//         .availability-section { background: ${COLORS.lightest}; border: 2px solid #90E0EF; border-radius: 10px; padding: 1.5rem; }
+//         .checkbox-container { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; }
+//         .checkbox-container input[type="checkbox"] { margin-top: 0.25rem; width: 18px; height: 18px; cursor: pointer; }
+//         .checkbox-label { flex: 1; color: ${COLORS.primary}; }
+//         .selection-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); overflow: hidden; animation: slideIn 0.3s ease; }
+//         .selection-card-header { background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: all 0.3s ease; }
+//         .selection-card-header:hover { background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%); }
+//         .selection-card-body { padding: 1.5rem; }
+//         .count-badge { background: rgba(255, 255, 255, 0.2); padding: 0.3rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+//         .search-box { position: relative; margin-bottom: 1rem; }
+//         .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #90E0EF; border-radius: 10px; font-size: 0.95rem; transition: all 0.3s ease; }
+//         .search-box input:focus { outline: none; border-color: ${COLORS.accent}; box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25); }
+//         .search-icon-inline { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: ${COLORS.accent}; pointer-events: none; }
+//         .clear-btn { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; transition: color 0.3s ease; }
+//         .clear-btn:hover { color: ${COLORS.accent}; }
+//         .items-list { max-height: 400px; overflow-y: auto; }
+//         .item-checkbox { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; margin-bottom: 0.75rem; border-radius: 10px; border: 2px solid #E9ECEF; background: #F8F9FA; cursor: pointer; transition: all 0.3s ease; }
+//         .item-checkbox.selected { background: #E6F7FF; border-color: ${COLORS.light}; }
+//         .item-checkbox:hover { border-color: ${COLORS.accent}; transform: translateX(4px); }
+//         .item-checkbox input[type="checkbox"] { margin-top: 0.25rem; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+//         .item-content { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+//         .units-badge { background: #6c757d; color: white; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+//         .info-box { background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 10px; padding: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: #1565C0; }
+//         .warning-box { background: #FFF3CD; border: 2px solid #FFE69C; border-radius: 10px; padding: 1.5rem; color: #856404; }
+//         .conflicts-box { background: #FFE6E6; border: 2px solid #FFB3B3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+//         .preview-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+//         .preview-badge { padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; }
+//         .preview-badge.success { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; }
+//         .preview-badge.danger { background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%); color: white; }
+//         .section-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); margin-bottom: 2rem; overflow: hidden; }
+//         .section-header { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+//         .schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+//         .schedule-table thead { background: ${COLORS.lightest}; color: ${COLORS.primary}; }
+//         .schedule-table th { padding: 0.75rem; font-weight: 600; text-align: center; border: 1px solid #90E0EF; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+//         .schedule-table td { padding: 0.75rem; border: 1px solid #E8F4F8; text-align: center; vertical-align: middle; transition: all 0.3s ease; }
+//         .schedule-table tbody tr:nth-child(odd) { background: #FAFCFD; }
+//         .schedule-table tbody tr:hover { background: #E8F4F8; }
+//         .time-badge { background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%); color: ${COLORS.primary}; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; }
+//         .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9998; padding: 1rem; }
+//         .modal-content { background: white; border-radius: 16px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease; }
+//         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+//         .modal-header-custom { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+//         .modal-close { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; padding: 0; transition: transform 0.3s ease; }
+//         .modal-close:hover { transform: scale(1.2); }
+//         .modal-body-custom { padding: 2rem; }
+//         .modal-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+//         .modal-info-grid > div { display: flex; flex-direction: column; gap: 0.5rem; }
+//         .modal-info-grid p { margin: 0; color: #333; font-size: 0.95rem; }
+//         .modal-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+//         .modal-badge.success { background: #10B981; color: white; }
+//         .modal-badge.secondary { background: #6c757d; color: white; }
+//         .modal-info-box { background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 10px; padding: 1rem; display: flex; align-items: flex-start; gap: 0.75rem; color: #1565C0; }
+//         .modal-footer-custom { padding: 1.5rem 2rem; border-top: 1px solid #E8F4F8; display: flex; justify-content: flex-end; gap: 1rem; }
+//         .edusched-toast { position: fixed; top: 2rem; right: 2rem; min-width: 320px; background: white; border-radius: 12px; padding: 1rem 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; align-items: center; gap: 1rem; z-index: 9999; animation: slideInToast 0.3s ease; border-left: 4px solid; }
+//         @keyframes slideInToast { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+//         .edusched-toast.toast-success { border-left-color: #10B981; }
+//         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
+//         .edusched-toast .toast-icon { display: flex; align-items: center; }
+//         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
+//         .edusched-toast .toast-close { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280; }
+//         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
+//         .page-content-grid { display: grid; gap: 1.5rem; }
+//         .animate-spin { animation: spin 1s linear infinite; }
+//         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+//         @media (max-width: 768px) { .schedule-container { padding: 1rem; } .page-title { font-size: 2rem; } .form-grid { grid-template-columns: 1fr; } .modal-info-grid { grid-template-columns: 1fr; } .statistics-grid { grid-template-columns: repeat(2, 1fr); } }
+//       `}</style>
+
+//       <div className="schedule-container">
+//         <div className="page-header">
+//           <div className="page-title-section">
+//             <div>
+//               <h1 className="page-title">
+//                 <Calendar size={28} />
+//                 AI Schedule Generator
+//               </h1>
+//               <p className="page-subtitle">
+//                 Smart scheduling with teacher assignments and room allocations
+//                 {isBTLED && yearLevel === 3 && (
+//                   <span style={{ marginLeft: '1rem', background: 'rgba(255,255,255,0.2)', padding: '0.25rem 0.75rem', borderRadius: '20px' }}>
+//                     Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}
+//                   </span>
+//                 )}
+//               </p>
+//             </div>
+
+//             <div className="header-actions">
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={async () => {
+//                   setLoading(true);
+//                   await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+//                   setLoading(false);
+//                   setToast({ type: 'success', message: 'Data reloaded successfully.' });
+//                 }}
+//                 disabled={loading || generating}
+//               >
+//                 <RefreshCw size={16} />
+//                 Reload Data
+//               </button>
+
+//               <button
+//                 className="action-btn secondary"
+//                 onClick={() => {
+//                   setScheduleResult(null);
+//                   setConflicts([]);
+//                   setSelectedSubjects([]);
+//                   setToast({ type: 'success', message: 'Selections cleared.' });
+//                 }}
+//                 disabled={generating}
+//               >
+//                 <X size={16} />
+//                 Reset
+//               </button>
+
+//               <button
+//                 className="action-btn primary"
+//                 onClick={() => setShowConfirm(true)}
+//                 disabled={generating || !courseId || selectedSubjects.length === 0}
+//               >
+//                 <CheckCircle size={16} />
+//                 {generating ? 'Generating…' : 'Generate Schedule'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Courses</div>
+//             <div className="stat-value">{overallStats.totalCourses}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Available Subjects</div>
+//             <div className="stat-value">{overallStats.totalSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Subjects</div>
+//             <div className="stat-value">{overallStats.selectedSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Availability Records</div>
+//             <div className="stat-value">{availabilityDataCount}</div>
+//           </div>
+//         </div>
+
+//         <div className="page-content-grid">
+//           <DeanScheduleForm
+//             courses={courses}
+//             courseId={courseId}
+//             setCourseId={setCourseId}
+//             yearLevel={yearLevel}
+//             setYearLevel={setYearLevel}
+//             semester={semester}
+//             setSemester={setSemester}
+//             studentsCount={studentsCount}
+//             setStudentsCount={setStudentsCount}
+//             sectionCount={sectionCount}
+//             setSectionCount={setSectionCount}
+//             considerAvailability={considerAvailability}
+//             setConsiderAvailability={setConsiderAvailability}
+//             generating={generating}
+//             availabilityLoaded={availabilityLoaded}
+//             availabilityDataCount={availabilityDataCount}
+//           />
+
+//           <BTLEDMajorSelector
+//             major={btledMajor}
+//             onChange={setBtledMajor}
+//             show={showMajorSelector}
+//           />
+
+//           <SubjectList
+//             subjects={subjects}
+//             selectedSubjects={selectedSubjects}
+//             toggleSubject={toggleSubject}
+//             generating={generating}
+//             loading={loadingSubjects}
+//             courseId={courseId}
+//           />
+//         </div>
+
+//         <SchedulePreview
+//           scheduleResult={scheduleResult}
+//           conflicts={conflicts}
+//           subjects={subjects}
+//           rooms={rooms}
+//           sectionCount={sectionCount}
+//           onClear={() => {
+//             setScheduleResult(null);
+//             setConflicts([]);
+//           }}
+//         />
+//       </div>
+
+//       <GenerateModal
+//         show={showConfirm}
+//         onHide={() => setShowConfirm(false)}
+//         onConfirm={handleGenerate}
+//         courses={courses}
+//         courseId={courseId}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         sectionCount={sectionCount}
+//         studentsCount={studentsCount}
+//         selectedSubjects={selectedSubjects}
+//         schedulePattern={schedulePattern}
+//         considerAvailability={considerAvailability}
+//       />
+
+//       {toast && (
+//         <Toast
+//           message={toast.message}
+//           type={toast.type === 'success' ? 'success' : 'error'}
+//           onClose={() => setToast(null)}
+//         />
+//       )}
+//     </>
+//   );
+// }
+
+//WORKING BUT WITHOUT CONFLICT CONTINUE OR NOT 
+
+// import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+// import {
+//   Calendar, Settings, CheckCircle, AlertTriangle, Clock, BookOpen,
+//   Loader, RefreshCw, Search, X, ChevronDown, ChevronUp, Award, Download, User
+// } from 'lucide-react';
+
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// const BTLED_MAJORS = [
+//   { value: 'ICT', label: 'ICT - Information and Communication Technology' },
+//   { value: 'HE', label: 'HE - Home Economics' }
+// ];
+
+// // ============================================
+// // UTILITY FUNCTIONS
+// // ============================================
+// const formatTime = (time) => {
+//   const [hours, minutes] = time.split(':');
+//   const hour = parseInt(hours);
+//   const period = hour >= 12 ? 'PM' : 'AM';
+//   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+//   return `${displayHour}:${minutes} ${period}`;
+// };
+
+// const slotToTimeRange = (slotIndex, durationHours) => {
+//   const duration = Number(durationHours) || 1;
+//   const startHour = 7 + Number(slotIndex);
+//   const endHour = startHour + duration;
+//   const formatHour = (hour) => {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
+//     return `${adjusted}:00 ${period}`;
+//   };
+//   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+// };
+
+// const isBTLEDCourse = (courseCode) => {
+//   return courseCode === 'BTLED' || courseCode?.startsWith('BTLED');
+// };
+
+// // ============================================
+// // COMPONENT DEFINITIONS
+// // ============================================
+// const Toast = ({ message, type, onClose }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => onClose(), 5000);
+//     return () => clearTimeout(timer);
+//   }, [onClose]);
+
+//   return (
+//     <div className={`edusched-toast toast-${type}`}>
+//       <div className="toast-icon">
+//         {type === "success" ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+//       </div>
+//       <span className="toast-message">{message}</span>
+//       <button className="toast-close" onClick={onClose}>×</button>
+//     </div>
+//   );
+// };
+
+// const LoadingState = ({ message = 'Loading...' }) => (
+//   <div style={{ textAlign: 'center', padding: '3rem' }}>
+//     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
+//     <p style={{ color: '#666', fontSize: '1rem' }}>{message}</p>
+//   </div>
+// );
+
+// const BTLEDMajorSelector = React.memo(({ major, onChange, show }) => {
+//   if (!show) return null;
+//   return (
+//     <div className="config-card" style={{ gridColumn: '1 / -1' }}>
+//       <div className="config-card-header">
+//         <Award size={20} />
+//         <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>BTLED Major</h3>
+//       </div>
+//       <div className="config-card-body">
+//         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+//           {BTLED_MAJORS.map(m => (
+//             <button
+//               key={m.value}
+//               className={`action-btn ${major === m.value ? 'primary' : 'secondary'}`}
+//               onClick={() => onChange(m.value)}
+//               style={{ flex: 1, minWidth: '200px' }}
+//             >
+//               {m.label}
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// const DeanScheduleForm = ({
+//   courses, courseId, setCourseId, yearLevel, setYearLevel, semester, setSemester,
+//   studentsCount, setStudentsCount, sectionCount, setSectionCount,
+//   considerAvailability, setConsiderAvailability, generating,
+//   availabilityLoaded, availabilityDataCount
+// }) => (
+//   <div className="config-card">
+//     <div className="config-card-header">
+//       <Settings size={20} />
+//       <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Schedule Configuration</h3>
+//     </div>
+//     <div className="config-card-body">
+//       <div className="form-grid">
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
+//             Course *
+//           </label>
+//           <select className="form-input-custom" value={courseId} onChange={e => setCourseId(e.target.value)} disabled={generating}>
+//             <option value="">-- Select Course --</option>
+//             {courses.map(c => <option key={c.id} value={c.id}>{c.code} — {c.name}</option>)}
+//           </select>
+//         </div>
+//         <div className="form-group">
+//           <label className="form-label-custom">Year Level *</label>
+//           <select className="form-input-custom" value={yearLevel} onChange={e => setYearLevel(Number(e.target.value))} disabled={generating}>
+//             {[1, 2, 3, 4].map(y => <option key={y} value={y}>{y}</option>)}
+//           </select>
+//         </div>
+//         <div className="form-group">
+//           <label className="form-label-custom">Semester *</label>
+//           <select className="form-input-custom" value={semester} onChange={e => setSemester(e.target.value)} disabled={generating}>
+//             <option value="1">1st Semester</option>
+//             <option value="2">2nd Semester</option>
+//           </select>
+//         </div>
+//         <div className="form-group">
+//           <label className="form-label-custom">Students per Section</label>
+//           <input type="number" className="form-input-custom" min="1" value={studentsCount} onChange={e => setStudentsCount(Number(e.target.value))} disabled={generating} />
+//         </div>
+//         <div className="form-group">
+//           <label className="form-label-custom">Number of Sections</label>
+//           <input type="number" className="form-input-custom" min="1" max="10" value={sectionCount} onChange={e => setSectionCount(Number(e.target.value))} disabled={generating} />
+//         </div>
+//       </div>
+//       <div className="availability-section">
+//         <label className="checkbox-container">
+//           <input type="checkbox" checked={considerAvailability} onChange={e => setConsiderAvailability(e.target.checked)} disabled={generating} />
+//           <span className="checkbox-label">
+//             <strong>Consider Instructor Availability</strong>
+//             <br />
+//             <small style={{ color: '#666' }}>
+//               When enabled, schedule will respect instructor availability windows.
+//               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+//               {availabilityLoaded && availabilityDataCount > 0 && ` (${availabilityDataCount} instructors with availability)`}
+//             </small>
+//           </span>
+//         </label>
+//         <div style={{ marginTop: '1rem', padding: '1rem', background: '#E3F2FD', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+//           <small style={{ color: '#1565C0', display: 'block', lineHeight: '1.6' }}>
+//             <strong>Schedule Pattern:</strong> The system will automatically determine the best pattern based on subject units and duration:
+//             <br />• <strong>MWF</strong> (Monday-Wednesday-Friday): For subjects requiring 3 sessions per week
+//             <br />• <strong>TTHS</strong> (Tuesday-Thursday-Saturday): For subjects requiring 2-3 sessions with longer durations
+//           </small>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+// const SubjectList = ({ subjects, selectedSubjects, toggleSubject, generating, loading, courseId, availabilityData }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredSubjects = useMemo(() => {
+//     if (!searchTerm) return subjects;
+//     const term = searchTerm.toLowerCase();
+//     return subjects.filter(s =>
+//       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
+//       (s.description || '').toLowerCase().includes(term) ||
+//       (s.teacher_name || '').toLowerCase().includes(term)
+//     );
+//   }, [subjects, searchTerm]);
+
+//   const getInstructorAvailabilityDetails = (teacherName) => {
+//     if (!teacherName || !availabilityData[teacherName]) return null;
+//     const avail = availabilityData[teacherName];
+//     const groupedByDay = avail.reduce((acc, slot) => {
+//       if (!acc[slot.day]) acc[slot.day] = [];
+//       acc[slot.day].push(`${slot.start_time}-${slot.end_time}`);
+//       return acc;
+//     }, {});
+//     const days = Object.keys(groupedByDay);
+//     return { days, groupedByDay, totalDays: days.length };
+//   };
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//           <BookOpen size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
+//           {subjects.length > 0 && (
+//             <span className="count-badge">{selectedSubjects.length} / {subjects.length}</span>
+//           )}
+//         </div>
+//         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//       </div>
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {loading ? <LoadingState message="Loading subjects..." /> : !courseId ? (
+//             <div className="info-box"><AlertTriangle size={18} /><span>Please select a course first.</span></div>
+//           ) : subjects.length === 0 ? (
+//             <div className="warning-box">No subjects available for this course, year, and semester.</div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input type="text" placeholder="Search subjects or instructors..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+//                 {searchTerm && <button onClick={() => setSearchTerm('')} className="clear-btn"><X size={16} /></button>}
+//               </div>
+//               <div className="items-list">
+//                 {filteredSubjects.map(s => {
+//                   const availDetails = getInstructorAvailabilityDetails(s.teacher_name);
+
+//                   return (
+//                     <label key={s.id} className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}>
+//                       <input type="checkbox" checked={selectedSubjects.includes(s.id)} onChange={() => toggleSubject(s.id)} disabled={generating} />
+//                       <div className="item-content">
+//                         <div style={{ flex: 1 }}>
+//                           <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+//                           <br />
+//                           <small style={{ color: '#666' }}>{s.description}</small>
+
+//                           {s.teacher_name && (
+//                             <>
+//                               <br />
+//                               <small style={{ color: COLORS.accent, fontWeight: 600 }}>
+//                                 <User size={12} style={{ display: 'inline', marginRight: '0.25rem' }} />
+//                                 Teacher: {s.teacher_name}
+//                               </small>
+
+//                               {availDetails && (
+//                                 <div style={{ marginTop: '0.5rem' }}>
+//                                   <span style={{
+//                                     background: '#d4f4dd',
+//                                     color: '#1b6933',
+//                                     padding: '0.2rem 0.6rem',
+//                                     borderRadius: '6px',
+//                                     fontSize: '0.75rem',
+//                                     fontWeight: 600,
+//                                     display: 'inline-flex',
+//                                     alignItems: 'center',
+//                                     gap: '0.25rem'
+//                                   }}>
+//                                     ✓ Availability Set ({availDetails.totalDays} day{availDetails.totalDays > 1 ? 's' : ''})
+//                                   </span>
+
+//                                   <details style={{ marginTop: '0.4rem', cursor: 'pointer' }}>
+//                                     <summary style={{
+//                                       fontSize: '0.75rem',
+//                                       color: COLORS.secondary,
+//                                       fontWeight: 600,
+//                                       userSelect: 'none'
+//                                     }}>
+//                                       View Time Windows
+//                                     </summary>
+//                                     <div style={{
+//                                       marginTop: '0.4rem',
+//                                       padding: '0.6rem',
+//                                       background: '#E3F2FD',
+//                                       borderRadius: '6px',
+//                                       fontSize: '0.75rem',
+//                                       border: '1px solid #90CAF9'
+//                                     }}>
+//                                       {Object.entries(availDetails.groupedByDay).map(([day, times]) => (
+//                                         <div key={day} style={{ marginBottom: '0.3rem' }}>
+//                                           <strong>{day}:</strong> {times.join(', ')}
+//                                         </div>
+//                                       ))}
+//                                     </div>
+//                                   </details>
+//                                 </div>
+//                               )}
+//                             </>
+//                           )}
+
+//                           {s.duration && (
+//                             <>
+//                               <br />
+//                               <small style={{ color: '#999' }}>
+//                                 Duration: {Number(s.duration)} hour{Number(s.duration) > 1 ? 's' : ''} per session
+//                               </small>
+//                             </>
+//                           )}
+//                         </div>
+//                         <span className="units-badge">{s.units}u</span>
+//                       </div>
+//                     </label>
+//                   );
+//                 })}
+//                 {filteredSubjects.length === 0 && <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>No subjects match your search</div>}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// const SchedulePreview = ({ scheduleResult, conflicts, subjects, rooms, sectionCount, onClear, availabilityData, considerAvailability }) => {
+//   const sectionRefs = useRef({});
+
+//   const [downloadingSection, setDownloadingSection] = useState(null);
+
+//   const handleDownloadSection = async (sectionIndex) => {
+//     const element = sectionRefs.current[sectionIndex];
+//     if (!element) return;
+
+//     setDownloadingSection(sectionIndex);
+//     try {
+//       const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
+//       const canvas = await html2canvas(element, {
+//         backgroundColor: '#ffffff',
+//         scale: 2,
+//         logging: false,
+//         useCORS: true,
+//         windowWidth: element.scrollWidth,
+//         windowHeight: element.scrollHeight
+//       });
+//       const image = canvas.toDataURL('image/png');
+//       const link = document.createElement('a');
+//       link.href = image;
+//       const sectionLetter = String.fromCharCode(65 + sectionIndex);
+//       link.download = `Schedule_Section_${sectionLetter}_${new Date().toISOString().slice(0,10)}.png`;
+//       link.click();
+//     } catch (error) {
+//       console.error('Download error:', error);
+//       alert('Failed to download section schedule. Please try again.');
+//     } finally {
+//       setDownloadingSection(null);
+//     }
+//   };
+
+//   if (!scheduleResult?.assignments) return null;
+
+//   const grouped = {};
+//   scheduleResult.assignments.forEach(a => {
+//     if (!grouped[a.section_index]) grouped[a.section_index] = [];
+//     grouped[a.section_index].push(a);
+//   });
+//   for (let i = 0; i < sectionCount; i++) {
+//     if (!grouped[i]) grouped[i] = [];
+//   }
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   const getInstructorAvailability = (instructorName, day) => {
+//     if (!considerAvailability || !availabilityData[instructorName]) return null;
+//     const dayAvailability = availabilityData[instructorName].filter(a => a.day === day);
+//     if (dayAvailability.length === 0) return null;
+//     return dayAvailability.map(a => `${a.start_time}-${a.end_time}`).join(', ');
+//   };
+
+//   return (
+//     <div style={{ marginTop: '2rem' }}>
+//       {conflicts.length > 0 && (
+//         <div className="conflicts-box">
+//           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+//             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>Schedule Conflicts Detected ({conflicts.length})</h4>
+//               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+//                 {conflicts.map((conflict, idx) => (
+//                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
+//                     <br /><small style={{ color: '#666' }}>{conflict.details}</small>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="preview-header">
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//           <Calendar size={24} style={{ color: COLORS.accent }} />
+//           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>Generated Schedule</h3>
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+//           {scheduleResult.stats && (
+//             <>
+//               <span className="preview-badge success">{scheduleResult.stats.totalAssignments} assignments</span>
+//               <span className="preview-badge success">{sectionCount} section{sectionCount !== 1 ? 's' : ''}</span>
+//               {conflicts.length === 0 ? (
+//                 <span className="preview-badge success"><CheckCircle size={14} style={{ marginRight: '0.25rem' }} />No Conflicts</span>
+//               ) : (
+//                 <span className="preview-badge danger"><AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />{conflicts.length} Conflicts</span>
+//               )}
+//             </>
+//           )}
+//           <button className="action-btn secondary" onClick={onClear}><X size={16} />Clear</button>
+//         </div>
+//       </div>
+
+//       <div style={{ marginTop: '1.5rem' }}>
+//         {Object.keys(grouped).sort((a, b) => Number(a) - Number(b)).map(secIdx => {
+//           const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+//           const sectionAssignments = grouped[secIdx];
+//           const subjectMap = new Map();
+//           sectionAssignments.forEach(a => {
+//             if (!subjectMap.has(a.subject_id)) {
+//               subjectMap.set(a.subject_id, { subject_id: a.subject_id, instructor_name: a.instructor_name, room_id: a.room_id, slots: [] });
+//             }
+//             subjectMap.get(a.subject_id).slots.push({ day: a.day, slot_index: a.slot_index });
+//           });
+
+//           return (
+//             <div key={secIdx} className="section-card" ref={el => sectionRefs.current[secIdx] = el}>
+//               <div className="section-header">
+//                 <div>
+//                   <h4 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>Section {sectionLetter}</h4>
+//                   <span style={{ opacity: 0.9, fontSize: '0.95rem' }}>{sectionAssignments.length} time slot{sectionAssignments.length !== 1 ? 's' : ''} assigned</span>
+//                 </div>
+//                 <button 
+//                   className="action-btn secondary"
+//                   onClick={() => handleDownloadSection(secIdx)}
+//                   disabled={downloadingSection === secIdx}
+//                   style={{ padding: '0.75rem 1.25rem', fontSize: '0.95rem' }}
+//                 >
+//                   <Download size={18} />
+//                   {downloadingSection === secIdx ? 'Downloading...' : 'Download Schedule'}
+//                 </button>
+//               </div>
+
+//               {sectionAssignments.length === 0 ? (
+//                 <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+//                   <Clock size={24} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+//                   <p>No classes assigned to this section yet</p>
+//                 </div>
+//               ) : (
+//                 <div style={{ overflowX: 'auto', padding: '1rem 0' }}>
+//                   <table className="schedule-table">
+//                     <thead>
+//                       <tr>
+//                         <th>Subject</th>
+//                         <th>Instructor</th>
+//                         <th>Room</th>
+//                         {days.map(d => <th key={d}>{d}</th>)}
+//                       </tr>
+//                     </thead>
+//                     <tbody>
+//                       {Array.from(subjectMap.values()).map((subjectData, i) => {
+//                         const subject = subjects.find(s => s.id === subjectData.subject_id);
+//                         const room = rooms.find(rm => rm.id === subjectData.room_id);
+//                         const hasAvailabilityData = considerAvailability && availabilityData[subjectData.instructor_name];
+
+//                         return (
+//                           <tr key={i}>
+//                             <td>
+//                               <strong style={{ color: COLORS.accent }}>{subject?.subject_code || subjectData.subject_id}</strong>
+//                               <br /><small style={{ color: '#666' }}>{subject?.description}</small>
+//                               {subject?.duration > 1 && (
+//                                 <><br /><small style={{ color: COLORS.secondary, fontWeight: 600 }}>{Number(subject.duration)}-hour session</small></>
+//                               )}
+//                             </td>
+//                             <td>
+//                               <div>
+//                                 <User size={14} style={{ display: 'inline', marginRight: '0.25rem', verticalAlign: 'middle' }} />
+//                                 {subjectData.instructor_name || 'TBD'}
+//                               </div>
+//                               {hasAvailabilityData && (
+//                                 <>
+//                                   <small style={{ color: COLORS.light, fontWeight: 600, display: 'block', marginTop: '0.25rem' }}>
+//                                     ✓ Availability Set
+//                                   </small>
+//                                   <details style={{ marginTop: '0.5rem', cursor: 'pointer' }}>
+//                                     <summary style={{ fontSize: '0.75rem', color: COLORS.secondary, fontWeight: 600, userSelect: 'none' }}>
+//                                       View Availability
+//                                     </summary>
+//                                     <div style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#E3F2FD', borderRadius: '4px', fontSize: '0.75rem' }}>
+//                                       {Object.entries(
+//                                         availabilityData[subjectData.instructor_name]?.reduce((acc, slot) => {
+//                                           if (!acc[slot.day]) acc[slot.day] = [];
+//                                           acc[slot.day].push(`${slot.start_time}-${slot.end_time}`);
+//                                           return acc;
+//                                         }, {}) || {}
+//                                       ).map(([day, times]) => (
+//                                         <div key={day} style={{ marginBottom: '0.25rem' }}>
+//                                           <strong>{day}:</strong> {times.join(', ')}
+//                                         </div>
+//                                       ))}
+//                                     </div>
+//                                   </details>
+//                                 </>
+//                               )}
+//                             </td>
+//                             <td><strong>{room?.name || 'TBD'}</strong></td>
+//                             {days.map(day => {
+//                               const daySlots = subjectData.slots.filter(slot => slot.day === day);
+//                               const availability = getInstructorAvailability(subjectData.instructor_name, day);
+//                               return (
+//                                 <td key={day}>
+//                                   {daySlots.length > 0 ? (
+//                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+//                                       {daySlots.map((slot, idx) => {
+//                                         const assignment = sectionAssignments.find(a => a.day === day && a.slot_index === slot.slot_index && a.subject_id === subjectData.subject_id);
+//                                         let duration = 1;
+//                                         if (assignment?.duration) duration = Number(assignment.duration);
+//                                         else if (subject?.duration) duration = Number(subject.duration);
+
+//                                         return (
+//                                           <span key={idx} className="time-badge">
+//                                             <Clock size={12} />
+//                                             {slotToTimeRange(slot.slot_index, duration)}
+//                                           </span>
+//                                         );
+//                                       })}
+//                                       {availability && (
+//                                         <small style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.25rem' }}>
+//                                           Available: {availability}
+//                                         </small>
+//                                       )}
+//                                     </div>
+//                                   ) : (
+//                                     <span style={{ color: '#ccc' }}>—</span>
+//                                   )}
+//                                 </td>
+//                               );
+//                             })}
+//                           </tr>
+//                         );
+//                       })}
+//                     </tbody>
+//                   </table>
+//                 </div>
+//               )}
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const GenerateModal = ({ show, onHide, onConfirm, courses, courseId, yearLevel, semester, sectionCount, studentsCount, selectedSubjects, schedulePattern, considerAvailability, availabilityDataCount }) => {
+//   if (!show) return null;
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header-custom">
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <Settings size={24} />
+//             <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>Confirm Schedule Generation</h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+//         <div className="modal-body-custom">
+//           <div className="modal-info-grid">
+//             <div><strong style={{ color: COLORS.accent }}>Course:</strong><p>{selectedCourse?.name || 'N/A'}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Year Level:</strong><p>{yearLevel}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Semester:</strong><p>{semester}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Sections:</strong><p>{sectionCount} (Section {String.fromCharCode(65)} - Section {String.fromCharCode(65 + sectionCount - 1)})</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Students/Section:</strong><p>{studentsCount}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Subjects:</strong><p>{selectedSubjects.length}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Schedule Pattern:</strong><p>Auto-determined (MWF/TTHS)</p></div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
+//               <p>{considerAvailability ? (<span className="modal-badge success">Enforced ({availabilityDataCount} instructors)</span>) : (<span className="modal-badge secondary">Ignored</span>)}</p>
+//             </div>
+//           </div>
+//           <div className="modal-info-box">
+//             <AlertTriangle size={18} />
+//             <small>
+//               The system will create {sectionCount} section{sectionCount !== 1 ? 's' : ''} and generate a complete schedule for each section using assigned teachers and rooms.
+//               {considerAvailability && availabilityDataCount > 0 && ` Instructor availability will be respected for ${availabilityDataCount} instructors.`}
+//             </small>
+//           </div>
+//         </div>
+//         <div className="modal-footer-custom">
+//           <button className="action-btn secondary" onClick={onHide}>Cancel</button>
+//           <button className="action-btn primary" onClick={onConfirm}><CheckCircle size={16} />Confirm & Generate</button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // MAIN COMPONENT
+// // ============================================
+// export default function DeanSchedulePage() {
+//   const [courses, setCourses] = useState([]);
+//   const [courseId, setCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [btledMajor, setBtledMajor] = useState('ICT');
+//   const [studentsCount, setStudentsCount] = useState(30);
+//   const [sectionCount, setSectionCount] = useState(1);
+//   const [schedulePattern, setSchedulePattern] = useState('BOTH');
+//   const [subjects, setSubjects] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [loadingSubjects, setLoadingSubjects] = useState(false);
+//   const [availabilityData, setAvailabilityData] = useState({});
+//   const [showConfirm, setShowConfirm] = useState(false);
+//   const [generating, setGenerating] = useState(false);
+//   const [scheduleResult, setScheduleResult] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const [considerAvailability, setConsiderAvailability] = useState(true);
+//   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+//   const [conflicts, setConflicts] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [rooms, setRooms] = useState([]);
+
+//   useEffect(() => {
+//     const initData = async () => {
+//       setLoading(true);
+//       await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+//       setLoading(false);
+//     };
+//     initData();
+//   }, []);
+
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching courses:', err);
+//       setCourses([]);
+//     }
+//   }, []);
+
+//   const fetchRooms = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/rooms`);
+//       const data = await res.json();
+//       setRooms(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching rooms:', err);
+//       setRooms([]);
+//     }
+//   }, []);
+
+//   const fetchAvailabilityData = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructor-availability`);
+//       if (!res.ok) throw new Error('Failed to fetch availability');
+//       const data = await res.json();
+//       const availMap = {};
+//       if (Array.isArray(data)) {
+//         data.forEach(item => {
+//           const name = item.instructorName || 'Unknown';
+//           if (!availMap[name]) availMap[name] = [];
+//           availMap[name].push({ day: item.day, start_time: item.start_time, end_time: item.end_time });
+//         });
+//       }
+//       setAvailabilityData(availMap);
+//       setAvailabilityLoaded(true);
+//     } catch (err) {
+//       console.error('Error fetching availability data:', err);
+//       setAvailabilityLoaded(true);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     if (!courseId) {
+//       setSubjects([]);
+//       setSelectedSubjects([]);
+//       return;
+//     }
+//     const loadSubjects = async () => {
+//       setLoadingSubjects(true);
+//       try {
+//         const params = new URLSearchParams({ courseId, yearLevel, semester });
+//         const selectedCourse = courses.find(c => c.id === Number(courseId));
+//         const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+//         if (isBTLED && yearLevel === 3) params.append('major', btledMajor);
+//         const res = await fetch(`${API}/api/subjects?${params}`);
+//         const data = await res.json();
+//         const arr = Array.isArray(data) ? data : [];
+//         setSubjects(arr);
+//         setSelectedSubjects(arr.map(s => s.id || s.subject_id).filter(Boolean));
+//       } catch (err) {
+//         console.error('Error loading subjects:', err);
+//         setSubjects([]);
+//       } finally {
+//         setLoadingSubjects(false);
+//       }
+//     };
+//     loadSubjects();
+//   }, [courseId, yearLevel, semester, btledMajor, courses]);
+
+//   const toggleSubject = useCallback((id) => {
+//     setSelectedSubjects(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+//   }, []);
+
+//   const detectConflicts = useCallback((assignments) => {
+//     const conflictList = [];
+//     const roomUsage = new Map();
+//     const instructorUsage = new Map();
+//     const sectionUsage = new Map();
+//     assignments.forEach((a) => {
+//       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
+//       if (roomUsage.has(roomKey)) {
+//         conflictList.push({
+//           type: 'room',
+//           message: `Room double-booked on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Conflict between subjects`
+//         });
+//       }
+//       roomUsage.set(roomKey, { ...a });
+
+//       const instrKey = `${a.instructor_name}-${a.day}-${a.slot_index}`;
+//       if (instructorUsage.has(instrKey)) {
+//         conflictList.push({
+//           type: 'instructor',
+//           message: `Instructor "${a.instructor_name}" is scheduled twice on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Teaching multiple classes`
+//         });
+//       }
+//       instructorUsage.set(instrKey, { ...a });
+
+//       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
+//       if (sectionUsage.has(sectionKey)) {
+//         const sectionName = String.fromCharCode(65 + a.section_index);
+//         conflictList.push({
+//           type: 'section',
+//           message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Multiple classes at same time`
+//         });
+//       }
+//       sectionUsage.set(sectionKey, { ...a });
+//     });
+//     return conflictList;
+//   }, [rooms]);
+
+//   const handleGenerate = useCallback(async () => {
+//     if (!courseId || selectedSubjects.length === 0) {
+//       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
+//       return;
+//     }
+//     setShowConfirm(false);
+//     setGenerating(true);
+//     setToast(null);
+//     setScheduleResult(null);
+//     setConflicts([]);
+//     try {
+//       const selectedCourse = courses.find(c => c.id === Number(courseId));
+//       const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+//       const payload = {
+//         courseId: Number(courseId),
+//         yearLevel: Number(yearLevel),
+//         semester: String(semester),
+//         studentsCount: Number(studentsCount),
+//         sectionCount: Number(sectionCount),
+//         subjects: selectedSubjects,
+//         schedulePattern: schedulePattern,
+//         considerInstructorAvailability: considerAvailability,
+//         major: isBTLED && yearLevel === 3 ? btledMajor : undefined
+//       };
+//       const res = await fetch(`${API}/api/scheduler/generate`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//       });
+//       const data = await res.json();
+//       if (!res.ok) throw new Error(data.detail || data.error || 'Schedule generation failed');
+//       const detectedConflicts = detectConflicts(data.assignments || []);
+//       setConflicts(detectedConflicts);
+//       setScheduleResult(data);
+     
+//       if (detectedConflicts.length > 0) {
+//         setToast({ type: 'error', message: `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` });
+//       } else {
+//         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
+//       }
+//     } catch (err) {
+//       console.error('Error generating schedule:', err);
+//       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
+//     } finally {
+//       setGenerating(false);
+//     }
+//   }, [courseId, selectedSubjects, considerAvailability, yearLevel, semester, studentsCount, sectionCount, schedulePattern, btledMajor, courses, detectConflicts]);
+
+//   const selectedCourse = useMemo(() => courses.find(c => c.id === Number(courseId)), [courses, courseId]);
+//   const isBTLED = useMemo(() => selectedCourse && isBTLEDCourse(selectedCourse.code), [selectedCourse]);
+//   const showMajorSelector = isBTLED && yearLevel === 3;
+//   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
+//   const overallStats = useMemo(() => ({
+//     totalCourses: courses.length,
+//     totalSubjects: subjects.length,
+//     selectedSubjects: selectedSubjects.length
+//   }), [courses.length, subjects.length, selectedSubjects.length]);
+
+//   if (loading) {
+//     return (
+//       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)` }}>
+//         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
+//         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         * { box-sizing: border-box; }
+//         body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+//         .schedule-container { padding: 2rem; background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%); min-height: 100vh; }
+//         .page-header { background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%); padding: 2rem; border-radius: 16px; box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15); margin-bottom: 2rem; color: white; }
+//         .page-title-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+//         .page-title { font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.75rem; letter-spacing: -0.5px; }
+//         .page-subtitle { font-size: 1.05rem; margin: 0; opacity: 0.9; }
+//         .header-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+//         .action-btn { border: none; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem; }
+//         .action-btn.primary { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; }
+//         .action-btn.secondary { background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: white; backdrop-filter: blur(10px); }
+//         .action-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2); }
+//         .action-btn.primary:hover:not(:disabled) { background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%); }
+//         .action-btn.secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.5); }
+//         .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+//         .statistics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+//         .stat-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); border-left: 4px solid ${COLORS.accent}; animation: fadeIn 0.5s ease; }
+//         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+//         .stat-label { color: #666; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+//         .stat-value { font-size: 2rem; font-weight: 700; color: ${COLORS.primary}; }
+//         .config-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); margin-bottom: 2rem; overflow: hidden; animation: slideIn 0.3s ease; }
+//         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+//         .config-card-header { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+//         .config-card-body { padding: 2rem; }
+//         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+//         .form-group { display: flex; flex-direction: column; }
+//         .form-label-custom { font-weight: 600; color: ${COLORS.primary}; margin-bottom: 0.5rem; display: flex; align-items: center; font-size: 0.9rem; }
+//         .form-input-custom { border: 2px solid #90E0EF; border-radius: 10px; padding: 0.75rem; font-size: 0.95rem; transition: all 0.3s ease; background: white; }
+//         .form-input-custom:focus { outline: none; border-color: ${COLORS.accent}; box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25); }
+//         .form-input-custom:disabled { background: #f5f5f5; cursor: not-allowed; }
+//         .availability-section { background: ${COLORS.lightest}; border: 2px solid #90E0EF; border-radius: 10px; padding: 1.5rem; }
+//         .checkbox-container { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; }
+//         .checkbox-container input[type="checkbox"] { margin-top: 0.25rem; width: 18px; height: 18px; cursor: pointer; }
+//         .checkbox-label { flex: 1; color: ${COLORS.primary}; }
+//         .selection-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); overflow: hidden; animation: slideIn 0.3s ease; }
+//         .selection-card-header { background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: all 0.3s ease; }
+//         .selection-card-header:hover { background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%); }
+//         .selection-card-body { padding: 1.5rem; }
+//         .count-badge { background: rgba(255, 255, 255, 0.2); padding: 0.3rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+//         .search-box { position: relative; margin-bottom: 1rem; }
+//         .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #90E0EF; border-radius: 10px; font-size: 0.95rem; transition: all 0.3s ease; }
+//         .search-box input:focus { outline: none; border-color: ${COLORS.accent}; box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25); }
+//         .search-icon-inline { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: ${COLORS.accent}; pointer-events: none; }
+//         .clear-btn { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; transition: color 0.3s ease; }
+//         .clear-btn:hover { color: ${COLORS.accent}; }
+//         .items-list { max-height: 400px; overflow-y: auto; }
+//         .item-checkbox { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; margin-bottom: 0.75rem; border-radius: 10px; border: 2px solid #E9ECEF; background: #F8F9FA; cursor: pointer; transition: all 0.3s ease; }
+//         .item-checkbox.selected { background: #E6F7FF; border-color: ${COLORS.light}; }
+//         .item-checkbox:hover { border-color: ${COLORS.accent}; transform: translateX(4px); }
+//         .item-checkbox input[type="checkbox"] { margin-top: 0.25rem; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+//         .item-content { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+//         .units-badge { background: #6c757d; color: white; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+//         .info-box { background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 10px; padding: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: #1565C0; }
+//         .warning-box { background: #FFF3CD; border: 2px solid #FFE69C; border-radius: 10px; padding: 1.5rem; color: #856404; }
+//         .conflicts-box { background: #FFE6E6; border: 2px solid #FFB3B3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+//         .preview-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+//         .preview-badge { padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; }
+//         .preview-badge.success { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; }
+//         .preview-badge.danger { background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%); color: white; }
+//         .section-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); margin-bottom: 2rem; overflow: hidden; }
+//         .section-header { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+//         .schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+//         .schedule-table thead { background: ${COLORS.lightest}; color: ${COLORS.primary}; }
+//         .schedule-table th { padding: 0.75rem; font-weight: 600; text-align: center; border: 1px solid #90E0EF; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+//         .schedule-table td { padding: 0.75rem; border: 1px solid #E8F4F8; text-align: center; vertical-align: middle; transition: all 0.3s ease; }
+//         .schedule-table tbody tr:nth-child(odd) { background: #FAFCFD; }
+//         .schedule-table tbody tr:hover { background: #E8F4F8; }
+//         .time-badge { background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%); color: ${COLORS.primary}; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; }
+//         .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9998; padding: 1rem; }
+//         .modal-content { background: white; border-radius: 16px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease; }
+//         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+//         .modal-header-custom { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+//         .modal-close { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; padding: 0; transition: transform 0.3s ease; }
+//         .modal-close:hover { transform: scale(1.2); }
+//         .modal-body-custom { padding: 2rem; }
+//         .modal-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+//         .modal-info-grid > div { display: flex; flex-direction: column; gap: 0.5rem; }
+//         .modal-info-grid p { margin: 0; color: #333; font-size: 0.95rem; }
+//         .modal-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+//         .modal-badge.success { background: #10B981; color: white; }
+//         .modal-badge.secondary { background: #6c757d; color: white; }
+//         .modal-info-box { background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 10px; padding: 1rem; display: flex; align-items: flex-start; gap: 0.75rem; color: #1565C0; }
+//         .modal-footer-custom { padding: 1.5rem 2rem; border-top: 1px solid #E8F4F8; display: flex; justify-content: flex-end; gap: 1rem; }
+//         .edusched-toast { position: fixed; top: 2rem; right: 2rem; min-width: 320px; background: white; border-radius: 12px; padding: 1rem 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; align-items: center; gap: 1rem; z-index: 9999; animation: slideInToast 0.3s ease; border-left: 4px solid; }
+//         @keyframes slideInToast { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+//         .edusched-toast.toast-success { border-left-color: #10B981; }
+//         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
+//         .edusched-toast .toast-icon { display: flex; align-items: center; }
+//         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
+//         .edusched-toast .toast-close { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280; }
+//         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
+//         .page-content-grid { display: grid; gap: 1.5rem; }
+//         .animate-spin { animation: spin 1s linear infinite; }
+//         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+//         @media (max-width: 768px) { .schedule-container { padding: 1rem; } .page-title { font-size: 2rem; } .form-grid { grid-template-columns: 1fr; } .modal-info-grid { grid-template-columns: 1fr; } .statistics-grid { grid-template-columns: repeat(2, 1fr); } }
+//       `}</style>
+//       <div className="schedule-container">
+//         <div className="page-header">
+//           <div className="page-title-section">
+//             <div>
+//               <h1 className="page-title">
+//                 <Calendar size={28} />
+//                 AI Schedule Generator
+//               </h1>
+//               <p className="page-subtitle">
+//                 Smart scheduling with teacher assignments and room allocations
+//                 {isBTLED && yearLevel === 3 && (
+//                   <span style={{ marginLeft: '1rem', background: 'rgba(255,255,255,0.2)', padding: '0.25rem 0.75rem', borderRadius: '20px' }}>
+//                     Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}
+//                   </span>
+//                 )}
+//               </p>
+//             </div>
+//             <div className="header-actions">
+//               <button className="action-btn secondary" onClick={async () => {
+//                 setLoading(true);
+//                 await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+//                 setLoading(false);
+//                 setToast({ type: 'success', message: 'Data reloaded successfully.' });
+//               }} disabled={loading || generating}>
+//                 <RefreshCw size={16} />Reload Data
+//               </button>
+//               <button className="action-btn secondary" onClick={() => {
+//                 setScheduleResult(null);
+//                 setConflicts([]);
+//                 setSelectedSubjects([]);
+//                 setToast({ type: 'success', message: 'Selections cleared.' });
+//               }} disabled={generating}>
+//                 <X size={16} />Reset
+//               </button>
+//               <button className="action-btn primary" onClick={() => setShowConfirm(true)} disabled={generating || !courseId || selectedSubjects.length === 0}>
+//                 <CheckCircle size={16} />{generating ? 'Generating…' : 'Generate Schedule'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Courses</div>
+//             <div className="stat-value">{overallStats.totalCourses}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Available Subjects</div>
+//             <div className="stat-value">{overallStats.totalSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Subjects</div>
+//             <div className="stat-value">{overallStats.selectedSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Instructors with Availability</div>
+//             <div className="stat-value">{availabilityDataCount}</div>
+//           </div>
+//         </div>
+//         <div className="page-content-grid">
+//           <DeanScheduleForm
+//             courses={courses} courseId={courseId} setCourseId={setCourseId}
+//             yearLevel={yearLevel} setYearLevel={setYearLevel} semester={semester} setSemester={setSemester}
+//             studentsCount={studentsCount} setStudentsCount={setStudentsCount}
+//             sectionCount={sectionCount} setSectionCount={setSectionCount}
+//             considerAvailability={considerAvailability} setConsiderAvailability={setConsiderAvailability}
+//             generating={generating} availabilityLoaded={availabilityLoaded} availabilityDataCount={availabilityDataCount}
+//           />
+//           <BTLEDMajorSelector major={btledMajor} onChange={setBtledMajor} show={showMajorSelector} />
+//           <SubjectList
+//             subjects={subjects} selectedSubjects={selectedSubjects} toggleSubject={toggleSubject}
+//             generating={generating} loading={loadingSubjects} courseId={courseId}
+//             availabilityData={availabilityData}
+//           />
+//         </div>
+//         <SchedulePreview
+//           scheduleResult={scheduleResult} conflicts={conflicts} subjects={subjects}
+//           rooms={rooms} sectionCount={sectionCount} onClear={() => { setScheduleResult(null); setConflicts([]); }}
+//           availabilityData={availabilityData} considerAvailability={considerAvailability}
+//         />
+//       </div>
+//       <GenerateModal
+//         show={showConfirm} onHide={() => setShowConfirm(false)} onConfirm={handleGenerate}
+//         courses={courses} courseId={courseId} yearLevel={yearLevel} semester={semester}
+//         sectionCount={sectionCount} studentsCount={studentsCount} selectedSubjects={selectedSubjects}
+//         schedulePattern={schedulePattern} considerAvailability={considerAvailability}
+//         availabilityDataCount={availabilityDataCount}
+//       />
+//       {toast && <Toast message={toast.message} type={toast.type === 'success' ? 'success' : 'error'} onClose={() => setToast(null)} />}
+//     </>
+//   );
+// }
+
+// import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+// import {
+//   Calendar, Settings, CheckCircle, AlertTriangle, Clock, BookOpen,
+//   Loader, RefreshCw, Search, X, ChevronDown, ChevronUp, Award, Download, User
+// } from 'lucide-react';
+
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// const BTLED_MAJORS = [
+//   { value: 'ICT', label: 'ICT - Information and Communication Technology' },
+//   { value: 'HE', label: 'HE - Home Economics' }
+// ];
+
+// // ============================================
+// // UTILITY FUNCTIONS
+// // ============================================
+// const formatTime = (time) => {
+//   const [hours, minutes] = time.split(':');
+//   const hour = parseInt(hours);
+//   const period = hour >= 12 ? 'PM' : 'AM';
+//   const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+//   return `${displayHour}:${minutes} ${period}`;
+// };
+
+// const slotToTimeRange = (slotIndex, durationHours) => {
+//   const duration = Number(durationHours) || 1;
+//   const startHour = 7 + Number(slotIndex);
+//   const endHour = startHour + duration;
+//   const formatHour = (hour) => {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
+//     return `${adjusted}:00 ${period}`;
+//   };
+//   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+// };
+
+// const isBTLEDCourse = (courseCode) => {
+//   return courseCode === 'BTLED' || courseCode?.startsWith('BTLED');
+// };
+
+// // ============================================
+// // COMPONENT DEFINITIONS
+// // ============================================
+// const Toast = ({ message, type, onClose }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => onClose(), 5000);
+//     return () => clearTimeout(timer);
+//   }, [onClose]);
+
+//   return (
+//     <div className={`edusched-toast toast-${type}`}>
+//       <div className="toast-icon">
+//         {type === "success" ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+//       </div>
+//       <span className="toast-message">{message}</span>
+//       <button className="toast-close" onClick={onClose}>×</button>
+//     </div>
+//   );
+// };
+
+// const LoadingState = ({ message = 'Loading...' }) => (
+//   <div style={{ textAlign: 'center', padding: '3rem' }}>
+//     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
+//     <p style={{ color: '#666', fontSize: '1rem' }}>{message}</p>
+//   </div>
+// );
+
+// const BTLEDMajorSelector = React.memo(({ major, onChange, show }) => {
+//   if (!show) return null;
+//   return (
+//     <div className="config-card" style={{ gridColumn: '1 / -1' }}>
+//       <div className="config-card-header">
+//         <Award size={20} />
+//         <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>BTLED Major</h3>
+//       </div>
+//       <div className="config-card-body">
+//         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+//           {BTLED_MAJORS.map(m => (
+//             <button
+//               key={m.value}
+//               className={`action-btn ${major === m.value ? 'primary' : 'secondary'}`}
+//               onClick={() => onChange(m.value)}
+//               style={{ flex: 1, minWidth: '200px' }}
+//             >
+//               {m.label}
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// const ConflictWarningModal = ({ show, onHide, onForce, conflictData, courses, courseId }) => {
+//   if (!show || !conflictData) return null;
+
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+//   const { crossCourseConflicts = [], withinCourseConflicts = [], conflictCount = 0 } = conflictData;
+
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content modal-conflict" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px' }}>
+//         <div className="modal-header-custom" style={{ background: 'linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)' }}>
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <AlertTriangle size={28} />
+//             <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 700 }}>Schedule Conflicts Detected!</h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+
+//         <div className="modal-body-custom">
+//           <div style={{ 
+//             background: '#fff3cd', 
+//             border: '2px solid #ffc107', 
+//             borderRadius: '10px', 
+//             padding: '1.25rem', 
+//             marginBottom: '1.5rem',
+//             display: 'flex',
+//             alignItems: 'flex-start',
+//             gap: '1rem'
+//           }}>
+//             <AlertTriangle size={24} style={{ color: '#856404', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 0.5rem 0', color: '#856404', fontSize: '1.1rem' }}>
+//                 Found {conflictCount} Conflict{conflictCount !== 1 ? 's' : ''}
+//               </h4>
+//               <p style={{ margin: 0, color: '#856404', fontSize: '0.95rem' }}>
+//                 The system detected scheduling conflicts. You can review the details below and choose to:
+//               </p>
+//               <ul style={{ margin: '0.75rem 0 0 1.5rem', color: '#856404' }}>
+//                 <li><strong>Cancel</strong> - Go back and adjust your schedule</li>
+//                 <li><strong>Save Anyway</strong> - Save the schedule despite conflicts (not recommended)</li>
+//               </ul>
+//             </div>
+//           </div>
+
+//           {crossCourseConflicts.length > 0 && (
+//             <div style={{ marginBottom: '1.5rem' }}>
+//               <h4 style={{ 
+//                 color: '#dc3545', 
+//                 fontSize: '1.1rem', 
+//                 marginBottom: '1rem',
+//                 paddingBottom: '0.5rem',
+//                 borderBottom: '2px solid #dc3545'
+//               }}>
+//                 ❌ Cross-Course Conflicts ({crossCourseConflicts.length})
+//               </h4>
+//               <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+//                 {crossCourseConflicts.map((conflict, idx) => (
+//                   <div key={idx} style={{
+//                     background: '#ffe6e6',
+//                     border: '1px solid #ffb3b3',
+//                     borderRadius: '8px',
+//                     padding: '1rem',
+//                     marginBottom: '0.75rem'
+//                   }}>
+//                     <div style={{ display: 'flex', alignItems: 'start', gap: '0.75rem' }}>
+//                       <User size={18} style={{ color: '#dc3545', flexShrink: 0, marginTop: '0.25rem' }} />
+//                       <div style={{ flex: 1 }}>
+//                         <strong style={{ color: '#dc3545', fontSize: '1rem' }}>
+//                           {conflict.instructor}
+//                         </strong>
+//                         <div style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#721c24' }}>
+//                           <div style={{ marginBottom: '0.5rem' }}>
+//                             <strong>Already Teaching:</strong> {conflict.existingCourse} - {conflict.existingSubject}
+//                           </div>
+//                           <div style={{ marginBottom: '0.5rem' }}>
+//                             <strong>Attempting to Schedule:</strong> {selectedCourse?.code} - {conflict.newSubject}
+//                           </div>
+//                           <div style={{ 
+//                             background: '#fff',
+//                             padding: '0.5rem',
+//                             borderRadius: '4px',
+//                             marginTop: '0.5rem',
+//                             fontSize: '0.85rem'
+//                           }}>
+//                             <Clock size={14} style={{ display: 'inline', marginRight: '0.25rem' }} />
+//                             <strong>{conflict.day}</strong>, Time Slot {conflict.slot} ({7 + conflict.slot}:00 - {7 + conflict.slot + conflict.duration}:00)
+//                           </div>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+//           )}
+
+//           {withinCourseConflicts.length > 0 && (
+//             <div>
+//               <h4 style={{ 
+//                 color: '#fd7e14', 
+//                 fontSize: '1.1rem', 
+//                 marginBottom: '1rem',
+//                 paddingBottom: '0.5rem',
+//                 borderBottom: '2px solid #fd7e14'
+//               }}>
+//                 ⚠️ Within-Course Conflicts ({withinCourseConflicts.length})
+//               </h4>
+//               <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+//                 {withinCourseConflicts.map((conflict, idx) => (
+//                   <div key={idx} style={{
+//                     background: '#fff3cd',
+//                     border: '1px solid #ffc107',
+//                     borderRadius: '8px',
+//                     padding: '0.875rem',
+//                     marginBottom: '0.75rem',
+//                     fontSize: '0.9rem',
+//                     color: '#856404'
+//                   }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.instructor || conflict.room}
+//                     <br />
+//                     <small>
+//                       <Clock size={12} style={{ display: 'inline', marginRight: '0.25rem' }} />
+//                       {conflict.day}, Slot {conflict.slot} - {conflict.subject}
+//                     </small>
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+//           )}
+//         </div>
+
+//         <div className="modal-footer-custom" style={{ background: '#f8f9fa' }}>
+//           <button 
+//             className="action-btn secondary" 
+//             onClick={onHide}
+//             style={{ padding: '0.875rem 1.5rem' }}
+//           >
+//             <X size={18} />
+//             Cancel
+//           </button>
+//           <button 
+//             className="action-btn"
+//             onClick={onForce}
+//             style={{ 
+//               background: 'linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)',
+//               color: 'white',
+//               padding: '0.875rem 1.5rem'
+//             }}
+//           >
+//             <AlertTriangle size={18} />
+//             Save Anyway (Not Recommended)
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const DeanScheduleForm = ({
+//   courses, courseId, setCourseId, yearLevel, setYearLevel, semester, setSemester,
+//   studentsCount, setStudentsCount, sectionCount, setSectionCount,
+//   considerAvailability, setConsiderAvailability, generating,
+//   availabilityLoaded, availabilityDataCount
+// }) => (
+//   <div className="config-card">
+//     <div className="config-card-header">
+//       <Settings size={20} />
+//       <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Schedule Configuration</h3>
+//     </div>
+//     <div className="config-card-body">
+//       <div className="form-grid">
+//         <div className="form-group">
+//           <label className="form-label-custom">
+//             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
+//             Course *
+//           </label>
+//           <select className="form-input-custom" value={courseId} onChange={e => setCourseId(e.target.value)} disabled={generating}>
+//             <option value="">-- Select Course --</option>
+//             {courses.map(c => <option key={c.id} value={c.id}>{c.code} — {c.name}</option>)}
+//           </select>
+//         </div>
+//         <div className="form-group">
+//           <label className="form-label-custom">Year Level *</label>
+//           <select className="form-input-custom" value={yearLevel} onChange={e => setYearLevel(Number(e.target.value))} disabled={generating}>
+//             {[1, 2, 3, 4].map(y => <option key={y} value={y}>{y}</option>)}
+//           </select>
+//         </div>
+//         <div className="form-group">
+//           <label className="form-label-custom">Semester *</label>
+//           <select className="form-input-custom" value={semester} onChange={e => setSemester(e.target.value)} disabled={generating}>
+//             <option value="1">1st Semester</option>
+//             <option value="2">2nd Semester</option>
+//           </select>
+//         </div>
+//         <div className="form-group">
+//           <label className="form-label-custom">Students per Section</label>
+//           <input type="number" className="form-input-custom" min="1" value={studentsCount} onChange={e => setStudentsCount(Number(e.target.value))} disabled={generating} />
+//         </div>
+//         <div className="form-group">
+//           <label className="form-label-custom">Number of Sections</label>
+//           <input type="number" className="form-input-custom" min="1" max="10" value={sectionCount} onChange={e => setSectionCount(Number(e.target.value))} disabled={generating} />
+//         </div>
+//       </div>
+//       <div className="availability-section">
+//         <label className="checkbox-container">
+//           <input type="checkbox" checked={considerAvailability} onChange={e => setConsiderAvailability(e.target.checked)} disabled={generating} />
+//           <span className="checkbox-label">
+//             <strong>Consider Instructor Availability</strong>
+//             <br />
+//             <small style={{ color: '#666' }}>
+//               When enabled, schedule will respect instructor availability windows.
+//               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+//               {availabilityLoaded && availabilityDataCount > 0 && ` (${availabilityDataCount} instructors with availability)`}
+//             </small>
+//           </span>
+//         </label>
+//         <div style={{ marginTop: '1rem', padding: '1rem', background: '#E3F2FD', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+//           <small style={{ color: '#1565C0', display: 'block', lineHeight: '1.6' }}>
+//             <strong>Schedule Pattern:</strong> The system will automatically determine the best pattern based on subject units and duration:
+//             <br />• <strong>MWF</strong> (Monday-Wednesday-Friday): For subjects requiring 3 sessions per week
+//             <br />• <strong>TTHS</strong> (Tuesday-Thursday-Saturday): For subjects requiring 2-3 sessions with longer durations
+//           </small>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+// const SubjectList = ({ subjects, selectedSubjects, toggleSubject, generating, loading, courseId, availabilityData }) => {
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [isExpanded, setIsExpanded] = useState(true);
+
+//   const filteredSubjects = useMemo(() => {
+//     if (!searchTerm) return subjects;
+//     const term = searchTerm.toLowerCase();
+//     return subjects.filter(s =>
+//       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
+//       (s.description || '').toLowerCase().includes(term) ||
+//       (s.teacher_name || '').toLowerCase().includes(term)
+//     );
+//   }, [subjects, searchTerm]);
+
+//   const getInstructorAvailabilityDetails = (teacherName) => {
+//     if (!teacherName || !availabilityData[teacherName]) return null;
+//     const avail = availabilityData[teacherName];
+//     const groupedByDay = avail.reduce((acc, slot) => {
+//       if (!acc[slot.day]) acc[slot.day] = [];
+//       acc[slot.day].push(`${slot.start_time}-${slot.end_time}`);
+//       return acc;
+//     }, {});
+//     const days = Object.keys(groupedByDay);
+//     return { days, groupedByDay, totalDays: days.length };
+//   };
+
+//   return (
+//     <div className="selection-card">
+//       <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+//           <BookOpen size={18} />
+//           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
+//           {subjects.length > 0 && (
+//             <span className="count-badge">{selectedSubjects.length} / {subjects.length}</span>
+//           )}
+//         </div>
+//         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+//       </div>
+//       {isExpanded && (
+//         <div className="selection-card-body">
+//           {loading ? <LoadingState message="Loading subjects..." /> : !courseId ? (
+//             <div className="info-box"><AlertTriangle size={18} /><span>Please select a course first.</span></div>
+//           ) : subjects.length === 0 ? (
+//             <div className="warning-box">No subjects available for this course, year, and semester.</div>
+//           ) : (
+//             <>
+//               <div className="search-box">
+//                 <Search size={16} className="search-icon-inline" />
+//                 <input type="text" placeholder="Search subjects or instructors..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+//                 {searchTerm && <button onClick={() => setSearchTerm('')} className="clear-btn"><X size={16} /></button>}
+//               </div>
+//               <div className="items-list">
+//                 {filteredSubjects.map(s => {
+//                   const availDetails = getInstructorAvailabilityDetails(s.teacher_name);
+
+//                   return (
+//                     <label key={s.id} className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}>
+//                       <input type="checkbox" checked={selectedSubjects.includes(s.id)} onChange={() => toggleSubject(s.id)} disabled={generating} />
+//                       <div className="item-content">
+//                         <div style={{ flex: 1 }}>
+//                           <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+//                           <br />
+//                           <small style={{ color: '#666' }}>{s.description}</small>
+
+//                           {s.teacher_name && (
+//                             <>
+//                               <br />
+//                               <small style={{ color: COLORS.accent, fontWeight: 600 }}>
+//                                 <User size={12} style={{ display: 'inline', marginRight: '0.25rem' }} />
+//                                 Teacher: {s.teacher_name}
+//                               </small>
+
+//                               {availDetails && (
+//                                 <div style={{ marginTop: '0.5rem' }}>
+//                                   <span style={{
+//                                     background: '#d4f4dd',
+//                                     color: '#1b6933',
+//                                     padding: '0.2rem 0.6rem',
+//                                     borderRadius: '6px',
+//                                     fontSize: '0.75rem',
+//                                     fontWeight: 600,
+//                                     display: 'inline-flex',
+//                                     alignItems: 'center',
+//                                     gap: '0.25rem'
+//                                   }}>
+//                                     ✓ Availability Set ({availDetails.totalDays} day{availDetails.totalDays > 1 ? 's' : ''})
+//                                   </span>
+
+//                                   <details style={{ marginTop: '0.4rem', cursor: 'pointer' }}>
+//                                     <summary style={{
+//                                       fontSize: '0.75rem',
+//                                       color: COLORS.secondary,
+//                                       fontWeight: 600,
+//                                       userSelect: 'none'
+//                                     }}>
+//                                       View Time Windows
+//                                     </summary>
+//                                     <div style={{
+//                                       marginTop: '0.4rem',
+//                                       padding: '0.6rem',
+//                                       background: '#E3F2FD',
+//                                       borderRadius: '6px',
+//                                       fontSize: '0.75rem',
+//                                       border: '1px solid #90CAF9'
+//                                     }}>
+//                                       {Object.entries(availDetails.groupedByDay).map(([day, times]) => (
+//                                         <div key={day} style={{ marginBottom: '0.3rem' }}>
+//                                           <strong>{day}:</strong> {times.join(', ')}
+//                                         </div>
+//                                       ))}
+//                                     </div>
+//                                   </details>
+//                                 </div>
+//                               )}
+//                             </>
+//                           )}
+
+//                           {s.duration && (
+//                             <>
+//                               <br />
+//                               <small style={{ color: '#999' }}>
+//                                 Duration: {Number(s.duration)} hour{Number(s.duration) > 1 ? 's' : ''} per session
+//                               </small>
+//                             </>
+//                           )}
+//                         </div>
+//                         <span className="units-badge">{s.units}u</span>
+//                       </div>
+//                     </label>
+//                   );
+//                 })}
+//                 {filteredSubjects.length === 0 && <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>No subjects match your search</div>}
+//               </div>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// const SchedulePreview = ({ scheduleResult, conflicts, subjects, rooms, sectionCount, onClear, availabilityData, considerAvailability }) => {
+//   const sectionRefs = useRef({});
+//   const [downloadingSection, setDownloadingSection] = useState(null);
+
+//   const handleDownloadSection = async (sectionIndex) => {
+//     const element = sectionRefs.current[sectionIndex];
+//     if (!element) return;
+
+//     setDownloadingSection(sectionIndex);
+//     try {
+//       const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
+//       const canvas = await html2canvas(element, {
+//         backgroundColor: '#ffffff',
+//         scale: 2,
+//         logging: false,
+//         useCORS: true,
+//         windowWidth: element.scrollWidth,
+//         windowHeight: element.scrollHeight
+//       });
+//       const image = canvas.toDataURL('image/png');
+//       const link = document.createElement('a');
+//       link.href = image;
+//       const sectionLetter = String.fromCharCode(65 + sectionIndex);
+//       link.download = `Schedule_Section_${sectionLetter}_${new Date().toISOString().slice(0,10)}.png`;
+//       link.click();
+//     } catch (error) {
+//       console.error('Download error:', error);
+//       alert('Failed to download section schedule. Please try again.');
+//     } finally {
+//       setDownloadingSection(null);
+//     }
+//   };
+
+//   if (!scheduleResult?.assignments) return null;
+
+//   const grouped = {};
+//   scheduleResult.assignments.forEach(a => {
+//     if (!grouped[a.section_index]) grouped[a.section_index] = [];
+//     grouped[a.section_index].push(a);
+//   });
+//   for (let i = 0; i < sectionCount; i++) {
+//     if (!grouped[i]) grouped[i] = [];
+//   }
+
+//   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+//   const getInstructorAvailability = (instructorName, day) => {
+//     if (!considerAvailability || !availabilityData[instructorName]) return null;
+//     const dayAvailability = availabilityData[instructorName].filter(a => a.day === day);
+//     if (dayAvailability.length === 0) return null;
+//     return dayAvailability.map(a => `${a.start_time}-${a.end_time}`).join(', ');
+//   };
+
+//   return (
+//     <div style={{ marginTop: '2rem' }}>
+//       {conflicts.length > 0 && (
+//         <div className="conflicts-box">
+//           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+//             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
+//             <div style={{ flex: 1 }}>
+//               <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>Schedule Conflicts Detected ({conflicts.length})</h4>
+//               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+//                 {conflicts.map((conflict, idx) => (
+//                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
+//                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
+//                     <br /><small style={{ color: '#666' }}>{conflict.details}</small>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="preview-header">
+//         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//           <Calendar size={24} style={{ color: COLORS.accent }} />
+//           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>Generated Schedule</h3>
+//         </div>
+//         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+//           {scheduleResult.stats && (
+//             <>
+//               <span className="preview-badge success">{scheduleResult.stats.totalAssignments} assignments</span>
+//               <span className="preview-badge success">{sectionCount} section{sectionCount !== 1 ? 's' : ''}</span>
+//               {conflicts.length === 0 ? (
+//                 <span className="preview-badge success"><CheckCircle size={14} style={{ marginRight: '0.25rem' }} />No Conflicts</span>
+//               ) : (
+//                 <span className="preview-badge danger"><AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />{conflicts.length} Conflicts</span>
+//               )}
+//             </>
+//           )}
+//           <button className="action-btn secondary" onClick={onClear}><X size={16} />Clear</button>
+//         </div>
+//       </div>
+
+//       <div style={{ marginTop: '1.5rem' }}>
+//         {Object.keys(grouped).sort((a, b) => Number(a) - Number(b)).map(secIdx => {
+//           const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+//           const sectionAssignments = grouped[secIdx];
+//           const subjectMap = new Map();
+//           sectionAssignments.forEach(a => {
+//             if (!subjectMap.has(a.subject_id)) {
+//               subjectMap.set(a.subject_id, { subject_id: a.subject_id, instructor_name: a.instructor_name, room_id: a.room_id, slots: [] });
+//             }
+//             subjectMap.get(a.subject_id).slots.push({ day: a.day, slot_index: a.slot_index });
+//           });
+
+//           return (
+//             <div key={secIdx} className="section-card" ref={el => sectionRefs.current[secIdx] = el}>
+//               <div className="section-header">
+//                 <div>
+//                   <h4 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>Section {sectionLetter}</h4>
+//                   <span style={{ opacity: 0.9, fontSize: '0.95rem' }}>{sectionAssignments.length} time slot{sectionAssignments.length !== 1 ? 's' : ''} assigned</span>
+//                 </div>
+//                 <button 
+//                   className="action-btn secondary"
+//                   onClick={() => handleDownloadSection(secIdx)}
+//                   disabled={downloadingSection === secIdx}
+//                   style={{ padding: '0.75rem 1.25rem', fontSize: '0.95rem' }}
+//                 >
+//                   <Download size={18} />
+//                   {downloadingSection === secIdx ? 'Downloading...' : 'Download Schedule'}
+//                 </button>
+//               </div>
+
+//               {sectionAssignments.length === 0 ? (
+//                 <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+//                   <Clock size={24} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+//                   <p>No classes assigned to this section yet</p>
+//                 </div>
+//               ) : (
+//                 <div style={{ overflowX: 'auto', padding: '1rem 0' }}>
+//                   <table className="schedule-table">
+//                     <thead>
+//                       <tr>
+//                         <th>Subject</th>
+//                         <th>Instructor</th>
+//                         <th>Room</th>
+//                         {days.map(d => <th key={d}>{d}</th>)}
+//                       </tr>
+//                     </thead>
+//                     <tbody>
+//                       {Array.from(subjectMap.values()).map((subjectData, i) => {
+//                         const subject = subjects.find(s => s.id === subjectData.subject_id);
+//                         const room = rooms.find(rm => rm.id === subjectData.room_id);
+//                         const hasAvailabilityData = considerAvailability && availabilityData[subjectData.instructor_name];
+
+//                         return (
+//                           <tr key={i}>
+//                             <td>
+//                               <strong style={{ color: COLORS.accent }}>{subject?.subject_code || subjectData.subject_id}</strong>
+//                               <br /><small style={{ color: '#666' }}>{subject?.description}</small>
+//                               {subject?.duration > 1 && (
+//                                 <><br /><small style={{ color: COLORS.secondary, fontWeight: 600 }}>{Number(subject.duration)}-hour session</small></>
+//                               )}
+//                             </td>
+//                             <td>
+//                               <div>
+//                                 <User size={14} style={{ display: 'inline', marginRight: '0.25rem', verticalAlign: 'middle' }} />
+//                                 {subjectData.instructor_name || 'TBD'}
+//                               </div>
+//                               {hasAvailabilityData && (
+//                                 <>
+//                                   <small style={{ color: COLORS.light, fontWeight: 600, display: 'block', marginTop: '0.25rem' }}>
+//                                     ✓ Availability Set
+//                                   </small>
+//                                   <details style={{ marginTop: '0.5rem', cursor: 'pointer' }}>
+//                                     <summary style={{ fontSize: '0.75rem', color: COLORS.secondary, fontWeight: 600, userSelect: 'none' }}>
+//                                       View Availability
+//                                     </summary>
+//                                     <div style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#E3F2FD', borderRadius: '4px', fontSize: '0.75rem' }}>
+//                                       {Object.entries(
+//                                         availabilityData[subjectData.instructor_name]?.reduce((acc, slot) => {
+//                                           if (!acc[slot.day]) acc[slot.day] = [];
+//                                           acc[slot.day].push(`${slot.start_time}-${slot.end_time}`);
+//                                           return acc;
+//                                         }, {}) || {}
+//                                       ).map(([day, times]) => (
+//                                         <div key={day} style={{ marginBottom: '0.25rem' }}>
+//                                           <strong>{day}:</strong> {times.join(', ')}
+//                                         </div>
+//                                       ))}
+//                                     </div>
+//                                   </details>
+//                                 </>
+//                               )}
+//                             </td>
+//                             <td><strong>{room?.name || 'TBD'}</strong></td>
+//                             {days.map(day => {
+//                               const daySlots = subjectData.slots.filter(slot => slot.day === day);
+//                               const availability = getInstructorAvailability(subjectData.instructor_name, day);
+//                               return (
+//                                 <td key={day}>
+//                                   {daySlots.length > 0 ? (
+//                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+//                                       {daySlots.map((slot, idx) => {
+//                                         const assignment = sectionAssignments.find(a => a.day === day && a.slot_index === slot.slot_index && a.subject_id === subjectData.subject_id);
+//                                         let duration = 1;
+//                                         if (assignment?.duration) duration = Number(assignment.duration);
+//                                         else if (subject?.duration) duration = Number(subject.duration);
+
+//                                         return (
+//                                           <span key={idx} className="time-badge">
+//                                             <Clock size={12} />
+//                                             {slotToTimeRange(slot.slot_index, duration)}
+//                                           </span>
+//                                         );
+//                                       })}
+//                                       {availability && (
+//                                         <small style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.25rem' }}>
+//                                           Available: {availability}
+//                                         </small>
+//                                       )}
+//                                     </div>
+//                                   ) : (
+//                                     <span style={{ color: '#ccc' }}>—</span>
+//                                   )}
+//                                 </td>
+//                               );
+//                             })}
+//                           </tr>
+//                         );
+//                       })}
+//                     </tbody>
+//                   </table>
+//                 </div>
+//               )}
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const GenerateModal = ({ show, onHide, onConfirm, courses, courseId, yearLevel, semester, sectionCount, studentsCount, selectedSubjects, schedulePattern, considerAvailability, availabilityDataCount }) => {
+//   if (!show) return null;
+//   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+//   return (
+//     <div className="modal-overlay" onClick={onHide}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header-custom">
+//           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+//             <Settings size={24} />
+//             <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>Confirm Schedule Generation</h3>
+//           </div>
+//           <button className="modal-close" onClick={onHide}>×</button>
+//         </div>
+//         <div className="modal-body-custom">
+//           <div className="modal-info-grid">
+//             <div><strong style={{ color: COLORS.accent }}>Course:</strong><p>{selectedCourse?.name || 'N/A'}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Year Level:</strong><p>{yearLevel}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Semester:</strong><p>{semester}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Sections:</strong><p>{sectionCount} (Section {String.fromCharCode(65)} - Section {String.fromCharCode(65 + sectionCount - 1)})</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Students/Section:</strong><p>{studentsCount}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Subjects:</strong><p>{selectedSubjects.length}</p></div>
+//             <div><strong style={{ color: COLORS.accent }}>Schedule Pattern:</strong><p>Auto-determined (MWF/TTHS)</p></div>
+//             <div>
+//               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
+//               <p>{considerAvailability ? (<span className="modal-badge success">Enforced ({availabilityDataCount} instructors)</span>) : (<span className="modal-badge secondary">Ignored</span>)}</p>
+//             </div>
+//           </div>
+//           <div className="modal-info-box">
+//             <AlertTriangle size={18} />
+//             <small>
+//               The system will create {sectionCount} section{sectionCount !== 1 ? 's' : ''} and generate a complete schedule for each section using assigned teachers and rooms.
+//               {considerAvailability && availabilityDataCount > 0 && ` Instructor availability will be respected for ${availabilityDataCount} instructors.`}
+//             </small>
+//           </div>
+//         </div>
+//         <div className="modal-footer-custom">
+//           <button className="action-btn secondary" onClick={onHide}>Cancel</button>
+//           <button className="action-btn primary" onClick={onConfirm}><CheckCircle size={16} />Confirm & Generate</button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// // ============================================
+// // MAIN COMPONENT
+// // ============================================
+// export default function DeanSchedulePage() {
+//   const [courses, setCourses] = useState([]);
+//   const [courseId, setCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [btledMajor, setBtledMajor] = useState('ICT');
+//   const [studentsCount, setStudentsCount] = useState(30);
+//   const [sectionCount, setSectionCount] = useState(1);
+//   const [schedulePattern, setSchedulePattern] = useState('BOTH');
+//   const [subjects, setSubjects] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [loadingSubjects, setLoadingSubjects] = useState(false);
+//   const [availabilityData, setAvailabilityData] = useState({});
+//   const [showConfirm, setShowConfirm] = useState(false);
+//   const [generating, setGenerating] = useState(false);
+//   const [scheduleResult, setScheduleResult] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const [considerAvailability, setConsiderAvailability] = useState(true);
+//   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+//   const [conflicts, setConflicts] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [rooms, setRooms] = useState([]);
+//   const [showConflictWarning, setShowConflictWarning] = useState(false);
+//   const [conflictWarningData, setConflictWarningData] = useState(null);
+
+//   useEffect(() => {
+//     const initData = async () => {
+//       setLoading(true);
+//       await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+//       setLoading(false);
+//     };
+//     initData();
+//   }, []);
+
+//   const fetchCourses = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching courses:', err);
+//       setCourses([]);
+//     }
+//   }, []);
+
+//   const fetchRooms = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/rooms`);
+//       const data = await res.json();
+//       setRooms(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('Error fetching rooms:', err);
+//       setRooms([]);
+//     }
+//   }, []);
+
+//   const fetchAvailabilityData = useCallback(async () => {
+//     try {
+//       const res = await fetch(`${API}/api/instructor-availability`);
+//       if (!res.ok) throw new Error('Failed to fetch availability');
+//       const data = await res.json();
+//       const availMap = {};
+//       if (Array.isArray(data)) {
+//         data.forEach(item => {
+//           const name = item.instructorName || 'Unknown';
+//           if (!availMap[name]) availMap[name] = [];
+//           availMap[name].push({ day: item.day, start_time: item.start_time, end_time: item.end_time });
+//         });
+//       }
+//       setAvailabilityData(availMap);
+//       setAvailabilityLoaded(true);
+//     } catch (err) {
+//       console.error('Error fetching availability data:', err);
+//       setAvailabilityLoaded(true);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     if (!courseId) {
+//       setSubjects([]);
+//       setSelectedSubjects([]);
+//       return;
+//     }
+//     const loadSubjects = async () => {
+//       setLoadingSubjects(true);
+//       try {
+//         const params = new URLSearchParams({ courseId, yearLevel, semester });
+//         const selectedCourse = courses.find(c => c.id === Number(courseId));
+//         const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+//         if (isBTLED && yearLevel === 3) params.append('major', btledMajor);
+//         const res = await fetch(`${API}/api/subjects?${params}`);
+//         const data = await res.json();
+//         const arr = Array.isArray(data) ? data : [];
+//         setSubjects(arr);
+//         setSelectedSubjects(arr.map(s => s.id || s.subject_id).filter(Boolean));
+//       } catch (err) {
+//         console.error('Error loading subjects:', err);
+//         setSubjects([]);
+//       } finally {
+//         setLoadingSubjects(false);
+//       }
+//     };
+//     loadSubjects();
+//   }, [courseId, yearLevel, semester, btledMajor, courses]);
+
+//   const toggleSubject = useCallback((id) => {
+//     setSelectedSubjects(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+//   }, []);
+
+//   const detectConflicts = useCallback((assignments) => {
+//     const conflictList = [];
+//     const roomUsage = new Map();
+//     const instructorUsage = new Map();
+//     const sectionUsage = new Map();
+//     assignments.forEach((a) => {
+//       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
+//       if (roomUsage.has(roomKey)) {
+//         conflictList.push({
+//           type: 'room',
+//           message: `Room double-booked on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Conflict between subjects`
+//         });
+//       }
+//       roomUsage.set(roomKey, { ...a });
+
+//       const instrKey = `${a.instructor_name}-${a.day}-${a.slot_index}`;
+//       if (instructorUsage.has(instrKey)) {
+//         conflictList.push({
+//           type: 'instructor',
+//           message: `Instructor "${a.instructor_name}" is scheduled twice on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Teaching multiple classes`
+//         });
+//       }
+//       instructorUsage.set(instrKey, { ...a });
+
+//       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
+//       if (sectionUsage.has(sectionKey)) {
+//         const sectionName = String.fromCharCode(65 + a.section_index);
+//         conflictList.push({
+//           type: 'section',
+//           message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+//           details: `Multiple classes at same time`
+//         });
+//       }
+//       sectionUsage.set(sectionKey, { ...a });
+//     });
+//     return conflictList;
+//   }, []);
+
+//   const handleGenerate = useCallback(async (forceGenerateFlag = false) => {
+//     if (!courseId || selectedSubjects.length === 0) {
+//       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
+//       return;
+//     }
+    
+//     setShowConfirm(false);
+//     setGenerating(true);
+//     setToast(null);
+//     setScheduleResult(null);
+//     setConflicts([]);
+    
+//     try {
+//       const selectedCourse = courses.find(c => c.id === Number(courseId));
+//       const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+      
+//       const payload = {
+//         courseId: Number(courseId),
+//         yearLevel: Number(yearLevel),
+//         semester: String(semester),
+//         studentsCount: Number(studentsCount),
+//         sectionCount: Number(sectionCount),
+//         subjects: [...selectedSubjects],
+//         schedulePattern: String(schedulePattern),
+//         considerInstructorAvailability: Boolean(considerAvailability),
+//         major: isBTLED && yearLevel === 3 ? String(btledMajor) : undefined,
+//         forceGenerate: Boolean(forceGenerateFlag)
+//       };
+      
+//       const res = await fetch(`${API}/api/scheduler/generate`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//       });
+      
+//       const data = await res.json();
+      
+//       // Handle conflict response (409 status)
+//       if (res.status === 409 && data.hasConflicts && !forceGenerateFlag) {
+//         setGenerating(false);
+//         setConflictWarningData(data);
+//         setShowConflictWarning(true);
+//         return;
+//       }
+      
+//       if (!res.ok) throw new Error(data.detail || data.error || 'Schedule generation failed');
+      
+//       const detectedConflicts = detectConflicts(data.assignments || []);
+//       setConflicts(detectedConflicts);
+//       setScheduleResult(data);
+     
+//       if (detectedConflicts.length > 0) {
+//         setToast({ 
+//           type: forceGenerateFlag ? 'warning' : 'error', 
+//           message: forceGenerateFlag 
+//             ? `Schedule saved with ${detectedConflicts.length} known conflict(s).`
+//             : `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` 
+//         });
+//       } else {
+//         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
+//       }
+//     } catch (err) {
+//       console.error('Error generating schedule:', err);
+//       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
+//     } finally {
+//       setGenerating(false);
+//       setShowConflictWarning(false);
+//       setConflictWarningData(null);
+//     }
+//   }, [courseId, selectedSubjects, considerAvailability, yearLevel, semester, studentsCount, sectionCount, schedulePattern, btledMajor, courses, detectConflicts]);
+
+//   const selectedCourse = useMemo(() => courses.find(c => c.id === Number(courseId)), [courses, courseId]);
+//   const isBTLED = useMemo(() => selectedCourse && isBTLEDCourse(selectedCourse.code), [selectedCourse]);
+//   const showMajorSelector = isBTLED && yearLevel === 3;
+//   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
+//   const overallStats = useMemo(() => ({
+//     totalCourses: courses.length,
+//     totalSubjects: subjects.length,
+//     selectedSubjects: selectedSubjects.length
+//   }), [courses.length, subjects.length, selectedSubjects.length]);
+
+//   if (loading) {
+//     return (
+//       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)` }}>
+//         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
+//         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <style>{`
+//         * { box-sizing: border-box; }
+//         body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+//         .schedule-container { padding: 2rem; background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%); min-height: 100vh; }
+//         .page-header { background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%); padding: 2rem; border-radius: 16px; box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15); margin-bottom: 2rem; color: white; }
+//         .page-title-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+//         .page-title { font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.75rem; letter-spacing: -0.5px; }
+//         .page-subtitle { font-size: 1.05rem; margin: 0; opacity: 0.9; }
+//         .header-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+//         .action-btn { border: none; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem; }
+//         .action-btn.primary { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; }
+//         .action-btn.secondary { background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: white; backdrop-filter: blur(10px); }
+//         .action-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2); }
+//         .action-btn.primary:hover:not(:disabled) { background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%); }
+//         .action-btn.secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.5); }
+//         .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+//         .statistics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+//         .stat-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); border-left: 4px solid ${COLORS.accent}; animation: fadeIn 0.5s ease; }
+//         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+//         .stat-label { color: #666; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+//         .stat-value { font-size: 2rem; font-weight: 700; color: ${COLORS.primary}; }
+//         .config-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); margin-bottom: 2rem; overflow: hidden; animation: slideIn 0.3s ease; }
+//         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+//         .config-card-header { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+//         .config-card-body { padding: 2rem; }
+//         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+//         .form-group { display: flex; flex-direction: column; }
+//         .form-label-custom { font-weight: 600; color: ${COLORS.primary}; margin-bottom: 0.5rem; display: flex; align-items: center; font-size: 0.9rem; }
+//         .form-input-custom { border: 2px solid #90E0EF; border-radius: 10px; padding: 0.75rem; font-size: 0.95rem; transition: all 0.3s ease; background: white; }
+//         .form-input-custom:focus { outline: none; border-color: ${COLORS.accent}; box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25); }
+//         .form-input-custom:disabled { background: #f5f5f5; cursor: not-allowed; }
+//         .availability-section { background: ${COLORS.lightest}; border: 2px solid #90E0EF; border-radius: 10px; padding: 1.5rem; }
+//         .checkbox-container { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; }
+//         .checkbox-container input[type="checkbox"] { margin-top: 0.25rem; width: 18px; height: 18px; cursor: pointer; }
+//         .checkbox-label { flex: 1; color: ${COLORS.primary}; }
+//         .selection-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); overflow: hidden; animation: slideIn 0.3s ease; }
+//         .selection-card-header { background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: all 0.3s ease; }
+//         .selection-card-header:hover { background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%); }
+//         .selection-card-body { padding: 1.5rem; }
+//         .count-badge { background: rgba(255, 255, 255, 0.2); padding: 0.3rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+//         .search-box { position: relative; margin-bottom: 1rem; }
+//         .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #90E0EF; border-radius: 10px; font-size: 0.95rem; transition: all 0.3s ease; }
+//         .search-box input:focus { outline: none; border-color: ${COLORS.accent}; box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25); }
+//         .search-icon-inline { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: ${COLORS.accent}; pointer-events: none; }
+//         .clear-btn { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; transition: color 0.3s ease; }
+//         .clear-btn:hover { color: ${COLORS.accent}; }
+//         .items-list { max-height: 400px; overflow-y: auto; }
+//         .item-checkbox { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; margin-bottom: 0.75rem; border-radius: 10px; border: 2px solid #E9ECEF; background: #F8F9FA; cursor: pointer; transition: all 0.3s ease; }
+//         .item-checkbox.selected { background: #E6F7FF; border-color: ${COLORS.light}; }
+//         .item-checkbox:hover { border-color: ${COLORS.accent}; transform: translateX(4px); }
+//         .item-checkbox input[type="checkbox"] { margin-top: 0.25rem; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+//         .item-content { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+//         .units-badge { background: #6c757d; color: white; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+//         .info-box { background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 10px; padding: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: #1565C0; }
+//         .warning-box { background: #FFF3CD; border: 2px solid #FFE69C; border-radius: 10px; padding: 1.5rem; color: #856404; }
+//         .conflicts-box { background: #FFE6E6; border: 2px solid #FFB3B3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+//         .preview-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+//         .preview-badge { padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; }
+//         .preview-badge.success { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; }
+//         .preview-badge.danger { background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%); color: white; }
+//         .section-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); margin-bottom: 2rem; overflow: hidden; }
+//         .section-header { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+//         .schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+//         .schedule-table thead { background: ${COLORS.lightest}; color: ${COLORS.primary}; }
+//         .schedule-table th { padding: 0.75rem; font-weight: 600; text-align: center; border: 1px solid #90E0EF; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+//         .schedule-table td { padding: 0.75rem; border: 1px solid #E8F4F8; text-align: center; vertical-align: middle; transition: all 0.3s ease; }
+//         .schedule-table tbody tr:nth-child(odd) { background: #FAFCFD; }
+//         .schedule-table tbody tr:hover { background: #E8F4F8; }
+//         .time-badge { background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%); color: ${COLORS.primary}; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; }
+//         .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9998; padding: 1rem; }
+//         .modal-content { background: white; border-radius: 16px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease; }
+//         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+//         .modal-header-custom { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+//         .modal-close { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; padding: 0; transition: transform 0.3s ease; }
+//         .modal-close:hover { transform: scale(1.2); }
+//         .modal-body-custom { padding: 2rem; }
+//         .modal-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+//         .modal-info-grid > div { display: flex; flex-direction: column; gap: 0.5rem; }
+//         .modal-info-grid p { margin: 0; color: #333; font-size: 0.95rem; }
+//         .modal-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+//         .modal-badge.success { background: #10B981; color: white; }
+//         .modal-badge.secondary { background: #6c757d; color: white; }
+//         .modal-info-box { background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 10px; padding: 1rem; display: flex; align-items: flex-start; gap: 0.75rem; color: #1565C0; }
+//         .modal-footer-custom { padding: 1.5rem 2rem; border-top: 1px solid #E8F4F8; display: flex; justify-content: flex-end; gap: 1rem; }
+//         .modal-conflict .modal-body-custom { max-height: 600px; overflow-y: auto; }
+//         .modal-conflict .modal-body-custom::-webkit-scrollbar { width: 8px; }
+//         .modal-conflict .modal-body-custom::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+//         .modal-conflict .modal-body-custom::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+//         .modal-conflict .modal-body-custom::-webkit-scrollbar-thumb:hover { background: #555; }
+//         .edusched-toast { position: fixed; top: 2rem; right: 2rem; min-width: 320px; background: white; border-radius: 12px; padding: 1rem 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; align-items: center; gap: 1rem; z-index: 9999; animation: slideInToast 0.3s ease; border-left: 4px solid; }
+//         @keyframes slideInToast { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+//         .edusched-toast.toast-success { border-left-color: #10B981; }
+//         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
+//         .edusched-toast.toast-warning { border-left-color: #ffc107; }
+//         .edusched-toast .toast-icon { display: flex; align-items: center; }
+//         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
+//         .edusched-toast .toast-close { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280; }
+//         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
+//         .page-content-grid { display: grid; gap: 1.5rem; }
+//         .animate-spin { animation: spin 1s linear infinite; }
+//         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+//         @media (max-width: 768px) { .schedule-container { padding: 1rem; } .page-title { font-size: 2rem; } .form-grid { grid-template-columns: 1fr; } .modal-info-grid { grid-template-columns: 1fr; } .statistics-grid { grid-template-columns: repeat(2, 1fr); } }
+//       `}</style>
+//       <div className="schedule-container">
+//         <div className="page-header">
+//           <div className="page-title-section">
+//             <div>
+//               <h1 className="page-title">
+//                 <Calendar size={28} />
+//                 AI Schedule Generator
+//               </h1>
+//               <p className="page-subtitle">
+//                 Smart scheduling with teacher assignments and room allocations
+//                 {isBTLED && yearLevel === 3 && (
+//                   <span style={{ marginLeft: '1rem', background: 'rgba(255,255,255,0.2)', padding: '0.25rem 0.75rem', borderRadius: '20px' }}>
+//                     Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}
+//                   </span>
+//                 )}
+//               </p>
+//             </div>
+//             <div className="header-actions">
+//               <button className="action-btn secondary" onClick={async () => {
+//                 setLoading(true);
+//                 await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+//                 setLoading(false);
+//                 setToast({ type: 'success', message: 'Data reloaded successfully.' });
+//               }} disabled={loading || generating}>
+//                 <RefreshCw size={16} />Reload Data
+//               </button>
+//               <button className="action-btn secondary" onClick={() => {
+//                 setScheduleResult(null);
+//                 setConflicts([]);
+//                 setSelectedSubjects([]);
+//                 setToast({ type: 'success', message: 'Selections cleared.' });
+//               }} disabled={generating}>
+//                 <X size={16} />Reset
+//               </button>
+//               <button className="action-btn primary" onClick={() => setShowConfirm(true)} disabled={generating || !courseId || selectedSubjects.length === 0}>
+//                 <CheckCircle size={16} />{generating ? 'Generating…' : 'Generate Schedule'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="statistics-grid">
+//           <div className="stat-card">
+//             <div className="stat-label">Total Courses</div>
+//             <div className="stat-value">{overallStats.totalCourses}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Available Subjects</div>
+//             <div className="stat-value">{overallStats.totalSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Selected Subjects</div>
+//             <div className="stat-value">{overallStats.selectedSubjects}</div>
+//           </div>
+//           <div className="stat-card">
+//             <div className="stat-label">Instructors with Availability</div>
+//             <div className="stat-value">{availabilityDataCount}</div>
+//           </div>
+//         </div>
+//         <div className="page-content-grid">
+//           <DeanScheduleForm
+//             courses={courses} courseId={courseId} setCourseId={setCourseId}
+//             yearLevel={yearLevel} setYearLevel={setYearLevel} semester={semester} setSemester={setSemester}
+//             studentsCount={studentsCount} setStudentsCount={setStudentsCount}
+//             sectionCount={sectionCount} setSectionCount={setSectionCount}
+//             considerAvailability={considerAvailability} setConsiderAvailability={setConsiderAvailability}
+//             generating={generating} availabilityLoaded={availabilityLoaded} availabilityDataCount={availabilityDataCount}
+//           />
+//           <BTLEDMajorSelector major={btledMajor} onChange={setBtledMajor} show={showMajorSelector} />
+//           <SubjectList
+//             subjects={subjects} selectedSubjects={selectedSubjects} toggleSubject={toggleSubject}
+//             generating={generating} loading={loadingSubjects} courseId={courseId}
+//             availabilityData={availabilityData}
+//           />
+//         </div>
+//         <SchedulePreview
+//           scheduleResult={scheduleResult} conflicts={conflicts} subjects={subjects}
+//           rooms={rooms} sectionCount={sectionCount} onClear={() => { setScheduleResult(null); setConflicts([]); }}
+//           availabilityData={availabilityData} considerAvailability={considerAvailability}
+//         />
+//       </div>
+//       <GenerateModal
+//         show={showConfirm} onHide={() => setShowConfirm(false)} onConfirm={handleGenerate}
+//         courses={courses} courseId={courseId} yearLevel={yearLevel} semester={semester}
+//         sectionCount={sectionCount} studentsCount={studentsCount} selectedSubjects={selectedSubjects}
+//         schedulePattern={schedulePattern} considerAvailability={considerAvailability}
+//         availabilityDataCount={availabilityDataCount}
+//       />
+//       <ConflictWarningModal
+//         show={showConflictWarning}
+//         onHide={() => {
+//           setShowConflictWarning(false);
+//           setConflictWarningData(null);
+//           setGenerating(false);
+//         }}
+//         onForce={() => handleGenerate(true)}
+//         conflictData={conflictWarningData}
+//         courses={courses}
+//         courseId={courseId}
+//       />
+//       {toast && <Toast message={toast.message} type={toast.type === 'success' ? 'success' : toast.type === 'warning' ? 'warning' : 'error'} onClose={() => setToast(null)} />}
+//     </>
+//   );
+// }
+
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import {
+  Calendar, Settings, CheckCircle, AlertTriangle, Clock, BookOpen,
+  Loader, RefreshCw, Search, X, ChevronDown, ChevronUp, Award, Download, User
+} from 'lucide-react';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -10402,10 +21137,14 @@ const COLORS = {
   lightest: "#CAF0F8",
 };
 
+const BTLED_MAJORS = [
+  { value: 'ICT', label: 'ICT - Information and Communication Technology' },
+  { value: 'HE', label: 'HE - Home Economics' }
+];
+
 // ============================================
 // UTILITY FUNCTIONS
 // ============================================
-
 const formatTime = (time) => {
   const [hours, minutes] = time.split(':');
   const hour = parseInt(hours);
@@ -10414,13 +21153,10 @@ const formatTime = (time) => {
   return `${displayHour}:${minutes} ${period}`;
 };
 
-const formatTimeRange = (startTime, endTime) => {
-  return `${formatTime(startTime)} - ${formatTime(endTime)}`;
-};
-
-const slotToTime = (slotIndex) => {
+const slotToTimeRange = (slotIndex, durationHours) => {
+  const duration = Number(durationHours) || 1;
   const startHour = 7 + Number(slotIndex);
-  const endHour = startHour + 1;
+  const endHour = startHour + duration;
   const formatHour = (hour) => {
     const period = hour >= 12 ? 'PM' : 'AM';
     const adjusted = hour % 12 === 0 ? 12 : hour % 12;
@@ -10429,15 +21165,16 @@ const slotToTime = (slotIndex) => {
   return `${formatHour(startHour)} - ${formatHour(endHour)}`;
 };
 
-// ============================================
-// TOAST NOTIFICATION COMPONENT
-// ============================================
+const isBTLEDCourse = (courseCode) => {
+  return courseCode === 'BTLED' || courseCode?.startsWith('BTLED');
+};
 
+// ============================================
+// COMPONENT DEFINITIONS
+// ============================================
 const Toast = ({ message, type, onClose }) => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, 5000);
+    const timer = setTimeout(() => onClose(), 5000);
     return () => clearTimeout(timer);
   }, [onClose]);
 
@@ -10452,10 +21189,6 @@ const Toast = ({ message, type, onClose }) => {
   );
 };
 
-// ============================================
-// LOADING STATE COMPONENT
-// ============================================
-
 const LoadingState = ({ message = 'Loading...' }) => (
   <div style={{ textAlign: 'center', padding: '3rem' }}>
     <Loader className="animate-spin" size={40} style={{ color: COLORS.accent, margin: '0 auto 1rem' }} />
@@ -10463,27 +21196,194 @@ const LoadingState = ({ message = 'Loading...' }) => (
   </div>
 );
 
-// ============================================
-// SCHEDULE FORM COMPONENT
-// ============================================
+const BTLEDMajorSelector = React.memo(({ major, onChange, show }) => {
+  if (!show) return null;
+  return (
+    <div className="config-card" style={{ gridColumn: '1 / -1' }}>
+      <div className="config-card-header">
+        <Award size={20} />
+        <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>BTLED Major</h3>
+      </div>
+      <div className="config-card-body">
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          {BTLED_MAJORS.map(m => (
+            <button
+              key={m.value}
+              className={`action-btn ${major === m.value ? 'primary' : 'secondary'}`}
+              onClick={() => onChange(m.value)}
+              style={{ flex: 1, minWidth: '200px' }}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+});
 
-const DeanScheduleForm = ({ 
-  courses, 
-  courseId, 
-  setCourseId,
-  yearLevel,
-  setYearLevel,
-  semester,
-  setSemester,
-  studentsCount,
-  setStudentsCount,
-  sectionCount,
-  setSectionCount,
-  considerAvailability,
-  setConsiderAvailability,
-  generating,
-  availabilityLoaded,
-  availabilityDataCount
+const ConflictWarningModal = ({ show, onHide, onForce, conflictData, courses, courseId }) => {
+  if (!show || !conflictData) return null;
+
+  const selectedCourse = courses.find(c => String(c.id) === String(courseId));
+  const { crossCourseConflicts = [], withinCourseConflicts = [], conflictCount = 0 } = conflictData;
+
+  return (
+    <div className="modal-overlay" onClick={onHide}>
+      <div className="modal-content modal-conflict" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px' }}>
+        <div className="modal-header-custom" style={{ background: 'linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <AlertTriangle size={28} />
+            <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 700 }}>Schedule Conflicts Detected!</h3>
+          </div>
+          <button className="modal-close" onClick={onHide}>×</button>
+        </div>
+
+        <div className="modal-body-custom">
+          <div style={{ 
+            background: '#fff3cd', 
+            border: '2px solid #ffc107', 
+            borderRadius: '10px', 
+            padding: '1.25rem', 
+            marginBottom: '1.5rem',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '1rem'
+          }}>
+            <AlertTriangle size={24} style={{ color: '#856404', flexShrink: 0, marginTop: '0.25rem' }} />
+            <div style={{ flex: 1 }}>
+              <h4 style={{ margin: '0 0 0.5rem 0', color: '#856404', fontSize: '1.1rem' }}>
+                Found {conflictCount} Conflict{conflictCount !== 1 ? 's' : ''}
+              </h4>
+              <p style={{ margin: 0, color: '#856404', fontSize: '0.95rem' }}>
+                The system detected scheduling conflicts. You can review the details below and choose to:
+              </p>
+              <ul style={{ margin: '0.75rem 0 0 1.5rem', color: '#856404' }}>
+                <li><strong>Cancel</strong> - Go back and adjust your schedule</li>
+                <li><strong>Save Anyway</strong> - Save the schedule despite conflicts (not recommended)</li>
+              </ul>
+            </div>
+          </div>
+
+          {crossCourseConflicts.length > 0 && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h4 style={{ 
+                color: '#dc3545', 
+                fontSize: '1.1rem', 
+                marginBottom: '1rem',
+                paddingBottom: '0.5rem',
+                borderBottom: '2px solid #dc3545'
+              }}>
+                ❌ Cross-Course Conflicts ({crossCourseConflicts.length})
+              </h4>
+              <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                {crossCourseConflicts.map((conflict, idx) => (
+                  <div key={idx} style={{
+                    background: '#ffe6e6',
+                    border: '1px solid #ffb3b3',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginBottom: '0.75rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'start', gap: '0.75rem' }}>
+                      <User size={18} style={{ color: '#dc3545', flexShrink: 0, marginTop: '0.25rem' }} />
+                      <div style={{ flex: 1 }}>
+                        <strong style={{ color: '#dc3545', fontSize: '1rem' }}>
+                          {conflict.instructor}
+                        </strong>
+                        <div style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#721c24' }}>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <strong>Already Teaching:</strong> {conflict.existingCourse} - {conflict.existingSubject}
+                          </div>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <strong>Attempting to Schedule:</strong> {selectedCourse?.code} - {conflict.newSubject}
+                          </div>
+                          <div style={{ 
+                            background: '#fff',
+                            padding: '0.5rem',
+                            borderRadius: '4px',
+                            marginTop: '0.5rem',
+                            fontSize: '0.85rem'
+                          }}>
+                            <Clock size={14} style={{ display: 'inline', marginRight: '0.25rem' }} />
+                            <strong>{conflict.day}</strong>, Time Slot {conflict.slot} ({7 + conflict.slot}:00 - {7 + conflict.slot + conflict.duration}:00)
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {withinCourseConflicts.length > 0 && (
+            <div>
+              <h4 style={{ 
+                color: '#fd7e14', 
+                fontSize: '1.1rem', 
+                marginBottom: '1rem',
+                paddingBottom: '0.5rem',
+                borderBottom: '2px solid #fd7e14'
+              }}>
+                ⚠️ Within-Course Conflicts ({withinCourseConflicts.length})
+              </h4>
+              <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {withinCourseConflicts.map((conflict, idx) => (
+                  <div key={idx} style={{
+                    background: '#fff3cd',
+                    border: '1px solid #ffc107',
+                    borderRadius: '8px',
+                    padding: '0.875rem',
+                    marginBottom: '0.75rem',
+                    fontSize: '0.9rem',
+                    color: '#856404'
+                  }}>
+                    <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.instructor || conflict.room}
+                    <br />
+                    <small>
+                      <Clock size={12} style={{ display: 'inline', marginRight: '0.25rem' }} />
+                      {conflict.day}, Slot {conflict.slot} - {conflict.subject}
+                    </small>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="modal-footer-custom" style={{ background: '#f8f9fa' }}>
+          <button 
+            className="action-btn secondary" 
+            onClick={onHide}
+            style={{ padding: '0.875rem 1.5rem' }}
+          >
+            <X size={18} />
+            Cancel
+          </button>
+          <button 
+            className="action-btn"
+            onClick={onForce}
+            style={{ 
+              background: 'linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)',
+              color: 'white',
+              padding: '0.875rem 1.5rem'
+            }}
+          >
+            <AlertTriangle size={18} />
+            Save Anyway (Not Recommended)
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DeanScheduleForm = ({
+  courses, courseId, setCourseId, yearLevel, setYearLevel, semester, setSemester,
+  studentsCount, setStudentsCount, sectionCount, setSectionCount,
+  considerAvailability, setConsiderAvailability, generating,
+  availabilityLoaded, availabilityDataCount
 }) => (
   <div className="config-card">
     <div className="config-card-header">
@@ -10497,120 +21397,69 @@ const DeanScheduleForm = ({
             <BookOpen size={16} style={{ marginRight: '0.5rem' }} />
             Course *
           </label>
-          <select
-            className="form-input-custom"
-            value={courseId}
-            onChange={e => setCourseId(e.target.value)}
-            disabled={generating}
-          >
+          <select className="form-input-custom" value={courseId} onChange={e => setCourseId(e.target.value)} disabled={generating}>
             <option value="">-- Select Course --</option>
-            {courses.map(c => (
-              <option key={c.id} value={c.id}>
-                {c.code} — {c.name}
-              </option>
-            ))}
+            {courses.map(c => <option key={c.id} value={c.id}>{c.code} — {c.name}</option>)}
           </select>
         </div>
-
         <div className="form-group">
           <label className="form-label-custom">Year Level *</label>
-          <select
-            className="form-input-custom"
-            value={yearLevel}
-            onChange={e => setYearLevel(Number(e.target.value))}
-            disabled={generating}
-          >
-            {[1, 2, 3, 4].map(y => (
-              <option key={y} value={y}>{y}</option>
-            ))}
+          <select className="form-input-custom" value={yearLevel} onChange={e => setYearLevel(Number(e.target.value))} disabled={generating}>
+            {[1, 2, 3, 4].map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
-
         <div className="form-group">
           <label className="form-label-custom">Semester *</label>
-          <select
-            className="form-input-custom"
-            value={semester}
-            onChange={e => setSemester(e.target.value)}
-            disabled={generating}
-          >
+          <select className="form-input-custom" value={semester} onChange={e => setSemester(e.target.value)} disabled={generating}>
             <option value="1">1st Semester</option>
             <option value="2">2nd Semester</option>
           </select>
         </div>
-
         <div className="form-group">
-          <label className="form-label-custom">
-            <Users size={16} style={{ marginRight: '0.5rem' }} />
-            Students per Section
-          </label>
-          <input
-            type="number"
-            className="form-input-custom"
-            min="1"
-            value={studentsCount}
-            onChange={e => setStudentsCount(Number(e.target.value))}
-            disabled={generating}
-          />
+          <label className="form-label-custom">Students per Section</label>
+          <input type="number" className="form-input-custom" min="1" value={studentsCount} onChange={e => setStudentsCount(Number(e.target.value))} disabled={generating} />
         </div>
-
         <div className="form-group">
           <label className="form-label-custom">Number of Sections</label>
-          <input
-            type="number"
-            className="form-input-custom"
-            min="1"
-            max="10"
-            value={sectionCount}
-            onChange={e => setSectionCount(Number(e.target.value))}
-            disabled={generating}
-          />
+          <input type="number" className="form-input-custom" min="1" max="10" value={sectionCount} onChange={e => setSectionCount(Number(e.target.value))} disabled={generating} />
         </div>
       </div>
-
       <div className="availability-section">
         <label className="checkbox-container">
-          <input
-            type="checkbox"
-            checked={considerAvailability}
-            onChange={e => setConsiderAvailability(e.target.checked)}
-            disabled={generating}
-          />
+          <input type="checkbox" checked={considerAvailability} onChange={e => setConsiderAvailability(e.target.checked)} disabled={generating} />
           <span className="checkbox-label">
             <strong>Consider Instructor Availability</strong>
             <br />
             <small style={{ color: '#666' }}>
-              When enabled, only instructors with availability data will be scheduled.
+              When enabled, schedule will respect instructor availability windows.
               {availabilityLoaded && availabilityDataCount === 0 && ' (No availability data loaded)'}
+              {availabilityLoaded && availabilityDataCount > 0 && ` (${availabilityDataCount} instructors with availability)`}
             </small>
           </span>
         </label>
+        <div style={{ marginTop: '1rem', padding: '1rem', background: '#E3F2FD', borderRadius: '8px', border: '1px solid #90CAF9' }}>
+          <small style={{ color: '#1565C0', display: 'block', lineHeight: '1.6' }}>
+            <strong>Schedule Pattern:</strong> The system will automatically determine the best pattern based on subject units and duration:
+            <br />• <strong>MWF</strong> (Monday-Wednesday-Friday): For subjects requiring 3 sessions per week
+            <br />• <strong>TTHS</strong> (Tuesday-Thursday-Saturday): For subjects requiring 2-3 sessions with longer durations
+          </small>
+        </div>
       </div>
     </div>
   </div>
 );
 
-// ============================================
-// SUBJECT LIST COMPONENT
-// ============================================
-
-const SubjectList = ({ 
-  subjects, 
-  selectedSubjects, 
-  toggleSubject, 
-  generating, 
-  loading, 
-  courseId 
-}) => {
+const SubjectList = ({ subjects, selectedSubjects, toggleSubject, generating, loading, courseId, availabilityData }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
 
   const filteredSubjects = useMemo(() => {
     if (!searchTerm) return subjects;
     const term = searchTerm.toLowerCase();
-    return subjects.filter(s => 
+    return subjects.filter(s =>
       (s.subject_code || s.code || '').toLowerCase().includes(term) ||
-      (s.description || '').toLowerCase().includes(term)
+      (s.description || '').toLowerCase().includes(term) ||
+      (s.teacher_name || '').toLowerCase().includes(term)
     );
   }, [subjects, searchTerm]);
 
@@ -10621,249 +21470,162 @@ const SubjectList = ({
           <BookOpen size={18} />
           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Subjects *</h3>
           {subjects.length > 0 && (
-            <span className="count-badge">
-              {selectedSubjects.length} / {subjects.length}
-            </span>
+            <span className="count-badge">{selectedSubjects.length} / {subjects.length}</span>
           )}
         </div>
         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </div>
-      
       {isExpanded && (
         <div className="selection-card-body">
-          {loading ? (
-            <LoadingState message="Loading subjects..." />
-          ) : !courseId ? (
-            <div className="info-box">
-              <AlertTriangle size={18} />
-              <span>Please select a course first.</span>
-            </div>
+          {loading ? <LoadingState message="Loading subjects..." /> : !courseId ? (
+            <div className="info-box"><AlertTriangle size={18} /><span>Please select a course first.</span></div>
           ) : subjects.length === 0 ? (
-            <div className="warning-box">
-              No subjects available for this course, year, and semester.
-            </div>
+            <div className="warning-box">No subjects available for this course, year, and semester.</div>
           ) : (
             <>
               <div className="search-box">
                 <Search size={16} className="search-icon-inline" />
-                <input
-                  type="text"
-                  placeholder="Search subjects..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                />
-                {searchTerm && (
-                  <button onClick={() => setSearchTerm('')} className="clear-btn">
-                    <X size={16} />
-                  </button>
-                )}
+                <input type="text" placeholder="Search subjects or instructors..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                {searchTerm && <button onClick={() => setSearchTerm('')} className="clear-btn"><X size={16} /></button>}
               </div>
-
               <div className="items-list">
-                {filteredSubjects.map(s => (
-                  <label 
-                    key={s.id} 
-                    className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedSubjects.includes(s.id)}
-                      onChange={() => toggleSubject(s.id)}
-                      disabled={generating}
-                    />
-                    <div className="item-content">
-                      <div>
-                        <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
-                        <br />
-                        <small style={{ color: '#666' }}>{s.description}</small>
-                      </div>
-                      <span className="units-badge">{s.units}u</span>
-                    </div>
-                  </label>
-                ))}
-                {filteredSubjects.length === 0 && (
-                  <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
-                    No subjects match your search
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+                {filteredSubjects.map(s => {
+                  const hasAvailability = availabilityData[s.teacher_name] && availabilityData[s.teacher_name].length > 0;
+                  const availDetails = hasAvailability ? availabilityData[s.teacher_name] : null;
 
-// ============================================
-// INSTRUCTOR LIST COMPONENT
-// ============================================
+                  const groupedByDay = availDetails?.reduce((acc, slot) => {
+                    if (!acc[slot.day]) acc[slot.day] = [];
+                    acc[slot.day].push(`${slot.start_time.substring(0,5)}-${slot.end_time.substring(0,5)}`);
+                    return acc;
+                  }, {}) || {};
 
-const InstructorSubjectList = ({ 
-  instructors, 
-  selectedInstructorIds, 
-  toggleInstructor, 
-  selectAllInstructors,
-  deselectAllInstructors,
-  instructorAvailability,
-  availabilityData,
-  considerAvailability,
-  generating, 
-  courseId 
-}) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isExpanded, setIsExpanded] = useState(true);
+                  return (
+                    <label key={s.id} className={`item-checkbox ${selectedSubjects.includes(s.id) ? 'selected' : ''}`}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedSubjects.includes(s.id)} 
+                        onChange={() => toggleSubject(s.id)} 
+                        disabled={generating} 
+                      />
+                      <div className="item-content">
+                        <div style={{ flex: 1 }}>
+                          <strong style={{ color: COLORS.primary }}>{s.subject_code || s.code}</strong>
+                          <br />
+                          <small style={{ color: '#666' }}>{s.description}</small>
 
-  const filteredInstructors = useMemo(() => {
-    if (!searchTerm) return instructors;
-    const term = searchTerm.toLowerCase();
-    return instructors.filter(i => 
-      (i.name || i.instructor_name || '').toLowerCase().includes(term)
-    );
-  }, [instructors, searchTerm]);
-
-  const getInstructorAvailabilityTimes = useCallback((instructor) => {
-    const name = instructor.name || instructor.instructor_name;
-    const slots = availabilityData[name] || [];
-    const byDay = {};
-    slots.forEach(slot => {
-      const day = slot.day || 'Unknown';
-      if (!byDay[day]) byDay[day] = [];
-      byDay[day].push(`${slot.start_time} - ${slot.end_time}`);
-    });
-    return byDay;
-  }, [availabilityData]);
-
-  const getInstructorSlots = useCallback((instructor) => {
-    const name = instructor.name || instructor.instructor_name;
-    const slots = availabilityData[name] || [];
-    return slots.length;
-  }, [availabilityData]);
-
-  return (
-    <div className="selection-card">
-      <div className="selection-card-header" onClick={() => setIsExpanded(!isExpanded)}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
-          <Users size={18} />
-          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Instructors *</h3>
-          {considerAvailability && (
-            <span className="warning-badge">Availability Enabled</span>
-          )}
-          {instructors.length > 0 && (
-            <span className="count-badge" style={{ marginLeft: 'auto' }}>
-              {selectedInstructorIds.length} / {instructors.length}
-            </span>
-          )}
-        </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          {instructors.length > 0 && (
-            <>
-              <button 
-                className="small-btn" 
-                onClick={(e) => { e.stopPropagation(); selectAllInstructors(); }}
-                disabled={generating}
-              >
-                Select All
-              </button>
-              <button 
-                className="small-btn" 
-                onClick={(e) => { e.stopPropagation(); deselectAllInstructors(); }}
-                disabled={generating}
-              >
-                Clear
-              </button>
-            </>
-          )}
-          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        </div>
-      </div>
-      
-      {isExpanded && (
-        <div className="selection-card-body">
-          {!courseId ? (
-            <div className="info-box">
-              <AlertTriangle size={18} />
-              <span>Please select a course first.</span>
-            </div>
-          ) : instructors.length === 0 ? (
-            <div className="warning-box">
-              No instructors assigned to this course. Please assign instructors first.
-            </div>
-          ) : (
-            <>
-              <div className="search-box">
-                <Search size={16} className="search-icon-inline" />
-                <input
-                  type="text"
-                  placeholder="Search instructors..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                />
-                {searchTerm && (
-                  <button onClick={() => setSearchTerm('')} className="clear-btn">
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
-
-              <div className="items-list">
-                {filteredInstructors.map(ins => (
-                  <label 
-                    key={ins.id} 
-                    className={`item-checkbox ${selectedInstructorIds.includes(ins.id) ? 'selected' : ''}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedInstructorIds.includes(ins.id)}
-                      onChange={() => toggleInstructor(ins.id)}
-                      disabled={generating}
-                    />
-                    <div className="item-content" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <strong style={{ color: COLORS.primary }}>{ins.name || ins.instructor_name}</strong>
-                      
-                      {considerAvailability && (
-                        <div style={{ marginTop: '0.5rem', width: '100%' }}>
-                          {instructorAvailability[ins.id] ? (
+                          {s.teacher_name && (
                             <>
-                              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                <CheckCircle size={14} style={{ color: '#10B981', marginRight: '0.5rem' }} />
-                                <small style={{ color: '#10B981', fontWeight: 600 }}>
-                                  {getInstructorSlots(ins)} availability slots
-                                </small>
-                              </div>
-                              <div style={{ fontSize: '0.75rem', color: '#6B7280', paddingLeft: '1.5rem' }}>
-                                {Object.entries(getInstructorAvailabilityTimes(ins)).map(([day, times]) => (
-                                  <div key={day} style={{ marginBottom: '0.25rem' }}>
-                                    <strong>{day}:</strong>{' '}
-                                    {times.map((t, idx) => {
-                                      const [start, end] = t.split(' - ');
-                                      return (
-                                        <span key={idx}>
-                                          {formatTimeRange(start, end)}
-                                          {idx < times.length - 1 && ', '}
-                                        </span>
-                                      );
-                                    })}
-                                  </div>
-                                ))}
+                              <br />
+                              <div style={{ 
+                                margin: '0.75rem 0', 
+                                padding: '0.75rem', 
+                                background: hasAvailability ? '#f0fdf4' : '#fefce8',
+                                borderRadius: '10px',
+                                border: hasAvailability ? '2px solid #86efac' : '2px solid #fde68a'
+                              }}>
+                                <div style={{ 
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  gap: '0.5rem',
+                                  fontWeight: 600,
+                                  color: hasAvailability ? '#166534' : '#92400e',
+                                  marginBottom: hasAvailability ? '0.5rem' : '0'
+                                }}>
+                                  <User size={16} />
+                                  Instructor: {s.teacher_name}
+                                  {hasAvailability ? (
+                                    <span style={{
+                                      background: '#86efac',
+                                      color: '#166534',
+                                      padding: '0.25rem 0.75rem',
+                                      borderRadius: '20px',
+                                      fontSize: '0.8rem',
+                                      fontWeight: 600,
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '0.25rem'
+                                    }}>
+                                      ✓ Availability Set
+                                    </span>
+                                  ) : (
+                                    <span style={{
+                                      background: '#fde68a',
+                                      color: '#92400e',
+                                      padding: '0.25rem 0.75rem',
+                                      borderRadius: '20px',
+                                      fontSize: '0.8rem',
+                                      fontWeight: 600,
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '0.25rem'
+                                    }}>
+                                      ⚠ No availability set
+                                    </span>
+                                  )}
+                                </div>
+
+                                {hasAvailability && Object.keys(groupedByDay).length > 0 && (
+                                  <details style={{ marginTop: '0.5rem', cursor: 'pointer' }}>
+                                    <summary style={{
+                                      fontSize: '0.85rem',
+                                      color: '#166534',
+                                      fontWeight: 600,
+                                      userSelect: 'none',
+                                      listStyle: 'none',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '0.25rem'
+                                    }}>
+                                      <ChevronDown size={16} style={{ transition: 'transform 0.2s' }} />
+                                      View Time Windows ({Object.keys(groupedByDay).length} day{Object.keys(groupedByDay).length > 1 ? 's' : ''})
+                                    </summary>
+                                    <div style={{
+                                      marginTop: '0.75rem',
+                                      padding: '0.75rem',
+                                      background: 'white',
+                                      borderRadius: '8px',
+                                      border: '1px solid #86efac',
+                                      fontSize: '0.85rem'
+                                    }}>
+                                      {Object.entries(groupedByDay).map(([day, times]) => (
+                                        <div key={day} style={{ marginBottom: '0.5rem' }}>
+                                          <strong style={{ color: COLORS.primary }}>{day}:</strong>{' '}
+                                          <span style={{ color: '#166534' }}>{times.join(', ')}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </details>
+                                )}
+
+                                {!hasAvailability && (
+                                  <small style={{ 
+                                    color: '#92400e', 
+                                    fontStyle: 'italic', 
+                                    display: 'block', 
+                                    marginTop: '0.5rem' 
+                                  }}>
+                                    This instructor can be scheduled at any time.
+                                  </small>
+                                )}
                               </div>
                             </>
-                          ) : (
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                              <AlertTriangle size={14} style={{ color: '#F59E0B', marginRight: '0.5rem' }} />
-                              <small style={{ color: '#F59E0B' }}>No availability data</small>
-                            </div>
+                          )}
+
+                          {s.duration && (
+                            <>
+                              <br />
+                              <small style={{ color: '#999' }}>
+                                Duration: {Number(s.duration)} hour{Number(s.duration) > 1 ? 's' : ''} per session
+                              </small>
+                            </>
                           )}
                         </div>
-                      )}
-                    </div>
-                  </label>
-                ))}
-                {filteredInstructors.length === 0 && (
-                  <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>
-                    No instructors match your search
-                  </div>
-                )}
+                        <span className="units-badge">{s.units}u</span>
+                      </div>
+                    </label>
+                  );
+                })}
+                {filteredSubjects.length === 0 && <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>No subjects match your search</div>}
               </div>
             </>
           )}
@@ -10873,18 +21635,39 @@ const InstructorSubjectList = ({
   );
 };
 
-// ============================================
-// SCHEDULE PREVIEW COMPONENT
-// ============================================
+const SchedulePreview = ({ scheduleResult, conflicts, subjects, rooms, sectionCount, onClear, availabilityData, considerAvailability }) => {
+  const sectionRefs = useRef({});
+  const [downloadingSection, setDownloadingSection] = useState(null);
 
-const SchedulePreview = ({ 
-  scheduleResult, 
-  conflicts, 
-  subjects, 
-  instructors, 
-  rooms, 
-  onClear 
-}) => {
+  const handleDownloadSection = async (sectionIndex) => {
+    const element = sectionRefs.current[sectionIndex];
+    if (!element) return;
+
+    setDownloadingSection(sectionIndex);
+    try {
+      const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
+      });
+      const image = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = image;
+      const sectionLetter = String.fromCharCode(65 + sectionIndex);
+      link.download = `Schedule_Section_${sectionLetter}_${new Date().toISOString().slice(0,10)}.png`;
+      link.click();
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download section schedule. Please try again.');
+    } finally {
+      setDownloadingSection(null);
+    }
+  };
+
   if (!scheduleResult?.assignments) return null;
 
   const grouped = {};
@@ -10892,8 +21675,18 @@ const SchedulePreview = ({
     if (!grouped[a.section_index]) grouped[a.section_index] = [];
     grouped[a.section_index].push(a);
   });
+  for (let i = 0; i < sectionCount; i++) {
+    if (!grouped[i]) grouped[i] = [];
+  }
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  const getInstructorAvailability = (instructorName, day) => {
+    if (!considerAvailability || !availabilityData[instructorName]) return null;
+    const dayAvailability = availabilityData[instructorName].filter(a => a.day === day);
+    if (dayAvailability.length === 0) return null;
+    return dayAvailability.map(a => `${a.start_time.substring(0,5)}-${a.end_time.substring(0,5)}`).join(', ');
+  };
 
   return (
     <div style={{ marginTop: '2rem' }}>
@@ -10902,15 +21695,12 @@ const SchedulePreview = ({
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
             <AlertTriangle size={24} style={{ color: '#ff4444', flexShrink: 0, marginTop: '0.25rem' }} />
             <div style={{ flex: 1 }}>
-              <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>
-                Schedule Conflicts Detected ({conflicts.length})
-              </h4>
+              <h4 style={{ margin: '0 0 1rem 0', color: '#ff4444', fontSize: '1.1rem' }}>Schedule Conflicts Detected ({conflicts.length})</h4>
               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
                 {conflicts.map((conflict, idx) => (
                   <li key={idx} style={{ marginBottom: '0.75rem' }}>
                     <strong style={{ textTransform: 'uppercase' }}>{conflict.type}:</strong> {conflict.message}
-                    <br />
-                    <small style={{ color: '#666' }}>{conflict.details}</small>
+                    <br /><small style={{ color: '#666' }}>{conflict.details}</small>
                   </li>
                 ))}
               </ul>
@@ -10922,195 +21712,202 @@ const SchedulePreview = ({
       <div className="preview-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <Calendar size={24} style={{ color: COLORS.accent }} />
-          <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>
-            Generated Schedule
-          </h3>
+          <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: COLORS.primary }}>Generated Schedule</h3>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           {scheduleResult.stats && (
             <>
-              <span className="preview-badge success">
-                {scheduleResult.stats.totalAssignments} assignments
-              </span>
+              <span className="preview-badge success">{scheduleResult.stats.totalAssignments} assignments</span>
+              <span className="preview-badge success">{sectionCount} section{sectionCount !== 1 ? 's' : ''}</span>
               {conflicts.length === 0 ? (
-                <span className="preview-badge success">
-                  <CheckCircle size={14} style={{ marginRight: '0.25rem' }} />
-                  No Conflicts
-                </span>
+                <span className="preview-badge success"><CheckCircle size={14} style={{ marginRight: '0.25rem' }} />No Conflicts</span>
               ) : (
-                <span className="preview-badge danger">
-                  <AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />
-                  {conflicts.length} Conflicts
-                </span>
+                <span className="preview-badge danger"><AlertTriangle size={14} style={{ marginRight: '0.25rem' }} />{conflicts.length} Conflicts</span>
               )}
             </>
           )}
-          <button className="action-btn secondary" onClick={onClear}>
-            <X size={16} />
-            Clear
-          </button>
+          <button className="action-btn secondary" onClick={onClear}><X size={16} />Clear</button>
         </div>
       </div>
 
-      {Object.keys(grouped).map(secIdx => {
-        const sectionLetter = String.fromCharCode(65 + Number(secIdx));
-        return (
-          <div key={secIdx} className="section-card">
-            <div className="section-header">
-              <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Section {sectionLetter}</h4>
-            </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="schedule-table">
-                <thead>
-                  <tr>
-                    <th>Subject</th>
-                    <th>Instructor</th>
-                    <th>Room</th>
-                    {days.map(d => (
-                      <th key={d}>{d}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {grouped[secIdx].map((r, i) => {
-                    const subject = subjects.find(s => s.id === r.subject_id);
-                    const instructor = instructors.find(ins => ins.id === r.instructor_id);
-                    const room = rooms.find(rm => rm.id === r.room_id);
+      <div style={{ marginTop: '1.5rem' }}>
+        {Object.keys(grouped).sort((a, b) => Number(a) - Number(b)).map(secIdx => {
+          const sectionLetter = String.fromCharCode(65 + Number(secIdx));
+          const sectionAssignments = grouped[secIdx];
+          const subjectMap = new Map();
+          sectionAssignments.forEach(a => {
+            if (!subjectMap.has(a.subject_id)) {
+              subjectMap.set(a.subject_id, { subject_id: a.subject_id, instructor_name: a.instructor_name, room_id: a.room_id, slots: [] });
+            }
+            subjectMap.get(a.subject_id).slots.push({ day: a.day, slot_index: a.slot_index });
+          });
 
-                    return (
-                      <tr key={i}>
-                        <td>
-                          <strong style={{ color: COLORS.accent }}>
-                            {subject?.subject_code || r.subject_id}
-                          </strong>
-                          <br />
-                          <small style={{ color: '#666' }}>{subject?.description}</small>
-                        </td>
-                        <td>{instructor?.name || instructor?.instructor_name || 'TBD'}</td>
-                        <td>
-                          <strong>{room?.name || 'TBD'}</strong>
-                        </td>
-                        {days.map(day => {
-                          const matchingSlot = grouped[secIdx].find(
-                            slot => slot.subject_id === r.subject_id && slot.day === day
-                          );
-                          return (
-                            <td key={day}>
-                              {matchingSlot ? (
-                                <span className="time-badge">
-                                  <Clock size={12} />
-                                  {slotToTime(matchingSlot.slot_index)}
-                                </span>
-                              ) : (
-                                <span style={{ color: '#ccc' }}>—</span>
+          return (
+            <div key={secIdx} className="section-card" ref={el => sectionRefs.current[secIdx] = el}>
+              <div className="section-header">
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>Section {sectionLetter}</h4>
+                  <span style={{ opacity: 0.9, fontSize: '0.95rem' }}>{sectionAssignments.length} time slot{sectionAssignments.length !== 1 ? 's' : ''} assigned</span>
+                </div>
+                <button 
+                  className="action-btn secondary"
+                  onClick={() => handleDownloadSection(secIdx)}
+                  disabled={downloadingSection === secIdx}
+                  style={{ padding: '0.75rem 1.25rem', fontSize: '0.95rem' }}
+                >
+                  <Download size={18} />
+                  {downloadingSection === secIdx ? 'Downloading...' : 'Download Schedule'}
+                </button>
+              </div>
+
+              {sectionAssignments.length === 0 ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+                  <Clock size={24} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+                  <p>No classes assigned to this section yet</p>
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto', padding: '1rem 0' }}>
+                  <table className="schedule-table">
+                    <thead>
+                      <tr>
+                        <th>Subject</th>
+                        <th>Instructor</th>
+                        <th>Room</th>
+                        {days.map(d => <th key={d}>{d}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.from(subjectMap.values()).map((subjectData, i) => {
+                        const subject = subjects.find(s => s.id === subjectData.subject_id);
+                        const room = rooms.find(rm => rm.id === subjectData.room_id);
+                        const hasAvailabilityData = considerAvailability && availabilityData[subjectData.instructor_name];
+
+                        return (
+                          <tr key={i}>
+                            <td>
+                              <strong style={{ color: COLORS.accent }}>{subject?.subject_code || subjectData.subject_id}</strong>
+                              <br /><small style={{ color: '#666' }}>{subject?.description}</small>
+                              {subject?.duration > 1 && (
+                                <><br /><small style={{ color: COLORS.secondary, fontWeight: 600 }}>{Number(subject.duration)}-hour session</small></>
                               )}
                             </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                            <td>
+                              <div>
+                                <User size={14} style={{ display: 'inline', marginRight: '0.25rem', verticalAlign: 'middle' }} />
+                                {subjectData.instructor_name || 'TBD'}
+                              </div>
+                              {hasAvailabilityData && (
+                                <>
+                                  <small style={{ color: COLORS.light, fontWeight: 600, display: 'block', marginTop: '0.25rem' }}>
+                                    ✓ Availability Set
+                                  </small>
+                                  <details style={{ marginTop: '0.5rem', cursor: 'pointer' }}>
+                                    <summary style={{ fontSize: '0.75rem', color: COLORS.secondary, fontWeight: 600, userSelect: 'none' }}>
+                                      View Availability
+                                    </summary>
+                                    <div style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#E3F2FD', borderRadius: '4px', fontSize: '0.75rem' }}>
+                                      {Object.entries(
+                                        availabilityData[subjectData.instructor_name]?.reduce((acc, slot) => {
+                                          if (!acc[slot.day]) acc[slot.day] = [];
+                                          acc[slot.day].push(`${slot.start_time.substring(0,5)}-${slot.end_time.substring(0,5)}`);
+                                          return acc;
+                                        }, {}) || {}
+                                      ).map(([day, times]) => (
+                                        <div key={day} style={{ marginBottom: '0.25rem' }}>
+                                          <strong>{day}:</strong> {times.join(', ')}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </details>
+                                </>
+                              )}
+                            </td>
+                            <td><strong>{room?.name || 'TBD'}</strong></td>
+                            {days.map(day => {
+                              const daySlots = subjectData.slots.filter(slot => slot.day === day);
+                              const availability = getInstructorAvailability(subjectData.instructor_name, day);
+                              return (
+                                <td key={day}>
+                                  {daySlots.length > 0 ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                      {daySlots.map((slot, idx) => {
+                                        const assignment = sectionAssignments.find(a => a.day === day && a.slot_index === slot.slot_index && a.subject_id === subjectData.subject_id);
+                                        let duration = 1;
+                                        if (assignment?.duration) duration = Number(assignment.duration);
+                                        else if (subject?.duration) duration = Number(subject.duration);
+
+                                        return (
+                                          <span key={idx} className="time-badge">
+                                            <Clock size={12} />
+                                            {slotToTimeRange(slot.slot_index, duration)}
+                                          </span>
+                                        );
+                                      })}
+                                      {availability && (
+                                        <small style={{ color: '#666', fontSize: '0.7rem', marginTop: '0.25rem' }}>
+                                          Available: {availability}
+                                        </small>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <span style={{ color: '#ccc' }}>—</span>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };
 
-// ============================================
-// CONFIRMATION MODAL COMPONENT
-// ============================================
-
-const GenerateModal = ({ 
-  show, 
-  onHide, 
-  onConfirm, 
-  courses, 
-  courseId, 
-  yearLevel, 
-  semester, 
-  sectionCount, 
-  studentsCount, 
-  selectedSubjects, 
-  selectedInstructorIds, 
-  considerAvailability 
-}) => {
+const GenerateModal = ({ show, onHide, onConfirm, courses, courseId, yearLevel, semester, sectionCount, studentsCount, selectedSubjects, schedulePattern, considerAvailability, availabilityDataCount }) => {
   if (!show) return null;
-
   const selectedCourse = courses.find(c => String(c.id) === String(courseId));
-
   return (
     <div className="modal-overlay" onClick={onHide}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header-custom">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Settings size={24} />
-            <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
-              Confirm Schedule Generation
-            </h3>
+            <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>Confirm Schedule Generation</h3>
           </div>
           <button className="modal-close" onClick={onHide}>×</button>
         </div>
         <div className="modal-body-custom">
           <div className="modal-info-grid">
-            <div>
-              <strong style={{ color: COLORS.accent }}>Course:</strong>
-              <p>{selectedCourse?.name || 'N/A'}</p>
-            </div>
-            <div>
-              <strong style={{ color: COLORS.accent }}>Year Level:</strong>
-              <p>{yearLevel}</p>
-            </div>
-            <div>
-              <strong style={{ color: COLORS.accent }}>Semester:</strong>
-              <p>{semester}</p>
-            </div>
-            <div>
-              <strong style={{ color: COLORS.accent }}>Sections:</strong>
-              <p>{sectionCount}</p>
-            </div>
-            <div>
-              <strong style={{ color: COLORS.accent }}>Students/Section:</strong>
-              <p>{studentsCount}</p>
-            </div>
-            <div>
-              <strong style={{ color: COLORS.accent }}>Subjects:</strong>
-              <p>{selectedSubjects.length}</p>
-            </div>
-            <div>
-              <strong style={{ color: COLORS.accent }}>Instructors:</strong>
-              <p>{selectedInstructorIds.length}</p>
-            </div>
+            <div><strong style={{ color: COLORS.accent }}>Course:</strong><p>{selectedCourse?.name || 'N/A'}</p></div>
+            <div><strong style={{ color: COLORS.accent }}>Year Level:</strong><p>{yearLevel}</p></div>
+            <div><strong style={{ color: COLORS.accent }}>Semester:</strong><p>{semester}</p></div>
+            <div><strong style={{ color: COLORS.accent }}>Sections:</strong><p>{sectionCount} (Section {String.fromCharCode(65)} - Section {String.fromCharCode(65 + sectionCount - 1)})</p></div>
+            <div><strong style={{ color: COLORS.accent }}>Students/Section:</strong><p>{studentsCount}</p></div>
+            <div><strong style={{ color: COLORS.accent }}>Subjects:</strong><p>{selectedSubjects.length}</p></div>
+            <div><strong style={{ color: COLORS.accent }}>Schedule Pattern:</strong><p>Auto-determined (MWF/TTHS)</p></div>
             <div>
               <strong style={{ color: COLORS.accent }}>Availability Check:</strong>
-              <p>
-                {considerAvailability ? (
-                  <span className="modal-badge success">Enforced</span>
-                ) : (
-                  <span className="modal-badge secondary">Ignored</span>
-                )}
-              </p>
+              <p>{considerAvailability ? (<span className="modal-badge success">Enforced ({availabilityDataCount} instructors)</span>) : (<span className="modal-badge secondary">Ignored</span>)}</p>
             </div>
           </div>
           <div className="modal-info-box">
             <AlertTriangle size={18} />
             <small>
-              The system will automatically assign rooms and time slots (7 AM - 7 PM) 
-              while preventing scheduling conflicts.
+              The system will create {sectionCount} section{sectionCount !== 1 ? 's' : ''} and generate a complete schedule for each section using assigned teachers and rooms.
+              {considerAvailability && availabilityDataCount > 0 && ` Instructor availability will be respected for ${availabilityDataCount} instructors.`}
             </small>
           </div>
         </div>
         <div className="modal-footer-custom">
-          <button className="action-btn secondary" onClick={onHide}>
-            Cancel
-          </button>
-          <button className="action-btn primary" onClick={onConfirm}>
-            <CheckCircle size={16} />
-            Confirm & Generate
-          </button>
+          <button className="action-btn secondary" onClick={onHide}>Cancel</button>
+          <button className="action-btn primary" onClick={onConfirm}><CheckCircle size={16} />Confirm & Generate</button>
         </div>
       </div>
     </div>
@@ -11120,27 +21917,19 @@ const GenerateModal = ({
 // ============================================
 // MAIN COMPONENT
 // ============================================
-
 export default function DeanSchedulePage() {
-  // State Management
   const [courses, setCourses] = useState([]);
   const [courseId, setCourseId] = useState('');
   const [yearLevel, setYearLevel] = useState(1);
   const [semester, setSemester] = useState('1');
+  const [btledMajor, setBtledMajor] = useState('ICT');
   const [studentsCount, setStudentsCount] = useState(30);
   const [sectionCount, setSectionCount] = useState(1);
-  
+  const [schedulePattern, setSchedulePattern] = useState('BOTH');
   const [subjects, setSubjects] = useState([]);
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
-  
-  const [allInstructors, setAllInstructors] = useState([]);
-  const [courseInstructors, setCourseInstructors] = useState([]);
-  const [selectedInstructorIds, setSelectedInstructorIds] = useState([]);
-  const [instructorAvailability, setInstructorAvailability] = useState({});
   const [availabilityData, setAvailabilityData] = useState({});
-  
-  const [rooms, setRooms] = useState([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [scheduleResult, setScheduleResult] = useState(null);
@@ -11149,23 +21938,19 @@ export default function DeanSchedulePage() {
   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
   const [conflicts, setConflicts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [rooms, setRooms] = useState([]);
+  const [showConflictWarning, setShowConflictWarning] = useState(false);
+  const [conflictWarningData, setConflictWarningData] = useState(null);
 
-  // Fetch initial data on mount
   useEffect(() => {
     const initData = async () => {
       setLoading(true);
-      await Promise.all([
-        fetchCourses(),
-        fetchAllInstructors(),
-        fetchRooms(),
-        fetchAvailabilityData()
-      ]);
+      await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
       setLoading(false);
     };
     initData();
   }, []);
 
-  // API Fetch Functions
   const fetchCourses = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/courses`);
@@ -11177,24 +21962,11 @@ export default function DeanSchedulePage() {
     }
   }, []);
 
-  const fetchAllInstructors = useCallback(async () => {
-    try {
-      const res = await fetch(`${API}/api/instructors`);
-      const data = await res.json();
-      setAllInstructors(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Error fetching instructors:', err);
-      setAllInstructors([]);
-    }
-  }, []);
-
   const fetchRooms = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/rooms`);
-      if (res.ok) {
-        const data = await res.json();
-        setRooms(Array.isArray(data) ? data : []);
-      }
+      const data = await res.json();
+      setRooms(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching rooms:', err);
       setRooms([]);
@@ -11206,19 +21978,12 @@ export default function DeanSchedulePage() {
       const res = await fetch(`${API}/api/instructor-availability`);
       if (!res.ok) throw new Error('Failed to fetch availability');
       const data = await res.json();
-      
       const availMap = {};
       if (Array.isArray(data)) {
         data.forEach(item => {
           const name = item.instructorName || 'Unknown';
-          if (!availMap[name]) {
-            availMap[name] = [];
-          }
-          availMap[name].push({
-            day: item.day,
-            start_time: item.start_time,
-            end_time: item.end_time
-          });
+          if (!availMap[name]) availMap[name] = [];
+          availMap[name].push({ day: item.day, start_time: item.start_time, end_time: item.end_time });
         });
       }
       setAvailabilityData(availMap);
@@ -11229,22 +21994,20 @@ export default function DeanSchedulePage() {
     }
   }, []);
 
-  // Load subjects and instructors when course/year/semester changes
   useEffect(() => {
     if (!courseId) {
       setSubjects([]);
       setSelectedSubjects([]);
-      setCourseInstructors([]);
-      setSelectedInstructorIds([]);
-      setInstructorAvailability({});
       return;
     }
-
     const loadSubjects = async () => {
       setLoadingSubjects(true);
       try {
-        const q = new URLSearchParams({ courseId, yearLevel, semester }).toString();
-        const res = await fetch(`${API}/api/subjects?${q}`);
+        const params = new URLSearchParams({ courseId, yearLevel, semester });
+        const selectedCourse = courses.find(c => c.id === Number(courseId));
+        const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+        if (isBTLED && yearLevel === 3) params.append('major', btledMajor);
+        const res = await fetch(`${API}/api/subjects?${params}`);
         const data = await res.json();
         const arr = Array.isArray(data) ? data : [];
         setSubjects(arr);
@@ -11256,131 +22019,56 @@ export default function DeanSchedulePage() {
         setLoadingSubjects(false);
       }
     };
-
-    const loadCourseInstructors = async () => {
-      // Filter instructors that match the selected course
-      const filtered = allInstructors.filter(i => {
-        const instructorCourseId = i.course_id || i.courseId;
-        return String(instructorCourseId) === String(courseId);
-      });
-      
-      if (filtered.length > 0) {
-        console.log(`Found ${filtered.length} instructors for course ${courseId}`);
-        setCourseInstructors(filtered);
-        initializeAvailability(filtered);
-      } else {
-        console.warn(`No instructors found for course ${courseId}`);
-        setCourseInstructors([]);
-        initializeAvailability([]);
-      }
-    };
-
-    const initializeAvailability = (instructors) => {
-      const availMap = {};
-      instructors.forEach(i => {
-        const hasAvailability = availabilityData[i.name || i.instructor_name] !== undefined;
-        availMap[i.id] = hasAvailability;
-      });
-      setInstructorAvailability(availMap);
-    };
-
     loadSubjects();
-    loadCourseInstructors();
-  }, [courseId, yearLevel, semester, allInstructors, availabilityData]);
+  }, [courseId, yearLevel, semester, btledMajor, courses]);
 
-  // Toggle Functions
   const toggleSubject = useCallback((id) => {
-    setSelectedSubjects(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
+    setSelectedSubjects(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   }, []);
 
-  const toggleInstructor = useCallback((id) => {
-    setSelectedInstructorIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
-  }, []);
-
-  const selectAllInstructors = useCallback(() => {
-    setSelectedInstructorIds(courseInstructors.map(i => i.id));
-  }, [courseInstructors]);
-
-  const deselectAllInstructors = useCallback(() => {
-    setSelectedInstructorIds([]);
-  }, []);
-
-  // Conflict Detection
   const detectConflicts = useCallback((assignments) => {
     const conflictList = [];
     const roomUsage = new Map();
     const instructorUsage = new Map();
     const sectionUsage = new Map();
-
     assignments.forEach((a) => {
-      const room = rooms.find(r => r.id === a.room_id);
-      const instructor = courseInstructors.find(i => i.id === a.instructor_id) || 
-                         allInstructors.find(i => i.id === a.instructor_id);
-      const subject = subjects.find(s => s.id === a.subject_id);
-
-      // Check room conflicts
       const roomKey = `${a.room_id}-${a.day}-${a.slot_index}`;
       if (roomUsage.has(roomKey)) {
-        const existing = roomUsage.get(roomKey);
         conflictList.push({
           type: 'room',
-          message: `Room "${room?.name || a.room_id}" is double-booked on ${a.day} at ${slotToTime(a.slot_index)}`,
-          details: `Conflict between subjects: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+          message: `Room double-booked on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+          details: `Conflict between subjects`
         });
       }
-      roomUsage.set(roomKey, { ...a, subject: subject?.subject_code });
+      roomUsage.set(roomKey, { ...a });
 
-      // Check instructor conflicts
-      const instrKey = `${a.instructor_id}-${a.day}-${a.slot_index}`;
+      const instrKey = `${a.instructor_name}-${a.day}-${a.slot_index}`;
       if (instructorUsage.has(instrKey)) {
-        const existing = instructorUsage.get(instrKey);
         conflictList.push({
           type: 'instructor',
-          message: `Instructor "${instructor?.name || a.instructor_id}" is scheduled twice on ${a.day} at ${slotToTime(a.slot_index)}`,
-          details: `Teaching both: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+          message: `Instructor "${a.instructor_name}" is scheduled twice on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+          details: `Teaching multiple classes`
         });
       }
-      instructorUsage.set(instrKey, { ...a, subject: subject?.subject_code });
+      instructorUsage.set(instrKey, { ...a });
 
-      // Check section conflicts
       const sectionKey = `${a.section_index}-${a.day}-${a.slot_index}`;
       if (sectionUsage.has(sectionKey)) {
-        const existing = sectionUsage.get(sectionKey);
         const sectionName = String.fromCharCode(65 + a.section_index);
         conflictList.push({
           type: 'section',
-          message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTime(a.slot_index)}`,
-          details: `Both: ${existing.subject} and ${subject?.subject_code || a.subject_id}`
+          message: `Section ${sectionName} has overlapping classes on ${a.day} at ${slotToTimeRange(a.slot_index, 1)}`,
+          details: `Multiple classes at same time`
         });
       }
-      sectionUsage.set(sectionKey, { ...a, subject: subject?.subject_code });
+      sectionUsage.set(sectionKey, { ...a });
     });
-
     return conflictList;
-  }, [rooms, courseInstructors, allInstructors, subjects]);
+  }, []);
 
-  // Generate Schedule Handler
-  const handleGenerate = useCallback(async () => {
+  const handleGenerate = useCallback(async (forceGenerateFlag = false) => {
     if (!courseId || selectedSubjects.length === 0) {
       setToast({ type: 'error', message: 'Please select a course and at least one subject.' });
-      return;
-    }
-
-    if (selectedInstructorIds.length === 0) {
-      setToast({ type: 'error', message: 'Please select at least one instructor for this course.' });
-      return;
-    }
-
-    const selectedButUnavailable = selectedInstructorIds.filter(id => !instructorAvailability[id]);
-    if (considerAvailability && selectedButUnavailable.length > 0) {
-      setToast({ 
-        type: 'error', 
-        message: `${selectedButUnavailable.length} selected instructor(s) have no availability data. They will be excluded from scheduling.` 
-      });
       return;
     }
 
@@ -11391,10 +22079,8 @@ export default function DeanSchedulePage() {
     setConflicts([]);
 
     try {
-      const instructorsPayload = selectedInstructorIds.map(id => ({
-        id,
-        available: instructorAvailability[id] || true
-      }));
+      const selectedCourse = courses.find(c => c.id === Number(courseId));
+      const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
 
       const payload = {
         courseId: Number(courseId),
@@ -11402,9 +22088,11 @@ export default function DeanSchedulePage() {
         semester: String(semester),
         studentsCount: Number(studentsCount),
         sectionCount: Number(sectionCount),
-        subjects: selectedSubjects,
-        instructors: instructorsPayload,
-        considerInstructorAvailability: considerAvailability
+        subjects: [...selectedSubjects],
+        schedulePattern: String(schedulePattern),
+        considerInstructorAvailability: Boolean(considerAvailability),
+        major: isBTLED && yearLevel === 3 ? String(btledMajor) : undefined,
+        forceGenerate: Boolean(forceGenerateFlag)
       };
 
       const res = await fetch(`${API}/api/scheduler/generate`, {
@@ -11415,18 +22103,29 @@ export default function DeanSchedulePage() {
 
       const data = await res.json();
 
+      // FIXED: Show conflict modal and STOP further execution
+      if (res.status === 409 && data.hasConflicts && !forceGenerateFlag) {
+        setConflictWarningData(data);
+        setShowConflictWarning(true);
+        setGenerating(false);
+        return; // Critical: prevent success path
+      }
+
       if (!res.ok) {
         throw new Error(data.detail || data.error || 'Schedule generation failed');
       }
 
+      // Normal success path
       const detectedConflicts = detectConflicts(data.assignments || []);
       setConflicts(detectedConflicts);
       setScheduleResult(data);
-      
+
       if (detectedConflicts.length > 0) {
-        setToast({ 
-          type: 'error', 
-          message: `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.` 
+        setToast({
+          type: forceGenerateFlag ? 'warning' : 'error',
+          message: forceGenerateFlag
+            ? `Schedule saved with ${detectedConflicts.length} known conflict(s).`
+            : `Schedule generated with ${detectedConflicts.length} conflict(s). Please review below.`
         });
       } else {
         setToast({ type: 'success', message: data.message || 'Schedule generated successfully with no conflicts!' });
@@ -11435,44 +22134,26 @@ export default function DeanSchedulePage() {
       console.error('Error generating schedule:', err);
       setToast({ type: 'error', message: err.message || 'Schedule generation failed.' });
     } finally {
-      setGenerating(false);
+      // Only stop spinner if conflict modal is not open
+      if (!showConflictWarning) {
+        setGenerating(false);
+      }
     }
-  }, [
-    courseId, 
-    selectedSubjects, 
-    selectedInstructorIds, 
-    instructorAvailability, 
-    considerAvailability,
-    yearLevel,
-    semester,
-    studentsCount,
-    sectionCount,
-    detectConflicts
-  ]);
+  }, [courseId, selectedSubjects, considerAvailability, yearLevel, semester, studentsCount, sectionCount, schedulePattern, btledMajor, courses, detectConflicts, showConflictWarning]);
 
-  // Memoized values
+  const selectedCourse = useMemo(() => courses.find(c => c.id === Number(courseId)), [courses, courseId]);
+  const isBTLED = useMemo(() => selectedCourse && isBTLEDCourse(selectedCourse.code), [selectedCourse]);
+  const showMajorSelector = isBTLED && yearLevel === 3;
   const availabilityDataCount = useMemo(() => Object.keys(availabilityData).length, [availabilityData]);
-
-  const overallStats = useMemo(() => {
-    return {
-      totalCourses: courses.length,
-      totalSubjects: subjects.length,
-      totalInstructors: courseInstructors.length,
-      selectedSubjects: selectedSubjects.length,
-      selectedInstructors: selectedInstructorIds.length
-    };
-  }, [courses.length, subjects.length, courseInstructors.length, selectedSubjects.length, selectedInstructorIds.length]);
+  const overallStats = useMemo(() => ({
+    totalCourses: courses.length,
+    totalSubjects: subjects.length,
+    selectedSubjects: selectedSubjects.length
+  }), [courses.length, subjects.length, selectedSubjects.length]);
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)`
-      }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: `linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%)` }}>
         <Loader className="animate-spin" size={48} style={{ color: COLORS.accent, marginBottom: '1rem' }} />
         <p style={{ color: COLORS.accent, fontSize: '1.1rem' }}>Loading schedule generator...</p>
       </div>
@@ -11482,946 +22163,214 @@ export default function DeanSchedulePage() {
   return (
     <>
       <style>{`
-        * {
-          box-sizing: border-box;
-        }
-
-        body {
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-        }
-
-        .schedule-container {
-          padding: 2rem;
-          background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
-          min-height: 100vh;
-        }
-
-        .page-header {
-          background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
-          padding: 2rem;
-          border-radius: 16px;
-          box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
-          margin-bottom: 2rem;
-          color: white;
-        }
-
-        .page-title-section {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .page-title {
-          font-size: 2.5rem;
-          font-weight: 700;
-          margin: 0 0 0.5rem 0;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          letter-spacing: -0.5px;
-        }
-
-        .page-subtitle {
-          font-size: 1.05rem;
-          margin: 0;
-          opacity: 0.9;
-        }
-
-        .header-actions {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
-        .action-btn {
-          border: none;
-          padding: 0.75rem 1.5rem;
-          border-radius: 10px;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-size: 0.95rem;
-        }
-
-        .action-btn.primary {
-          background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
-          color: white;
-        }
-
-        .action-btn.secondary {
-          background: rgba(255, 255, 255, 0.2);
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          color: white;
-          backdrop-filter: blur(10px);
-        }
-
-        .action-btn:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
-        }
-
-        .action-btn.primary:hover:not(:disabled) {
-          background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%);
-        }
-
-        .action-btn.secondary:hover:not(:disabled) {
-          background: rgba(255, 255, 255, 0.3);
-          border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .action-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .statistics-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-          gap: 1rem;
-          margin-bottom: 2rem;
-        }
-
-        .stat-card {
-          background: white;
-          border-radius: 12px;
-          padding: 1.5rem;
-          box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
-          border-left: 4px solid ${COLORS.accent};
-          animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .stat-label {
-          color: #666;
-          font-size: 0.85rem;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-          font-size: 2rem;
-          font-weight: 700;
-          color: ${COLORS.primary};
-        }
-
-        .config-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
-          margin-bottom: 2rem;
-          overflow: hidden;
-          animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .config-card-header {
-          background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
-          color: white;
-          padding: 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .config-card-body {
-          padding: 2rem;
-        }
-
-        .form-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 1.5rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .form-label-custom {
-          font-weight: 600;
-          color: ${COLORS.primary};
-          margin-bottom: 0.5rem;
-          display: flex;
-          align-items: center;
-          font-size: 0.9rem;
-        }
-
-        .form-input-custom {
-          border: 2px solid #90E0EF;
-          border-radius: 10px;
-          padding: 0.75rem;
-          font-size: 0.95rem;
-          transition: all 0.3s ease;
-          background: white;
-        }
-
-        .form-input-custom:focus {
-          outline: none;
-          border-color: ${COLORS.accent};
-          box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
-        }
-
-        .form-input-custom:disabled {
-          background: #f5f5f5;
-          cursor: not-allowed;
-        }
-
-        .availability-section {
-          background: ${COLORS.lightest};
-          border: 2px solid #90E0EF;
-          border-radius: 10px;
-          padding: 1.5rem;
-        }
-
-        .checkbox-container {
-          display: flex;
-          align-items: flex-start;
-          gap: 0.75rem;
-          cursor: pointer;
-        }
-
-        .checkbox-container input[type="checkbox"] {
-          margin-top: 0.25rem;
-          width: 18px;
-          height: 18px;
-          cursor: pointer;
-        }
-
-        .checkbox-label {
-          flex: 1;
-          color: ${COLORS.primary};
-        }
-
-        .selection-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
-          overflow: hidden;
-          animation: slideIn 0.3s ease;
-        }
-
-        .selection-card-header {
-          background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
-          color: white;
-          padding: 1.25rem 1.5rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          cursor: pointer;
-          user-select: none;
-          transition: all 0.3s ease;
-        }
-
-        .selection-card-header:hover {
-          background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%);
-        }
-
-        .selection-card-body {
-          padding: 1.5rem;
-        }
-
-        .count-badge {
-          background: rgba(255, 255, 255, 0.2);
-          padding: 0.3rem 0.75rem;
-          border-radius: 12px;
-          font-size: 0.85rem;
-          font-weight: 600;
-        }
-
-        .warning-badge {
-          background: #F59E0B;
-          padding: 0.25rem 0.6rem;
-          border-radius: 6px;
-          font-size: 0.75rem;
-          font-weight: 600;
-        }
-
-        .small-btn {
-          background: rgba(255, 255, 255, 0.2);
-          border: none;
-          color: white;
-          padding: 0.4rem 0.8rem;
-          border-radius: 6px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .small-btn:hover:not(:disabled) {
-          background: rgba(255, 255, 255, 0.3);
-        }
-
-        .small-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .search-box {
-          position: relative;
-          margin-bottom: 1rem;
-        }
-
-        .search-box input {
-          width: 100%;
-          padding: 0.75rem 1rem 0.75rem 2.75rem;
-          border: 2px solid #90E0EF;
-          border-radius: 10px;
-          font-size: 0.95rem;
-          transition: all 0.3s ease;
-        }
-
-        .search-box input:focus {
-          outline: none;
-          border-color: ${COLORS.accent};
-          box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25);
-        }
-
-        .search-icon-inline {
-          position: absolute;
-          left: 1rem;
-          top: 50%;
-          transform: translateY(-50%);
-          color: ${COLORS.accent};
-          pointer-events: none;
-        }
-
-        .clear-btn {
-          position: absolute;
-          right: 0.75rem;
-          top: 50%;
-          transform: translateY(-50%);
-          background: none;
-          border: none;
-          color: #999;
-          cursor: pointer;
-          padding: 0.25rem;
-          display: flex;
-          align-items: center;
-          transition: color 0.3s ease;
-        }
-
-        .clear-btn:hover {
-          color: ${COLORS.accent};
-        }
-
-        .items-list {
-          max-height: 400px;
-          overflow-y: auto;
-        }
-
-        .item-checkbox {
-          display: flex;
-          align-items: flex-start;
-          gap: 1rem;
-          padding: 1rem;
-          margin-bottom: 0.75rem;
-          border-radius: 10px;
-          border: 2px solid #E9ECEF;
-          background: #F8F9FA;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .item-checkbox.selected {
-          background: #E6F7FF;
-          border-color: ${COLORS.light};
-        }
-
-        .item-checkbox:hover {
-          border-color: ${COLORS.accent};
-          transform: translateX(4px);
-        }
-
-        .item-checkbox input[type="checkbox"] {
-          margin-top: 0.25rem;
-          width: 18px;
-          height: 18px;
-          cursor: pointer;
-          flex-shrink: 0;
-        }
-
-        .item-content {
-          flex: 1;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .units-badge {
-          background: #6c757d;
-          color: white;
-          padding: 0.25rem 0.6rem;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          font-weight: 600;
-        }
-
-        .info-box {
-          background: #E3F2FD;
-          border: 2px solid #90CAF9;
-          border-radius: 10px;
-          padding: 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          color: #1565C0;
-        }
-
-        .warning-box {
-          background: #FFF3CD;
-          border: 2px solid #FFE69C;
-          border-radius: 10px;
-          padding: 1.5rem;
-          color: #856404;
-        }
-
-        .conflicts-box {
-          background: #FFE6E6;
-          border: 2px solid #FFB3B3;
-          border-radius: 12px;
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-        }
-
-        .preview-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-          margin-bottom: 2rem;
-        }
-
-        .preview-badge {
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 0.25rem;
-        }
-
-        .preview-badge.success {
-          background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-          color: white;
-        }
-
-        .preview-badge.danger {
-          background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%);
-          color: white;
-        }
-
-        .section-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
-          margin-bottom: 2rem;
-          overflow: hidden;
-        }
-
-        .section-header {
-          background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
-          color: white;
-          padding: 1.25rem 1.5rem;
-        }
-
-        .schedule-table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 0.9rem;
-        }
-
-        .schedule-table thead {
-          background: ${COLORS.lightest};
-          color: ${COLORS.primary};
-        }
-
-        .schedule-table th {
-          padding: 0.75rem;
-          font-weight: 600;
-          text-align: center;
-          border: 1px solid #90E0EF;
-          font-size: 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .schedule-table td {
-          padding: 0.75rem;
-          border: 1px solid #E8F4F8;
-          text-align: center;
-          vertical-align: middle;
-          transition: all 0.3s ease;
-        }
-
-        .schedule-table tbody tr:nth-child(odd) {
-          background: #FAFCFD;
-        }
-
-        .schedule-table tbody tr:hover {
-          background: #E8F4F8;
-        }
-
-        .time-badge {
-          background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%);
-          color: ${COLORS.primary};
-          padding: 0.4rem 0.8rem;
-          border-radius: 6px;
-          font-weight: 600;
-          font-size: 0.8rem;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.25rem;
-        }
-
-        .modal-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 9998;
-          padding: 1rem;
-        }
-
-        .modal-content {
-          background: white;
-          border-radius: 16px;
-          max-width: 600px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-          animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-          from {
-            transform: translateY(50px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        .modal-header-custom {
-          background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%);
-          color: white;
-          padding: 1.5rem 2rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .modal-close {
-          background: none;
-          border: none;
-          color: white;
-          font-size: 2rem;
-          cursor: pointer;
-          line-height: 1;
-          padding: 0;
-          transition: transform 0.3s ease;
-        }
-
-        .modal-close:hover {
-          transform: scale(1.2);
-        }
-
-        .modal-body-custom {
-          padding: 2rem;
-        }
-
-        .modal-info-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1.5rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .modal-info-grid > div {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .modal-info-grid p {
-          margin: 0;
-          color: #333;
-          font-size: 0.95rem;
-        }
-
-        .modal-badge {
-          display: inline-block;
-          padding: 0.25rem 0.75rem;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          font-weight: 600;
-        }
-
-        .modal-badge.success {
-          background: #10B981;
-          color: white;
-        }
-
-        .modal-badge.secondary {
-          background: #6c757d;
-          color: white;
-        }
-
-        .modal-info-box {
-          background: #E3F2FD;
-          border: 2px solid #90CAF9;
-          border-radius: 10px;
-          padding: 1rem;
-          display: flex;
-          align-items: flex-start;
-          gap: 0.75rem;
-          color: #1565C0;
-        }
-
-        .modal-footer-custom {
-          padding: 1.5rem 2rem;
-          border-top: 1px solid #E8F4F8;
-          display: flex;
-          justify-content: flex-end;
-          gap: 1rem;
-        }
-
-        .edusched-toast {
-          position: fixed;
-          top: 2rem;
-          right: 2rem;
-          min-width: 320px;
-          background: white;
-          border-radius: 12px;
-          padding: 1rem 1.5rem;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          z-index: 9999;
-          animation: slideInToast 0.3s ease;
-          border-left: 4px solid;
-        }
-
-        @keyframes slideInToast {
-          from {
-            transform: translateX(400px);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+        .schedule-container { padding: 2rem; background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%); min-height: 100vh; }
+        .page-header { background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%); padding: 2rem; border-radius: 16px; box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15); margin-bottom: 2rem; color: white; }
+        .page-title-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .page-title { font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.75rem; letter-spacing: -0.5px; }
+        .page-subtitle { font-size: 1.05rem; margin: 0; opacity: 0.9; }
+        .header-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .action-btn { border: none; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem; }
+        .action-btn.primary { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; }
+        .action-btn.secondary { background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: white; backdrop-filter: blur(10px); }
+        .action-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2); }
+        .action-btn.primary:hover:not(:disabled) { background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.accent} 100%); }
+        .action-btn.secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.5); }
+        .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .statistics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); border-left: 4px solid ${COLORS.accent}; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .stat-label { color: #666; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: ${COLORS.primary}; }
+        .config-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); margin-bottom: 2rem; overflow: hidden; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .config-card-header { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        .config-card-body { padding: 2rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-label-custom { font-weight: 600; color: ${COLORS.primary}; margin-bottom: 0.5rem; display: flex; align-items: center; font-size: 0.9rem; }
+        .form-input-custom { border: 2px solid #90E0EF; border-radius: 10px; padding: 0.75rem; font-size: 0.95rem; transition: all 0.3s ease; background: white; }
+        .form-input-custom:focus { outline: none; border-color: ${COLORS.accent}; box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25); }
+        .form-input-custom:disabled { background: #f5f5f5; cursor: not-allowed; }
+        .availability-section { background: ${COLORS.lightest}; border: 2px solid #90E0EF; border-radius: 10px; padding: 1.5rem; }
+        .checkbox-container { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; }
+        .checkbox-container input[type="checkbox"] { margin-top: 0.25rem; width: 18px; height: 18px; cursor: pointer; }
+        .checkbox-label { flex: 1; color: ${COLORS.primary}; }
+        .selection-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); overflow: hidden; animation: slideIn 0.3s ease; }
+        .selection-card-header { background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: all 0.3s ease; }
+        .selection-card-header:hover { background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondary} 100%); }
+        .selection-card-body { padding: 1.5rem; }
+        .count-badge { background: rgba(255, 255, 255, 0.2); padding: 0.3rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+        .search-box { position: relative; margin-bottom: 1rem; }
+        .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #90E0EF; border-radius: 10px; font-size: 0.95rem; transition: all 0.3s ease; }
+        .search-box input:focus { outline: none; border-color: ${COLORS.accent}; box-shadow: 0 0 0 0.2rem rgba(0, 119, 182, 0.25); }
+        .search-icon-inline { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: ${COLORS.accent}; pointer-events: none; }
+        .clear-btn { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; transition: color 0.3s ease; }
+        .clear-btn:hover { color: ${COLORS.accent}; }
+        .items-list { max-height: 400px; overflow-y: auto; }
+        .item-checkbox { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; margin-bottom: 0.75rem; border-radius: 10px; border: 2px solid #E9ECEF; background: #F8F9FA; cursor: pointer; transition: all 0.3s ease; }
+        .item-checkbox.selected { background: #E6F7FF; border-color: ${COLORS.light}; }
+        .item-checkbox:hover { border-color: ${COLORS.accent}; transform: translateX(4px); }
+        .item-checkbox input[type="checkbox"] { margin-top: 0.25rem; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+        .item-content { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+        .units-badge { background: #6c757d; color: white; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+        .info-box { background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 10px; padding: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: #1565C0; }
+        .warning-box { background: #FFF3CD; border: 2px solid #FFE69C; border-radius: 10px; padding: 1.5rem; color: #856404; }
+        .conflicts-box { background: #FFE6E6; border: 2px solid #FFB3B3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+        .preview-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+        .preview-badge { padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; }
+        .preview-badge.success { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; }
+        .preview-badge.danger { background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%); color: white; }
+        .section-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1); margin-bottom: 2rem; overflow: hidden; }
+        .section-header { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .schedule-table thead { background: ${COLORS.lightest}; color: ${COLORS.primary}; }
+        .schedule-table th { padding: 0.75rem; font-weight: 600; text-align: center; border: 1px solid #90E0EF; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .schedule-table td { padding: 0.75rem; border: 1px solid #E8F4F8; text-align: center; vertical-align: middle; transition: all 0.3s ease; }
+        .schedule-table tbody tr:nth-child(odd) { background: #FAFCFD; }
+        .schedule-table tbody tr:hover { background: #E8F4F8; }
+        .time-badge { background: linear-gradient(135deg, ${COLORS.lighter} 0%, ${COLORS.light} 100%); color: ${COLORS.primary}; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9998; padding: 1rem; }
+        .modal-content { background: white; border-radius: 16px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header-custom { background: linear-gradient(135deg, ${COLORS.accent} 0%, ${COLORS.light} 100%); color: white; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .modal-close { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; padding: 0; transition: transform 0.3s ease; }
+        .modal-close:hover { transform: scale(1.2); }
+        .modal-body-custom { padding: 2rem; }
+        .modal-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .modal-info-grid > div { display: flex; flex-direction: column; gap: 0.5rem; }
+        .modal-info-grid p { margin: 0; color: #333; font-size: 0.95rem; }
+        .modal-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+        .modal-badge.success { background: #10B981; color: white; }
+        .modal-badge.secondary { background: #6c757d; color: white; }
+        .modal-info-box { background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 10px; padding: 1rem; display: flex; align-items: flex-start; gap: 0.75rem; color: #1565C0; }
+        .modal-footer-custom { padding: 1.5rem 2rem; border-top: 1px solid #E8F4F8; display: flex; justify-content: flex-end; gap: 1rem; }
+        .modal-conflict .modal-body-custom { max-height: 600px; overflow-y: auto; }
+        .edusched-toast { position: fixed; top: 2rem; right: 2rem; min-width: 320px; background: white; border-radius: 12px; padding: 1rem 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; align-items: center; gap: 1rem; z-index: 9999; animation: slideInToast 0.3s ease; border-left: 4px solid; }
+        @keyframes slideInToast { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .edusched-toast.toast-success { border-left-color: #10B981; }
         .edusched-toast.toast-error { border-left-color: #ff6b6b; }
-
+        .edusched-toast.toast-warning { border-left-color: #ffc107; }
         .edusched-toast .toast-icon { display: flex; align-items: center; }
         .edusched-toast .toast-message { flex: 1; color: #111827; font-weight: 600; }
-        .edusched-toast .toast-close {
-          background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280;
-        }
+        .edusched-toast .toast-close { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #6B7280; }
         .edusched-toast .toast-close:hover { color: ${COLORS.accent}; }
-
-        .page-content-grid {
-          display: grid;
-          grid-template-columns: 1.15fr 1fr;
-          gap: 1.5rem;
-        }
-
-        @media (max-width: 1100px) {
-          .page-content-grid { grid-template-columns: 1fr; }
-        }
-
-        .left-col { display: flex; flex-direction: column; gap: 1.5rem; }
-        .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
-
-        .footer-actions {
-          display: flex;
-          gap: 0.75rem;
-          justify-content: flex-end;
-          margin-top: 1rem;
-        }
-
-        .divider {
-          height: 1px;
-          background: #E8F4F8;
-          margin: 1.25rem 0;
-        }
-
-        .animate-spin {
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+        .page-content-grid { display: grid; gap: 1.5rem; }
+        .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @media (max-width: 768px) { 
+          .schedule-container { padding: 1rem; } 
+          .page-title { font-size: 2rem; } 
+          .form-grid { grid-template-columns: 1fr; } 
+          .modal-info-grid { grid-template-columns: 1fr; } 
+          .statistics-grid { grid-template-columns: repeat(2, 1fr); } 
         }
       `}</style>
 
       <div className="schedule-container">
-        {/* HEADER */}
         <div className="page-header">
           <div className="page-title-section">
             <div>
               <h1 className="page-title">
                 <Calendar size={28} />
-                Schedule Generator
+                AI Schedule Generator
               </h1>
               <p className="page-subtitle">
-                Auto-assign rooms & times while preventing conflicts. Uses 7:00 AM – 7:00 PM slots (hourly).
+                Smart scheduling with teacher assignments and room allocations
+                {isBTLED && yearLevel === 3 && (
+                  <span style={{ marginLeft: '1rem', background: 'rgba(255,255,255,0.2)', padding: '0.25rem 0.75rem', borderRadius: '20px' }}>
+                    Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}
+                  </span>
+                )}
               </p>
             </div>
-
             <div className="header-actions">
-              <button
-                className="action-btn secondary"
-                onClick={async () => {
-                  setLoading(true);
-                  await Promise.all([fetchCourses(), fetchAllInstructors(), fetchRooms(), fetchAvailabilityData()]);
-                  setLoading(false);
-                  setToast({ type: 'success', message: 'Data reloaded successfully.' });
-                }}
-                disabled={loading || generating}
-                title="Reload courses, instructors, rooms, availability"
-              >
-                <RefreshCw size={16} />
-                Reload Data
+              <button className="action-btn secondary" onClick={async () => {
+                setLoading(true);
+                await Promise.all([fetchCourses(), fetchAvailabilityData(), fetchRooms()]);
+                setLoading(false);
+                setToast({ type: 'success', message: 'Data reloaded successfully.' });
+              }} disabled={loading || generating}>
+                <RefreshCw size={16} />Reload Data
               </button>
-
-              <button
-                className="action-btn secondary"
-                onClick={() => {
-                  setScheduleResult(null);
-                  setConflicts([]);
-                  setSelectedSubjects([]);
-                  setSelectedInstructorIds([]);
-                  setToast({ type: 'success', message: 'Selections cleared.' });
-                }}
-                disabled={generating}
-                title="Clear selections & preview"
-              >
-                <X size={16} />
-                Reset Selections
+              <button className="action-btn secondary" onClick={() => {
+                setScheduleResult(null);
+                setConflicts([]);
+                setSelectedSubjects([]);
+                setToast({ type: 'success', message: 'Selections cleared.' });
+              }} disabled={generating}>
+                <X size={16} />Reset
               </button>
-
-              <button
-                className="action-btn primary"
-                onClick={() => setShowConfirm(true)}
-                disabled={generating}
-                title="Generate schedule"
-              >
-                <CheckCircle size={16} />
-                {generating ? 'Generating…' : 'Generate Schedule'}
+              <button className="action-btn primary" onClick={() => setShowConfirm(true)} disabled={generating || !courseId || selectedSubjects.length === 0}>
+                <CheckCircle size={16} />{generating ? 'Generating…' : 'Generate Schedule'}
               </button>
             </div>
           </div>
         </div>
 
-        {/* TOP STATS */}
         <div className="statistics-grid">
           <div className="stat-card">
-            <div className="stat-label"><BookOpen size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Total Courses</div>
+            <div className="stat-label">Total Courses</div>
             <div className="stat-value">{overallStats.totalCourses}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label"><Users size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Course Instructors</div>
-            <div className="stat-value">{overallStats.totalInstructors}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label"><DoorOpen size={14} style={{ marginRight: 6, verticalAlign: -2 }} /> Total Rooms</div>
-            <div className="stat-value">{rooms.length}</div>
+            <div className="stat-label">Available Subjects</div>
+            <div className="stat-value">{overallStats.totalSubjects}</div>
           </div>
           <div className="stat-card">
             <div className="stat-label">Selected Subjects</div>
             <div className="stat-value">{overallStats.selectedSubjects}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label">Selected Instructors</div>
-            <div className="stat-value">{overallStats.selectedInstructors}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Availability Records</div>
+            <div className="stat-label">Instructors with Availability</div>
             <div className="stat-value">{availabilityDataCount}</div>
           </div>
         </div>
 
-        {/* BODY GRID */}
         <div className="page-content-grid">
-          <div className="left-col">
-            <DeanScheduleForm
-              courses={courses}
-              courseId={courseId}
-              setCourseId={setCourseId}
-              yearLevel={yearLevel}
-              setYearLevel={setYearLevel}
-              semester={semester}
-              setSemester={setSemester}
-              studentsCount={studentsCount}
-              setStudentsCount={setStudentsCount}
-              sectionCount={sectionCount}
-              setSectionCount={setSectionCount}
-              considerAvailability={considerAvailability}
-              setConsiderAvailability={setConsiderAvailability}
-              generating={generating}
-              availabilityLoaded={availabilityLoaded}
-              availabilityDataCount={availabilityDataCount}
-            />
-
-            {/* Optional: quick rooms glance */}
-            <div className="selection-card">
-              <div className="selection-card-header" style={{ cursor: 'default' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Building2 size={18} />
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Rooms (Auto-assigned)</h3>
-                </div>
-              </div>
-              <div className="selection-card-body">
-                {rooms.length === 0 ? (
-                  <div className="warning-box">No rooms found. Add rooms in the admin first.</div>
-                ) : (
-                  <>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                      {rooms.slice(0, 18).map(r => (
-                        <span
-                          key={r.id}
-                          className="preview-badge"
-                          style={{ background: '#EEF8FF', color: COLORS.primary }}
-                        >
-                          {r.name}
-                        </span>
-                      ))}
-                      {rooms.length > 18 && (
-                        <span className="preview-badge" style={{ background: '#EEF8FF', color: COLORS.primary }}>
-                          +{rooms.length - 18} more
-                        </span>
-                      )}
-                    </div>
-                    <div className="divider" />
-                    <small style={{ color: '#6B7280' }}>
-                      Rooms are assigned automatically to avoid conflicts.
-                    </small>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="right-col">
-            <SubjectList
-              subjects={subjects}
-              selectedSubjects={selectedSubjects}
-              toggleSubject={toggleSubject}
-              generating={generating}
-              loading={loadingSubjects}
-              courseId={courseId}
-            />
-
-            <InstructorSubjectList
-              instructors={courseInstructors}
-              selectedInstructorIds={selectedInstructorIds}
-              toggleInstructor={toggleInstructor}
-              selectAllInstructors={selectAllInstructors}
-              deselectAllInstructors={deselectAllInstructors}
-              instructorAvailability={instructorAvailability}
-              availabilityData={availabilityData}
-              considerAvailability={considerAvailability}
-              generating={generating}
-              courseId={courseId}
-            />
-
-            <div className="footer-actions">
-              <button
-                className="action-btn secondary"
-                onClick={() => {
-                  setSelectedSubjects(subjects.map(s => s.id || s.subject_id).filter(Boolean));
-                  setSelectedInstructorIds(courseInstructors.map(i => i.id));
-                }}
-                disabled={generating || subjects.length === 0 || courseInstructors.length === 0}
-              >
-                <Plus size={16} />
-                Select All
-              </button>
-              <button
-                className="action-btn secondary"
-                onClick={() => {
-                  setSelectedSubjects([]);
-                  setSelectedInstructorIds([]);
-                }}
-                disabled={generating}
-              >
-                <X size={16} />
-                Clear All
-              </button>
-              <button
-                className="action-btn primary"
-                onClick={() => setShowConfirm(true)}
-                disabled={generating}
-              >
-                <CheckCircle size={16} />
-                {generating ? 'Generating…' : 'Generate'}
-              </button>
-            </div>
-          </div>
+          <DeanScheduleForm
+            courses={courses}
+            courseId={courseId}
+            setCourseId={setCourseId}
+            yearLevel={yearLevel}
+            setYearLevel={setYearLevel}
+            semester={semester}
+            setSemester={setSemester}
+            studentsCount={studentsCount}
+            setStudentsCount={setStudentsCount}
+            sectionCount={sectionCount}
+            setSectionCount={setSectionCount}
+            considerAvailability={considerAvailability}
+            setConsiderAvailability={setConsiderAvailability}
+            generating={generating}
+            availabilityLoaded={availabilityLoaded}
+            availabilityDataCount={availabilityDataCount}
+          />
+          <BTLEDMajorSelector major={btledMajor} onChange={setBtledMajor} show={showMajorSelector} />
+          <SubjectList
+            subjects={subjects}
+            selectedSubjects={selectedSubjects}
+            toggleSubject={toggleSubject}
+            generating={generating}
+            loading={loadingSubjects}
+            courseId={courseId}
+            availabilityData={availabilityData}
+          />
         </div>
 
-        {/* PREVIEW */}
         <SchedulePreview
           scheduleResult={scheduleResult}
           conflicts={conflicts}
           subjects={subjects}
-          instructors={allInstructors}
           rooms={rooms}
-          onClear={() => {
-            setScheduleResult(null);
-            setConflicts([]);
-          }}
+          sectionCount={sectionCount}
+          onClear={() => { setScheduleResult(null); setConflicts([]); }}
+          availabilityData={availabilityData}
+          considerAvailability={considerAvailability}
         />
       </div>
 
-      {/* MODAL */}
       <GenerateModal
         show={showConfirm}
         onHide={() => setShowConfirm(false)}
@@ -12433,18 +22382,25 @@ export default function DeanSchedulePage() {
         sectionCount={sectionCount}
         studentsCount={studentsCount}
         selectedSubjects={selectedSubjects}
-        selectedInstructorIds={selectedInstructorIds}
+        schedulePattern={schedulePattern}
         considerAvailability={considerAvailability}
+        availabilityDataCount={availabilityDataCount}
       />
 
-      {/* TOAST */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type === 'success' ? 'success' : 'error'}
-          onClose={() => setToast(null)}
-        />
-      )}
+      <ConflictWarningModal
+        show={showConflictWarning}
+        onHide={() => {
+          setShowConflictWarning(false);
+          setConflictWarningData(null);
+          setGenerating(false);
+        }}
+        onForce={() => handleGenerate(true)}
+        conflictData={conflictWarningData}
+        courses={courses}
+        courseId={courseId}
+      />
+
+      {toast && <Toast message={toast.message} type={toast.type === 'success' ? 'success' : toast.type === 'warning' ? 'warning' : 'error'} onClose={() => setToast(null)} />}
     </>
   );
 }

@@ -338,18 +338,1296 @@
 // };
 
 // export default InstructorProfile;
+
+//PRE-ORAL WORKING 
+
+// import React, { useState, useEffect, useCallback, useRef } from "react";
+// import { useAuth } from "../../context/AuthContext";
+// import { auth, storage } from "../../firebase";
+// import { updateProfile, updatePassword } from "firebase/auth";
+// import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+// import { v4 as uuidv4 } from "uuid";
+// import { 
+//   User, Mail, Lock, Camera, Check, X, AlertCircle, 
+//   Upload, Eye, EyeOff, Sun, Moon
+// } from "lucide-react";
+// // import { API } from '../../config/api';
+
+
+// // ==================== CONSTANTS ====================
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+// const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+// // ==================== TOAST NOTIFICATION ====================
+// const Toast = React.memo(({ message, type, onClose }) => {
+//   useEffect(() => {
+//     if (message) {
+//       const timer = setTimeout(onClose, 4000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [message, onClose]);
+
+//   if (!message) return null;
+
+//   const styles = {
+//     success: { bg: '#d4edda', border: '#c3e6cb', color: '#155724', Icon: Check },
+//     error: { bg: '#f8d7da', border: '#f5c6cb', color: '#721c24', Icon: AlertCircle },
+//     warning: { bg: '#fff3cd', border: '#ffeaa7', color: '#856404', Icon: AlertCircle },
+//   };
+
+//   const style = styles[type] || styles.success;
+//   const Icon = style.Icon;
+
+//   return (
+//     <div className="toast-notification" style={{ 
+//       background: style.bg, 
+//       borderColor: style.border, 
+//       color: style.color 
+//     }}>
+//       <Icon size={20} />
+//       <span>{message}</span>
+//       <button onClick={onClose} className="toast-close">
+//         <X size={16} />
+//       </button>
+//     </div>
+//   );
+// });
+
+// // ==================== PROFILE PHOTO UPLOADER ====================
+// const ProfilePhotoUploader = React.memo(({ 
+//   currentPhotoURL, 
+//   photoFile, 
+//   onPhotoChange, 
+//   onPhotoRemove 
+// }) => {
+//   const [isDragging, setIsDragging] = useState(false);
+//   const fileInputRef = useRef(null);
+
+//   const photoPreview = photoFile 
+//     ? URL.createObjectURL(photoFile)
+//     : currentPhotoURL || "/images/default-avatar.png";
+
+//   const handleDragOver = (e) => {
+//     e.preventDefault();
+//     setIsDragging(true);
+//   };
+
+//   const handleDragLeave = () => {
+//     setIsDragging(false);
+//   };
+
+//   const handleDrop = (e) => {
+//     e.preventDefault();
+//     setIsDragging(false);
+    
+//     const file = e.dataTransfer.files[0];
+//     if (file && ALLOWED_FILE_TYPES.includes(file.type)) {
+//       onPhotoChange(file);
+//     }
+//   };
+
+//   const handleFileSelect = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       onPhotoChange(file);
+//     }
+//   };
+
+//   return (
+//     <div className="photo-uploader">
+//       <div 
+//         className={`photo-container ${isDragging ? 'dragging' : ''}`}
+//         onDragOver={handleDragOver}
+//         onDragLeave={handleDragLeave}
+//         onDrop={handleDrop}
+//       >
+//         <div className="photo-wrapper">
+//           <img
+//             src={photoPreview}
+//             alt="Profile"
+//             className="profile-photo"
+//           />
+//           <div className="photo-overlay">
+//             <button
+//               type="button"
+//               className="photo-btn upload"
+//               onClick={() => fileInputRef.current?.click()}
+//               title="Upload photo"
+//             >
+//               <Camera size={20} />
+//             </button>
+//             {(photoFile || currentPhotoURL) && (
+//               <button
+//                 type="button"
+//                 className="photo-btn remove"
+//                 onClick={onPhotoRemove}
+//                 title="Remove photo"
+//               >
+//                 <X size={20} />
+//               </button>
+//             )}
+//           </div>
+//         </div>
+//         <input
+//           ref={fileInputRef}
+//           type="file"
+//           accept={ALLOWED_FILE_TYPES.join(',')}
+//           onChange={handleFileSelect}
+//           className="photo-input"
+//         />
+//       </div>
+//       <p className="photo-hint">
+//         <Upload size={14} />
+//         Drag & drop or click to upload (Max 5MB)
+//       </p>
+//     </div>
+//   );
+// });
+
+// // ==================== FORM INPUT COMPONENT ====================
+// const FormInput = React.memo(({ 
+//   icon: Icon, 
+//   label, 
+//   type = "text", 
+//   value, 
+//   onChange, 
+//   placeholder,
+//   disabled = false,
+//   required = false,
+//   helperText,
+//   error
+// }) => {
+//   const [showPassword, setShowPassword] = useState(false);
+//   const inputType = type === "password" && showPassword ? "text" : type;
+
+//   return (
+//     <div className="form-group">
+//       <label className="form-label">
+//         <Icon size={16} />
+//         {label}
+//         {required && <span className="required">*</span>}
+//       </label>
+//       <div className="input-wrapper">
+//         <input
+//           type={inputType}
+//           className={`form-input ${error ? 'error' : ''} ${disabled ? 'disabled' : ''}`}
+//           value={value}
+//           onChange={onChange}
+//           placeholder={placeholder}
+//           disabled={disabled}
+//           required={required}
+//         />
+//         {type === "password" && value && (
+//           <button
+//             type="button"
+//             className="password-toggle"
+//             onClick={() => setShowPassword(!showPassword)}
+//             tabIndex={-1}
+//           >
+//             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+//           </button>
+//         )}
+//       </div>
+//       {helperText && <p className="helper-text">{helperText}</p>}
+//       {error && <p className="error-text">{error}</p>}
+//     </div>
+//   );
+// });
+
+// // ==================== CONFIRMATION MODAL ====================
+// const ConfirmationModal = React.memo(({ show, onClose, onConfirm, title, message }) => {
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header">
+//           <AlertCircle size={24} className="warning-icon" />
+//           <h3>{title}</h3>
+//         </div>
+//         <div className="modal-body">
+//           <p>{message}</p>
+//         </div>
+//         <div className="modal-footer">
+//           <button onClick={onClose} className="btn-secondary">
+//             Cancel
+//           </button>
+//           <button onClick={onConfirm} className="btn-primary">
+//             Confirm
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== MAIN COMPONENT ====================
+// export default function InstructorProfile() {
+//   const { currentUser, setCurrentUser } = useAuth();
+  
+//   // State Management
+//   const [displayName, setDisplayName] = useState("");
+//   const [photoFile, setPhotoFile] = useState(null);
+//   const [password, setPassword] = useState("");
+//   const [confirmPassword, setConfirmPassword] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [toast, setToast] = useState({ message: "", type: "" });
+//   const [darkMode, setDarkMode] = useState(false);
+//   const [showConfirmModal, setShowConfirmModal] = useState(false);
+//   const [errors, setErrors] = useState({});
+
+//   // Initialize form with current user data
+//   useEffect(() => {
+//     if (currentUser) {
+//       setDisplayName(currentUser.displayName || "");
+//     }
+//   }, [currentUser]);
+
+//   /**
+//    * Validates the profile form
+//    * @returns {boolean} - True if valid, false otherwise
+//    */
+//   const validateForm = useCallback(() => {
+//     const newErrors = {};
+
+//     // Validate display name
+//     if (!displayName.trim()) {
+//       newErrors.displayName = "Name is required";
+//     } else if (displayName.trim().length < 2) {
+//       newErrors.displayName = "Name must be at least 2 characters";
+//     }
+
+//     // Validate photo file if selected
+//     if (photoFile) {
+//       if (!ALLOWED_FILE_TYPES.includes(photoFile.type)) {
+//         newErrors.photo = "Invalid file type. Please use JPEG, PNG, GIF, or WebP";
+//       } else if (photoFile.size > MAX_FILE_SIZE) {
+//         newErrors.photo = "File size must be less than 5MB";
+//       }
+//     }
+
+//     // Validate password if provided
+//     if (password) {
+//       if (password.length < 6) {
+//         newErrors.password = "Password must be at least 6 characters";
+//       } else if (password !== confirmPassword) {
+//         newErrors.confirmPassword = "Passwords do not match";
+//       }
+//     }
+
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   }, [displayName, photoFile, password, confirmPassword]);
+
+//   /**
+//    * Handles photo file selection
+//    * @param {File} file - Selected photo file
+//    */
+//   const handlePhotoChange = useCallback((file) => {
+//     if (file && ALLOWED_FILE_TYPES.includes(file.type)) {
+//       if (file.size <= MAX_FILE_SIZE) {
+//         setPhotoFile(file);
+//         setErrors(prev => ({ ...prev, photo: null }));
+//       } else {
+//         showToast("File size must be less than 5MB", "error");
+//       }
+//     } else {
+//       showToast("Invalid file type. Please use JPEG, PNG, GIF, or WebP", "error");
+//     }
+//   }, []);
+
+//   /**
+//    * Removes selected photo
+//    */
+//   const handlePhotoRemove = useCallback(() => {
+//     setPhotoFile(null);
+//     setErrors(prev => ({ ...prev, photo: null }));
+//   }, []);
+
+//   /**
+//    * Handles profile update submission
+//    */
+//   const handleUpdateProfile = async (e) => {
+//     e.preventDefault();
+    
+//     // Validate form
+//     if (!validateForm()) {
+//       showToast("Please fix the errors before submitting", "error");
+//       return;
+//     }
+
+//     // Show confirmation if password is being changed
+//     if (password) {
+//       setShowConfirmModal(true);
+//       return;
+//     }
+
+//     await performUpdate();
+//   };
+
+//   /**
+//    * Performs the actual profile update
+//    */
+//   const performUpdate = async () => {
+//     setLoading(true);
+//     setShowConfirmModal(false);
+
+//     try {
+//       let photoURL = currentUser?.photoURL;
+
+//       // Upload new profile picture if selected
+//       if (photoFile) {
+//         const fileRef = ref(storage, `profile-pics/${currentUser.uid}-${uuidv4()}`);
+//         await uploadBytes(fileRef, photoFile);
+//         photoURL = await getDownloadURL(fileRef);
+//       }
+
+//       // Update Firebase profile (name + photo)
+//       await updateProfile(auth.currentUser, {
+//         displayName: displayName.trim(),
+//         photoURL,
+//       });
+
+//       // Update password if provided
+//       if (password) {
+//         try {
+//           await updatePassword(auth.currentUser, password);
+//           showToast("Profile and password updated successfully!", "success");
+//         } catch (err) {
+//           if (err.code === "auth/requires-recent-login") {
+//             showToast("Please log out and log in again before changing your password", "warning");
+//           } else {
+//             showToast(`Error updating password: ${err.message}`, "error");
+//           }
+//           return;
+//         }
+//       } else {
+//         showToast("Profile updated successfully!", "success");
+//       }
+
+//       // Update local context with new info
+//       setCurrentUser({
+//         ...currentUser,
+//         displayName: displayName.trim(),
+//         photoURL,
+//       });
+
+//       // Reset form
+//       setPassword("");
+//       setConfirmPassword("");
+//       setPhotoFile(null);
+//       setErrors({});
+//     } catch (error) {
+//       console.error("Profile update error:", error);
+//       showToast(`Error updating profile: ${error.message}`, "error");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   /**
+//    * Shows toast notification
+//    */
+//   const showToast = (message, type) => {
+//     setToast({ message, type });
+//   };
+
+//   const closeToast = () => {
+//     setToast({ message: "", type: "" });
+//   };
+
+//   return (
+//     <div className={`profile-page ${darkMode ? 'dark-mode' : ''}`}>
+//       {/* Toast Notification */}
+//       <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+
+//       {/* Page Container */}
+//       <div className="profile-container">
+//         {/* Header */}
+//         <div className="profile-header">
+//           <div className="header-content">
+//             <div className="header-icon">
+//               <User size={32} />
+//             </div>
+//             <div>
+//               <h1 className="header-title">Profile Settings</h1>
+//               <p className="header-subtitle">Manage your account information</p>
+//             </div>
+//           </div>
+          
+//           <button
+//             className="theme-toggle"
+//             onClick={() => setDarkMode(!darkMode)}
+//             title={darkMode ? 'Light Mode' : 'Dark Mode'}
+//           >
+//             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+//           </button>
+//         </div>
+
+//         {/* Profile Form Card */}
+//         <div className="profile-card">
+//           <form onSubmit={handleUpdateProfile}>
+//             {/* Profile Photo Section */}
+//             <div className="photo-section">
+//               <ProfilePhotoUploader
+//                 currentPhotoURL={currentUser?.photoURL}
+//                 photoFile={photoFile}
+//                 onPhotoChange={handlePhotoChange}
+//                 onPhotoRemove={handlePhotoRemove}
+//               />
+//               {errors.photo && <p className="error-text center">{errors.photo}</p>}
+//             </div>
+
+//             {/* Form Fields */}
+//             <div className="form-section">
+//               <FormInput
+//                 icon={User}
+//                 label="Full Name"
+//                 type="text"
+//                 value={displayName}
+//                 onChange={(e) => setDisplayName(e.target.value)}
+//                 placeholder="Enter your full name"
+//                 required
+//                 error={errors.displayName}
+//               />
+
+//               <FormInput
+//                 icon={Mail}
+//                 label="Email Address"
+//                 type="email"
+//                 value={currentUser?.email || ""}
+//                 disabled
+//                 helperText="Email cannot be changed"
+//               />
+
+//               <div className="divider">
+//                 <span>Change Password</span>
+//               </div>
+
+//               <FormInput
+//                 icon={Lock}
+//                 label="New Password"
+//                 type="password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//                 placeholder="Leave blank to keep current password"
+//                 helperText="Password must be at least 6 characters"
+//                 error={errors.password}
+//               />
+
+//               {password && (
+//                 <FormInput
+//                   icon={Lock}
+//                   label="Confirm New Password"
+//                   type="password"
+//                   value={confirmPassword}
+//                   onChange={(e) => setConfirmPassword(e.target.value)}
+//                   placeholder="Re-enter your new password"
+//                   required={!!password}
+//                   error={errors.confirmPassword}
+//                 />
+//               )}
+//             </div>
+
+//             {/* Submit Button */}
+//             <div className="form-actions">
+//               <button
+//                 type="submit"
+//                 className="btn-submit"
+//                 disabled={loading}
+//               >
+//                 {loading ? (
+//                   <>
+//                     <div className="spinner"></div>
+//                     Updating...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Check size={18} />
+//                     Update Profile
+//                   </>
+//                 )}
+//               </button>
+//             </div>
+//           </form>
+//         </div>
+
+//         {/* Info Cards */}
+//         <div className="info-cards">
+//           <div className="info-card">
+//             <AlertCircle size={20} className="info-icon" />
+//             <div className="info-content">
+//               <h4>Security Tip</h4>
+//               <p>Use a strong password with at least 8 characters, including letters, numbers, and symbols.</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Confirmation Modal */}
+//       <ConfirmationModal
+//         show={showConfirmModal}
+//         onClose={() => setShowConfirmModal(false)}
+//         onConfirm={performUpdate}
+//         title="Confirm Password Change"
+//         message="Are you sure you want to change your password? You may need to log in again after this change."
+//       />
+
+//       {/* Inline Styles */}
+//       <style jsx>{`
+//         .profile-page {
+//           min-height: 100vh;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           padding: 2rem;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+//           transition: all 0.3s ease;
+//         }
+
+//         .profile-page.dark-mode {
+//           background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+//           color: #e0e0e0;
+//         }
+
+//         /* ===== TOAST NOTIFICATION ===== */
+//         .toast-notification {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           z-index: 10000;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           padding: 1rem 1.5rem;
+//           border-radius: 12px;
+//           border: 2px solid;
+//           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+//           animation: slideInRight 0.3s ease;
+//           max-width: 400px;
+//         }
+
+//         .toast-close {
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           opacity: 0.7;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .toast-close:hover {
+//           opacity: 1;
+//         }
+
+//         /* ===== CONTAINER ===== */
+//         .profile-container {
+//           max-width: 600px;
+//           margin: 0 auto;
+//           animation: fadeInUp 0.5s ease;
+//         }
+
+//         /* ===== HEADER ===== */
+//         .profile-header {
+//           background: white;
+//           border-radius: 16px;
+//           padding: 2rem;
+//           margin-bottom: 2rem;
+//           box-shadow: 0 4px 6px rgba(3, 4, 94, 0.1);
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//         }
+
+//         .dark-mode .profile-header {
+//           background: #1e293b;
+//         }
+
+//         .header-content {
+//           display: flex;
+//           align-items: center;
+//           gap: 1.25rem;
+//         }
+
+//         .header-icon {
+//           width: 56px;
+//           height: 56px;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           border-radius: 14px;
+//           color: white;
+//         }
+
+//         .header-title {
+//           font-size: 1.75rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           margin: 0 0 0.25rem 0;
+//         }
+
+//         .dark-mode .header-title {
+//           color: #e0e0e0;
+//         }
+
+//         .header-subtitle {
+//           font-size: 0.95rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//           margin: 0;
+//         }
+
+//         .dark-mode .header-subtitle {
+//           color: #94a3b8;
+//         }
+
+//         .theme-toggle {
+//           width: 44px;
+//           height: 44px;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           background: ${COLORS.lightest};
+//           border: none;
+//           border-radius: 12px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           color: ${COLORS.primary};
+//         }
+
+//         .theme-toggle:hover {
+//           background: ${COLORS.lighter};
+//           transform: translateY(-2px);
+//         }
+
+//         .dark-mode .theme-toggle {
+//           background: #334155;
+//           color: #e0e0e0;
+//         }
+
+//         /* ===== PROFILE CARD ===== */
+//         .profile-card {
+//           background: white;
+//           border-radius: 16px;
+//           padding: 2.5rem;
+//           box-shadow: 0 4px 6px rgba(3, 4, 94, 0.1);
+//           margin-bottom: 2rem;
+//         }
+
+//         .dark-mode .profile-card {
+//           background: #1e293b;
+//         }
+
+//         /* ===== PHOTO UPLOADER ===== */
+//         .photo-section {
+//           text-align: center;
+//           margin-bottom: 2.5rem;
+//         }
+
+//         .photo-uploader {
+//           display: inline-block;
+//         }
+
+//         .photo-container {
+//           position: relative;
+//           display: inline-block;
+//           transition: all 0.3s ease;
+//         }
+
+//         .photo-container.dragging {
+//           transform: scale(1.05);
+//         }
+
+//         .photo-wrapper {
+//           position: relative;
+//           width: 140px;
+//           height: 140px;
+//           border-radius: 50%;
+//           overflow: hidden;
+//           border: 4px solid ${COLORS.light};
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.2);
+//           transition: all 0.3s ease;
+//         }
+
+//         .photo-wrapper:hover {
+//           border-color: ${COLORS.lighter};
+//           box-shadow: 0 6px 16px rgba(0, 119, 182, 0.3);
+//         }
+
+//         .profile-photo {
+//           width: 100%;
+//           height: 100%;
+//           object-fit: cover;
+//         }
+
+//         .photo-overlay {
+//           position: absolute;
+//           inset: 0;
+//           background: rgba(3, 4, 94, 0.7);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           gap: 0.5rem;
+//           opacity: 0;
+//           transition: opacity 0.3s ease;
+//         }
+
+//         .photo-wrapper:hover .photo-overlay {
+//           opacity: 1;
+//         }
+
+//         .photo-btn {
+//           width: 40px;
+//           height: 40px;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           background: white;
+//           border: none;
+//           border-radius: 50%;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           color: ${COLORS.primary};
+//         }
+
+//         .photo-btn:hover {
+//           transform: scale(1.1);
+//           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+//         }
+
+//         .photo-btn.remove {
+//           background: #ef4444;
+//           color: white;
+//         }
+
+//         .photo-input {
+//           display: none;
+//         }
+
+//         .photo-hint {
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           gap: 0.5rem;
+//           margin-top: 1rem;
+//           font-size: 0.85rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//         }
+
+//         /* ===== FORM SECTION ===== */
+//         .form-section {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 1.5rem;
+//         }
+
+//         .form-group {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//         }
+
+//         .form-label {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-weight: 600;
+//           color: ${COLORS.secondary};
+//           font-size: 0.95rem;
+//         }
+
+//         .dark-mode .form-label {
+//           color: #94a3b8;
+//         }
+
+//         .required {
+//           color: #ef4444;
+//           margin-left: 0.25rem;
+//         }
+
+//         .input-wrapper {
+//           position: relative;
+//         }
+
+//         .form-input {
+//           width: 100%;
+//           padding: 0.875rem 1.25rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 12px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//           background: white;
+//           color: ${COLORS.primary};
+//         }
+
+//         .form-input:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         .form-input.disabled {
+//           background: #f5f5f5;
+//           cursor: not-allowed;
+//           opacity: 0.7;
+//         }
+
+//         .form-input.error {
+//           border-color: #ef4444;
+//         }
+
+//         .dark-mode .form-input {
+//           background: #334155;
+//           border-color: #475569;
+//           color: #e0e0e0;
+//         }
+
+//         .dark-mode .form-input.disabled {
+//           background: #1e293b;
+//         }
+
+//         .password-toggle {
+//           position: absolute;
+//           right: 1rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           color: ${COLORS.secondary};
+//           opacity: 0.6;
+//           transition: opacity 0.2s ease;
+//           padding: 0.25rem;
+//         }
+
+//         .password-toggle:hover {
+//           opacity: 1;
+//         }
+
+//         .helper-text {
+//           font-size: 0.85rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//           margin: 0;
+//         }
+
+//         .dark-mode .helper-text {
+//           color: #94a3b8;
+//         }
+
+//         .error-text {
+//           font-size: 0.85rem;
+//           color: #ef4444;
+//           margin: 0;
+//         }
+
+//         .error-text.center {
+//           text-align: center;
+//           margin-top: 0.5rem;
+//         }
+
+//         .divider {
+//           display: flex;
+//           align-items: center;
+//           text-align: center;
+//           margin: 1rem 0;
+//           color: ${COLORS.secondary};
+//           opacity: 0.5;
+//         }
+
+//         .divider::before,
+//         .divider::after {
+//           content: '';
+//           flex: 1;
+//           border-bottom: 1px solid ${COLORS.lightest};
+//         }
+
+//         .divider span {
+//           padding: 0 1rem;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .dark-mode .divider::before,
+//         .dark-mode .divider::after {
+//           border-bottom-color: #475569;
+//         }
+
+//         /* ===== FORM ACTIONS ===== */
+//         .form-actions {
+//           margin-top: 2rem;
+//         }
+
+//         .btn-submit {
+//           width: 100%;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           gap: 0.5rem;
+//           padding: 1rem 2rem;
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           color: white;
+//           border: none;
+//           border-radius: 12px;
+//           font-size: 1rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-submit:hover:not(:disabled) {
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(3, 4, 94, 0.3);
+//         }
+
+//         .btn-submit:disabled {
+//           opacity: 0.6;
+//           cursor: not-allowed;
+//         }
+
+//         .spinner {
+//           width: 18px;
+//           height: 18px;
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           border-top-color: white;
+//           border-radius: 50%;
+//           animation: spin 0.8s linear infinite;
+//         }
+
+//         @keyframes spin {
+//           to { transform: rotate(360deg); }
+//         }
+
+//         /* ===== INFO CARDS ===== */
+//         .info-cards {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 1rem;
+//         }
+
+//         .info-card {
+//           background: white;
+//           border-left: 4px solid ${COLORS.light};
+//           border-radius: 12px;
+//           padding: 1.25rem;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+//           display: flex;
+//           gap: 1rem;
+//         }
+
+//         .dark-mode .info-card {
+//           background: #1e293b;
+//         }
+
+//         .info-icon {
+//           color: ${COLORS.light};
+//           flex-shrink: 0;
+//         }
+
+//         .info-content h4 {
+//           margin: 0 0 0.5rem 0;
+//           font-size: 1rem;
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//         }
+
+//         .dark-mode .info-content h4 {
+//           color: #e0e0e0;
+//         }
+
+//         .info-content p {
+//           margin: 0;
+//           font-size: 0.9rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.8;
+//           line-height: 1.5;
+//         }
+
+//         .dark-mode .info-content p {
+//           color: #94a3b8;
+//         }
+
+//         /* ===== MODAL ===== */
+//         .modal-overlay {
+//           position: fixed;
+//           top: 0;
+//           left: 0;
+//           right: 0;
+//           bottom: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9999;
+//           animation: fadeIn 0.2s ease;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 450px;
+//           width: 90%;
+//           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+//           animation: scaleIn 0.3s ease;
+//         }
+
+//         .dark-mode .modal-content {
+//           background: #1e293b;
+//         }
+
+//         .modal-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           padding: 1.5rem;
+//           border-bottom: 2px solid ${COLORS.lightest};
+//         }
+
+//         .dark-mode .modal-header {
+//           border-bottom-color: #334155;
+//         }
+
+//         .warning-icon {
+//           color: #f59e0b;
+//         }
+
+//         .modal-header h3 {
+//           margin: 0;
+//           font-size: 1.25rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//         }
+
+//         .dark-mode .modal-header h3 {
+//           color: #e0e0e0;
+//         }
+
+//         .modal-body {
+//           padding: 1.5rem;
+//         }
+
+//         .modal-body p {
+//           margin: 0;
+//           color: ${COLORS.secondary};
+//           line-height: 1.6;
+//         }
+
+//         .dark-mode .modal-body p {
+//           color: #94a3b8;
+//         }
+
+//         .modal-footer {
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 0.75rem;
+//           padding: 1.5rem;
+//           border-top: 2px solid ${COLORS.lightest};
+//         }
+
+//         .dark-mode .modal-footer {
+//           border-top-color: #334155;
+//         }
+
+//         .btn-secondary,
+//         .btn-primary {
+//           padding: 0.75rem 1.5rem;
+//           border: none;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           font-size: 0.95rem;
+//         }
+
+//         .btn-secondary {
+//           background: #e5e7eb;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .btn-secondary:hover {
+//           background: #d1d5db;
+//         }
+
+//         .btn-primary {
+//           background: ${COLORS.primary};
+//           color: white;
+//         }
+
+//         .btn-primary:hover {
+//           background: ${COLORS.secondary};
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(3, 4, 94, 0.3);
+//         }
+
+//         /* ===== ANIMATIONS ===== */
+//         @keyframes fadeIn {
+//           from {
+//             opacity: 0;
+//           }
+//           to {
+//             opacity: 1;
+//           }
+//         }
+
+//         @keyframes fadeInUp {
+//           from {
+//             opacity: 0;
+//             transform: translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         @keyframes slideInRight {
+//           from {
+//             opacity: 0;
+//             transform: translateX(100px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateX(0);
+//           }
+//         }
+
+//         @keyframes scaleIn {
+//           from {
+//             opacity: 0;
+//             transform: scale(0.9);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: scale(1);
+//           }
+//         }
+
+//         /* ===== RESPONSIVE DESIGN ===== */
+//         @media (max-width: 768px) {
+//           .profile-page {
+//             padding: 1rem;
+//           }
+
+//           .profile-header {
+//             flex-direction: column;
+//             align-items: flex-start;
+//             gap: 1rem;
+//           }
+
+//           .theme-toggle {
+//             align-self: flex-end;
+//           }
+
+//           .header-title {
+//             font-size: 1.5rem;
+//           }
+
+//           .profile-card {
+//             padding: 1.5rem;
+//           }
+
+//           .photo-wrapper {
+//             width: 120px;
+//             height: 120px;
+//           }
+
+//           .form-input {
+//             padding: 0.75rem 1rem;
+//           }
+
+//           .btn-submit {
+//             padding: 0.875rem 1.5rem;
+//           }
+
+//           .info-card {
+//             flex-direction: column;
+//           }
+//         }
+
+//         @media (max-width: 480px) {
+//           .header-content {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .header-icon {
+//             width: 48px;
+//             height: 48px;
+//           }
+
+//           .header-title {
+//             font-size: 1.25rem;
+//           }
+
+//           .photo-wrapper {
+//             width: 100px;
+//             height: 100px;
+//           }
+
+//           .modal-content {
+//             width: 95%;
+//           }
+
+//           .modal-header,
+//           .modal-body,
+//           .modal-footer {
+//             padding: 1rem;
+//           }
+//         }
+
+//         /* ===== ACCESSIBILITY ===== */
+//         .form-input:focus-visible,
+//         .photo-btn:focus-visible,
+//         .btn-submit:focus-visible,
+//         .theme-toggle:focus-visible {
+//           outline: 3px solid ${COLORS.light};
+//           outline-offset: 2px;
+//         }
+
+//         @media (prefers-reduced-motion: reduce) {
+//           * {
+//             animation-duration: 0.01ms !important;
+//             animation-iteration-count: 1 !important;
+//             transition-duration: 0.01ms !important;
+//           }
+//         }
+
+//         /* ===== PRINT STYLES ===== */
+//         @media print {
+//           .profile-page {
+//             background: white;
+//           }
+
+//           .toast-notification,
+//           .theme-toggle,
+//           .btn-submit,
+//           .photo-overlay {
+//             display: none;
+//           }
+//         }
+//       `}</style>
+//     </div>
+//   );
+// }
+
+// ==================== FRONTEND: InstructorProfile.jsx ====================
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { auth, storage } from "../../firebase";
-import { updateProfile, updatePassword } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { v4 as uuidv4 } from "uuid";
 import { 
   User, Mail, Lock, Camera, Check, X, AlertCircle, 
   Upload, Eye, EyeOff, Sun, Moon
 } from "lucide-react";
-// import { API } from '../../config/api';
-
 
 // ==================== CONSTANTS ====================
 const COLORS = {
@@ -363,6 +1641,9 @@ const COLORS = {
 
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+// API Base URL - adjust this to your backend URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 // ==================== TOAST NOTIFICATION ====================
 const Toast = React.memo(({ message, type, onClose }) => {
@@ -411,7 +1692,9 @@ const ProfilePhotoUploader = React.memo(({
 
   const photoPreview = photoFile 
     ? URL.createObjectURL(photoFile)
-    : currentPhotoURL || "/images/default-avatar.png";
+    : currentPhotoURL 
+      ? (currentPhotoURL.startsWith('http') ? currentPhotoURL : `${API_BASE_URL.replace('/api', '')}${currentPhotoURL}`)
+      : "/images/default-avatar.png";
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -452,6 +1735,9 @@ const ProfilePhotoUploader = React.memo(({
             src={photoPreview}
             alt="Profile"
             className="profile-photo"
+            onError={(e) => {
+              e.target.src = "/images/default-avatar.png";
+            }}
           />
           <div className="photo-overlay">
             <button
@@ -591,19 +1877,16 @@ export default function InstructorProfile() {
 
   /**
    * Validates the profile form
-   * @returns {boolean} - True if valid, false otherwise
    */
   const validateForm = useCallback(() => {
     const newErrors = {};
 
-    // Validate display name
     if (!displayName.trim()) {
       newErrors.displayName = "Name is required";
     } else if (displayName.trim().length < 2) {
       newErrors.displayName = "Name must be at least 2 characters";
     }
 
-    // Validate photo file if selected
     if (photoFile) {
       if (!ALLOWED_FILE_TYPES.includes(photoFile.type)) {
         newErrors.photo = "Invalid file type. Please use JPEG, PNG, GIF, or WebP";
@@ -612,7 +1895,6 @@ export default function InstructorProfile() {
       }
     }
 
-    // Validate password if provided
     if (password) {
       if (password.length < 6) {
         newErrors.password = "Password must be at least 6 characters";
@@ -627,7 +1909,6 @@ export default function InstructorProfile() {
 
   /**
    * Handles photo file selection
-   * @param {File} file - Selected photo file
    */
   const handlePhotoChange = useCallback((file) => {
     if (file && ALLOWED_FILE_TYPES.includes(file.type)) {
@@ -645,10 +1926,47 @@ export default function InstructorProfile() {
   /**
    * Removes selected photo
    */
-  const handlePhotoRemove = useCallback(() => {
+  const handlePhotoRemove = useCallback(async () => {
+  if (!currentUser?.photoURL) {
     setPhotoFile(null);
-    setErrors(prev => ({ ...prev, photo: null }));
-  }, []);
+    return;
+  }
+
+  try {
+    const userId = currentUser.uid || currentUser.id;
+    
+    if (!userId || userId === 'undefined') {
+      showToast('User ID not found. Please log in again.', 'error');
+      return;
+    }
+
+    console.log('Deleting photo for user ID:', userId);
+
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/profile/photo/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setCurrentUser({
+        ...currentUser,
+        photoURL: null
+      });
+      setPhotoFile(null);
+      showToast('Profile photo removed successfully', 'success');
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Remove photo error:', error);
+    showToast(`Error removing photo: ${error.message}`, 'error');
+  }
+}, [currentUser, setCurrentUser]);
 
   /**
    * Handles profile update submission
@@ -656,13 +1974,11 @@ export default function InstructorProfile() {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     
-    // Validate form
     if (!validateForm()) {
       showToast("Please fix the errors before submitting", "error");
       return;
     }
 
-    // Show confirmation if password is being changed
     if (password) {
       setShowConfirmModal(true);
       return;
@@ -675,65 +1991,84 @@ export default function InstructorProfile() {
    * Performs the actual profile update
    */
   const performUpdate = async () => {
-    setLoading(true);
-    setShowConfirmModal(false);
+  setLoading(true);
+  setShowConfirmModal(false);
 
-    try {
-      let photoURL = currentUser?.photoURL;
-
-      // Upload new profile picture if selected
-      if (photoFile) {
-        const fileRef = ref(storage, `profile-pics/${currentUser.uid}-${uuidv4()}`);
-        await uploadBytes(fileRef, photoFile);
-        photoURL = await getDownloadURL(fileRef);
-      }
-
-      // Update Firebase profile (name + photo)
-      await updateProfile(auth.currentUser, {
-        displayName: displayName.trim(),
-        photoURL,
-      });
-
-      // Update password if provided
-      if (password) {
-        try {
-          await updatePassword(auth.currentUser, password);
-          showToast("Profile and password updated successfully!", "success");
-        } catch (err) {
-          if (err.code === "auth/requires-recent-login") {
-            showToast("Please log out and log in again before changing your password", "warning");
-          } else {
-            showToast(`Error updating password: ${err.message}`, "error");
-          }
-          return;
-        }
-      } else {
-        showToast("Profile updated successfully!", "success");
-      }
-
-      // Update local context with new info
-      setCurrentUser({
-        ...currentUser,
-        displayName: displayName.trim(),
-        photoURL,
-      });
-
-      // Reset form
-      setPassword("");
-      setConfirmPassword("");
-      setPhotoFile(null);
-      setErrors({});
-    } catch (error) {
-      console.error("Profile update error:", error);
-      showToast(`Error updating profile: ${error.message}`, "error");
-    } finally {
+  try {
+    // Get the correct user ID
+    const userId = currentUser.uid || currentUser.id;
+    
+    console.log('=== DEBUG INFO ===');
+    console.log('Current User Object:', currentUser);
+    console.log('User ID:', userId);
+    console.log('User ID type:', typeof userId);
+    
+    // Check if userId is valid
+    if (!userId || userId === 'undefined') {
+      showToast('User ID not found. Please log in again.', 'error');
       setLoading(false);
+      return;
     }
-  };
 
-  /**
-   * Shows toast notification
-   */
+    const formData = new FormData();
+    formData.append('userId', userId);  // Add userId FIRST
+    formData.append('displayName', displayName.trim());
+
+    if (photoFile) {
+      formData.append('profilePhoto', photoFile);
+    }
+
+    if (password) {
+      formData.append('password', password);
+    }
+
+    // Debug: Check what's in FormData
+    console.log('FormData contents:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/profile/update`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to update profile');
+    }
+
+    setCurrentUser({
+      ...currentUser,
+      displayName: data.displayName,
+      photoURL: data.photoURL,
+    });
+
+    showToast(
+      password 
+        ? "Profile and password updated successfully!" 
+        : "Profile updated successfully!", 
+      "success"
+    );
+
+    setPassword("");
+    setConfirmPassword("");
+    setPhotoFile(null);
+    setErrors({});
+
+  } catch (error) {
+    console.error("Profile update error:", error);
+    showToast(`Error updating profile: ${error.message}`, "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
   const showToast = (message, type) => {
     setToast({ message, type });
   };
@@ -744,12 +2079,9 @@ export default function InstructorProfile() {
 
   return (
     <div className={`profile-page ${darkMode ? 'dark-mode' : ''}`}>
-      {/* Toast Notification */}
       <Toast message={toast.message} type={toast.type} onClose={closeToast} />
 
-      {/* Page Container */}
       <div className="profile-container">
-        {/* Header */}
         <div className="profile-header">
           <div className="header-content">
             <div className="header-icon">
@@ -770,10 +2102,8 @@ export default function InstructorProfile() {
           </button>
         </div>
 
-        {/* Profile Form Card */}
         <div className="profile-card">
           <form onSubmit={handleUpdateProfile}>
-            {/* Profile Photo Section */}
             <div className="photo-section">
               <ProfilePhotoUploader
                 currentPhotoURL={currentUser?.photoURL}
@@ -784,7 +2114,6 @@ export default function InstructorProfile() {
               {errors.photo && <p className="error-text center">{errors.photo}</p>}
             </div>
 
-            {/* Form Fields */}
             <div className="form-section">
               <FormInput
                 icon={User}
@@ -835,7 +2164,6 @@ export default function InstructorProfile() {
               )}
             </div>
 
-            {/* Submit Button */}
             <div className="form-actions">
               <button
                 type="submit"
@@ -858,7 +2186,6 @@ export default function InstructorProfile() {
           </form>
         </div>
 
-        {/* Info Cards */}
         <div className="info-cards">
           <div className="info-card">
             <AlertCircle size={20} className="info-icon" />
@@ -870,7 +2197,6 @@ export default function InstructorProfile() {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
@@ -879,7 +2205,6 @@ export default function InstructorProfile() {
         message="Are you sure you want to change your password? You may need to log in again after this change."
       />
 
-      {/* Inline Styles */}
       <style jsx>{`
         .profile-page {
           min-height: 100vh;
@@ -894,7 +2219,6 @@ export default function InstructorProfile() {
           color: #e0e0e0;
         }
 
-        /* ===== TOAST NOTIFICATION ===== */
         .toast-notification {
           position: fixed;
           top: 2rem;
@@ -926,14 +2250,12 @@ export default function InstructorProfile() {
           opacity: 1;
         }
 
-        /* ===== CONTAINER ===== */
         .profile-container {
           max-width: 600px;
           margin: 0 auto;
           animation: fadeInUp 0.5s ease;
         }
 
-        /* ===== HEADER ===== */
         .profile-header {
           background: white;
           border-radius: 16px;
@@ -1012,7 +2334,6 @@ export default function InstructorProfile() {
           color: #e0e0e0;
         }
 
-        /* ===== PROFILE CARD ===== */
         .profile-card {
           background: white;
           border-radius: 16px;
@@ -1025,7 +2346,6 @@ export default function InstructorProfile() {
           background: #1e293b;
         }
 
-        /* ===== PHOTO UPLOADER ===== */
         .photo-section {
           text-align: center;
           margin-bottom: 2.5rem;
@@ -1122,7 +2442,6 @@ export default function InstructorProfile() {
           opacity: 0.7;
         }
 
-        /* ===== FORM SECTION ===== */
         .form-section {
           display: flex;
           flex-direction: column;
@@ -1261,7 +2580,6 @@ export default function InstructorProfile() {
           border-bottom-color: #475569;
         }
 
-        /* ===== FORM ACTIONS ===== */
         .form-actions {
           margin-top: 2rem;
         }
@@ -1306,7 +2624,6 @@ export default function InstructorProfile() {
           to { transform: rotate(360deg); }
         }
 
-        /* ===== INFO CARDS ===== */
         .info-cards {
           display: flex;
           flex-direction: column;
@@ -1355,7 +2672,6 @@ export default function InstructorProfile() {
           color: #94a3b8;
         }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
           position: fixed;
           top: 0;
@@ -1467,14 +2783,9 @@ export default function InstructorProfile() {
           box-shadow: 0 4px 12px rgba(3, 4, 94, 0.3);
         }
 
-        /* ===== ANIMATIONS ===== */
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         @keyframes fadeInUp {
@@ -1510,7 +2821,6 @@ export default function InstructorProfile() {
           }
         }
 
-        /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 768px) {
           .profile-page {
             padding: 1rem;
@@ -1583,7 +2893,6 @@ export default function InstructorProfile() {
           }
         }
 
-        /* ===== ACCESSIBILITY ===== */
         .form-input:focus-visible,
         .photo-btn:focus-visible,
         .btn-submit:focus-visible,
@@ -1600,7 +2909,6 @@ export default function InstructorProfile() {
           }
         }
 
-        /* ===== PRINT STYLES ===== */
         @media print {
           .profile-page {
             background: white;
@@ -1617,3 +2925,286 @@ export default function InstructorProfile() {
     </div>
   );
 }
+
+
+// ==================== BACKEND: server.js ====================
+/*
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files (uploaded images)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes
+const profileRoutes = require('./routes/profile');
+app.use('/api/profile', profileRoutes);
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+*/
+
+
+// ==================== BACKEND: config/database.js ====================
+/*
+const mysql = require('mysql2');
+
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'your_database'
+});
+
+connection.connect((err) => {
+  if (err) {
+    console.error('Database connection error:', err);
+    return;
+  }
+  console.log('Connected to MySQL database');
+});
+
+module.exports = connection;
+*/
+
+
+// ==================== BACKEND: routes/profile.js ====================
+/*
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const connection = require('../config/database');
+
+// Configure multer for file upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = 'uploads/profile-pictures';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = `${req.body.userId}-${Date.now()}${path.extname(file.originalname)}`;
+    cb(null, uniqueName);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
+
+// Profile update endpoint
+router.post('/update', upload.single('profilePhoto'), async (req, res) => {
+  try {
+    const { userId, displayName, password } = req.body;
+    const profilePhoto = req.file;
+
+    if (!userId || !displayName) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User ID and display name are required' 
+      });
+    }
+
+    // Get current user data
+    const [users] = await connection.promise().query(
+      'SELECT * FROM users WHERE id = ?',
+      [userId]
+    );
+
+    if (users.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    const currentUser = users[0];
+    let updateFields = [];
+    let updateValues = [];
+
+    updateFields.push('displayName = ?');
+    updateValues.push(displayName);
+
+    if (profilePhoto) {
+      const photoURL = `/uploads/profile-pictures/${profilePhoto.filename}`;
+      updateFields.push('photoURL = ?');
+      updateValues.push(photoURL);
+
+      if (currentUser.photoURL) {
+        const oldPhotoPath = path.join(__dirname, '..', currentUser.photoURL);
+        if (fs.existsSync(oldPhotoPath)) {
+          fs.unlinkSync(oldPhotoPath);
+        }
+      }
+    }
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateFields.push('password = ?');
+      updateValues.push(hashedPassword);
+    }
+
+    updateValues.push(userId);
+
+    const updateQuery = `
+      UPDATE users 
+      SET ${updateFields.join(', ')}, updatedAt = NOW() 
+      WHERE id = ?
+    `;
+
+    await connection.promise().query(updateQuery, updateValues);
+
+    const [updatedUsers] = await connection.promise().query(
+      'SELECT id, displayName, email, photoURL, role, createdAt FROM users WHERE id = ?',
+      [userId]
+    );
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      displayName: updatedUsers[0].displayName,
+      photoURL: updatedUsers[0].photoURL
+    });
+
+  } catch (error) {
+    console.error('Profile update error:', error);
+    
+    if (req.file) {
+      const filePath = path.join(__dirname, '..', 'uploads/profile-pictures', req.file.filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to update profile'
+    });
+  }
+});
+
+// Delete profile photo endpoint
+router.delete('/photo/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const [users] = await connection.promise().query(
+      'SELECT photoURL FROM users WHERE id = ?',
+      [userId]
+    );
+
+    if (users.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    const photoURL = users[0].photoURL;
+
+    if (photoURL) {
+      const photoPath = path.join(__dirname, '..', photoURL);
+      if (fs.existsSync(photoPath)) {
+        fs.unlinkSync(photoPath);
+      }
+
+      await connection.promise().query(
+        'UPDATE users SET photoURL = NULL WHERE id = ?',
+        [userId]
+      );
+    }
+
+    res.json({
+      success: true,
+      message: 'Profile photo deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Delete photo error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete profile photo'
+    });
+  }
+});
+
+module.exports = router;
+*/
+
+
+// ==================== DATABASE SCHEMA ====================
+/*
+CREATE TABLE IF NOT EXISTS users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  displayName VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  photoURL VARCHAR(500) DEFAULT NULL,
+  role ENUM('student', 'instructor', 'admin') DEFAULT 'student',
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+*/
+
+
+// ==================== PACKAGE.JSON ====================
+/*
+{
+  "name": "profile-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "mysql2": "^3.6.0",
+    "multer": "^1.4.5-lts.1",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
+*/
+
+
+// ==================== .ENV FILE ====================
+/*
+PORT=5000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=your_database_name
+JWT_SECRET=your_jwt_secret_key
+*/

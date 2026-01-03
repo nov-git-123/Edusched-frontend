@@ -256,7 +256,7 @@ const MENU_ITEMS = [
     path: "/instructor/availability",
     icon: Clock,
     label: "Availability",
-    badge: 1,
+    
   },
   {
     id: "profile",
@@ -349,6 +349,13 @@ const UserDropdown = React.memo(({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Construct proper photo URL
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  const photoURL = user?.photoURL || user?.profile_picture;
+  const fullPhotoURL = photoURL 
+    ? (photoURL.startsWith('http') ? photoURL : `${API_BASE_URL.replace('/api', '')}${photoURL}`)
+    : "/images/instructor-avatar.png";
+
   const handleProfileClick = () => {
     setIsOpen(false);
     navigate("/instructor/profile");
@@ -361,12 +368,15 @@ const UserDropdown = React.memo(({ user, onLogout }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <img
-          src={user?.photoURL || "/images/instructor-avatar.png"}
+          src={fullPhotoURL}
           alt="Profile"
           className="user-avatar"
+          onError={(e) => {
+            e.target.src = "/images/instructor-avatar.png";
+          }}
         />
         <div className="user-info">
-          <span className="user-name">{user?.displayName || "Instructor"}</span>
+          <span className="user-name">{user?.displayName || user?.full_name || "Instructor"}</span>
           <span className="user-role">Faculty Member</span>
         </div>
         <ChevronDown size={16} className={`dropdown-icon ${isOpen ? 'open' : ''}`} />
@@ -467,11 +477,11 @@ const Topbar = React.memo(({
           )}
         </div>
 
-        {/* Notifications */}
+        {/* Notifications
         <button className="icon-button notifications">
           <Bell size={20} />
           <span className="notification-badge">2</span>
-        </button>
+        </button> */}
 
         {/* User Dropdown */}
         <UserDropdown user={user} onLogout={onLogout} />

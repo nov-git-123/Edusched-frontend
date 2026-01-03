@@ -4263,22 +4263,6872 @@
 //  );
 // }
 
+//WORKING PRE-ORAL
+
+// import React, { useEffect, useState, useMemo, useCallback } from 'react';
+// import { 
+//   BookOpen, Plus, Search, RefreshCw, Edit2, Trash2, X, 
+//   Check, ChevronDown, ChevronUp, Filter, Download, 
+//   AlertCircle, CheckCircle, Calendar, Users, Award
+// } from 'lucide-react';
+// // import { API } from '../../config/api';
+
+
+// // ==================== CONSTANTS ====================
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// // const API_BASE =
+// //   process.env.REACT_APP_API_URL ||
+// //   (window.location.hostname === 'localhost'
+// //     ? 'http://localhost:5000'
+// //     : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// // ==================== UTILITY FUNCTIONS ====================
+// const getYearLabel = (year) => {
+//   const labels = { 1: 'First Year', 2: 'Second Year', 3: 'Third Year', 4: 'Fourth Year' };
+//   return labels[year] || `Year ${year}`;
+// };
+
+// const getSemesterLabel = (sem) => {
+//   const labels = { '1': '1st Semester', '2': '2nd Semester', 'Summer': 'Summer' };
+//   return labels[sem] || sem;
+// };
+
+// // ==================== TOAST NOTIFICATION ====================
+// const Toast = React.memo(({ message, type, onClose }) => {
+//   useEffect(() => {
+//     if (message) {
+//       const timer = setTimeout(onClose, 4000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [message, onClose]);
+
+//   if (!message) return null;
+
+//   const styles = {
+//     success: { bg: '#d4edda', border: '#c3e6cb', color: '#155724', Icon: CheckCircle },
+//     danger: { bg: '#f8d7da', border: '#f5c6cb', color: '#721c24', Icon: AlertCircle },
+//   };
+
+//   const style = styles[type] || styles.success;
+//   const Icon = style.Icon;
+
+//   return (
+//     <div className="toast-notification" style={{ 
+//       background: style.bg, 
+//       borderColor: style.border, 
+//       color: style.color 
+//     }}>
+//       <Icon size={20} />
+//       <span>{message}</span>
+//       <button onClick={onClose} className="toast-close">
+//         <X size={16} />
+//       </button>
+//     </div>
+//   );
+// });
+
+// // ==================== LOADING SKELETON ====================
+// const Skeleton = React.memo(({ width = '100%', height = '40px' }) => (
+//   <div className="skeleton" style={{ width, height }} />
+// ));
+
+// const TableSkeleton = React.memo(() => (
+//   <div className="table-skeleton">
+//     {[1, 2, 3, 4, 5].map(i => (
+//       <div key={i} className="skeleton-row">
+//         <Skeleton width="40px" height="50px" />
+//         <Skeleton width="120px" height="50px" />
+//         <Skeleton height="50px" />
+//         <Skeleton width="80px" height="50px" />
+//         <Skeleton width="100px" height="50px" />
+//       </div>
+//     ))}
+//   </div>
+// ));
+
+// // ==================== STATS CARD ====================
+// const StatsCard = React.memo(({ icon: Icon, label, value, color }) => (
+//   <div className="stats-card" style={{ borderTopColor: color }}>
+//     <div className="stats-icon" style={{ background: `${color}20`, color }}>
+//       <Icon size={24} />
+//     </div>
+//     <div className="stats-content">
+//       <div className="stats-value">{value}</div>
+//       <div className="stats-label">{label}</div>
+//     </div>
+//   </div>
+// ));
+
+// // ==================== COURSE SELECTOR ====================
+// const CourseSelector = React.memo(({ courses, selectedCourseId, onChange }) => (
+//   <div className="selector-section">
+//     <div className="selector-header">
+//       <BookOpen size={18} />
+//       <h3>Select Course</h3>
+//     </div>
+//     <div className="course-grid">
+//       {courses.map(course => (
+//         <button
+//           key={course.id}
+//           className={`course-btn ${course.id === selectedCourseId ? 'active' : ''}`}
+//           onClick={() => onChange(course.id)}
+//         >
+//           <div className="course-code">{course.code}</div>
+//           <div className="course-name">{course.name}</div>
+//         </button>
+//       ))}
+//     </div>
+//   </div>
+// ));
+
+// // ==================== YEAR SELECTOR ====================
+// const YearSelector = React.memo(({ yearLevel, onChange }) => (
+//   <div className="selector-section">
+//     <div className="selector-header">
+//       <Users size={18} />
+//       <h3>Year Level</h3>
+//     </div>
+//     <div className="button-group">
+//       {[1, 2, 3, 4].map(year => (
+//         <button
+//           key={year}
+//           className={`selector-btn ${year === yearLevel ? 'active' : ''}`}
+//           onClick={() => onChange(year)}
+//         >
+//           {getYearLabel(year)}
+//         </button>
+//       ))}
+//     </div>
+//   </div>
+// ));
+
+// // ==================== SEMESTER SELECTOR ====================
+// const SemesterSelector = React.memo(({ semester, onChange }) => (
+//   <div className="selector-section">
+//     <div className="selector-header">
+//       <Calendar size={18} />
+//       <h3>Semester</h3>
+//     </div>
+//     <div className="button-group">
+//       {['1', '2', ].map(sem => (
+//         <button
+//           key={sem}
+//           className={`selector-btn ${sem === semester ? 'active' : ''}`}
+//           onClick={() => onChange(sem)}
+//         >
+//           {getSemesterLabel(sem)}
+//         </button>
+//       ))}
+//     </div>
+//   </div>
+// ));
+
+// // ==================== SUBJECT TABLE ====================
+// const SubjectTable = React.memo(({ 
+//   subjects, 
+//   loading, 
+//   onDelete, 
+//   searchTerm, 
+//   sortBy 
+// }) => {
+//   const filteredAndSortedSubjects = useMemo(() => {
+//     let filtered = subjects;
+
+//     // Apply search filter
+//     if (searchTerm.trim()) {
+//       const term = searchTerm.toLowerCase();
+//       filtered = subjects.filter(s =>
+//         s.subject_code?.toLowerCase().includes(term) ||
+//         s.description?.toLowerCase().includes(term)
+//       );
+//     }
+
+//     // Apply sorting
+//     const sorted = [...filtered].sort((a, b) => {
+//       switch (sortBy) {
+//         case 'code':
+//           return (a.subject_code || '').localeCompare(b.subject_code || '');
+//         case 'description':
+//           return (a.description || '').localeCompare(b.description || '');
+//         case 'units':
+//           return (b.units || 0) - (a.units || 0);
+//         default:
+//           return 0;
+//       }
+//     });
+
+//     return sorted;
+//   }, [subjects, searchTerm, sortBy]);
+
+//   if (loading) return <TableSkeleton />;
+
+//   if (filteredAndSortedSubjects.length === 0) {
+//     return (
+//       <div className="empty-state">
+//         <BookOpen size={48} className="empty-icon" />
+//         <h3>No Subjects Found</h3>
+//         <p>
+//           {searchTerm 
+//             ? "No subjects match your search criteria"
+//             : "No subjects available for this selection"}
+//         </p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="table-wrapper">
+//       <table className="subjects-table">
+//         <thead>
+//           <tr>
+//             <th style={{ width: '60px' }}>#</th>
+//             <th>Subject Code</th>
+//             <th>Description</th>
+//             <th style={{ width: '100px' }}>Units</th>
+//             <th style={{ width: '120px' }} className="text-center">Actions</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {filteredAndSortedSubjects.map((subject, index) => (
+//             <tr key={subject.id} className="subject-row">
+//               <td className="row-number">{index + 1}</td>
+//               <td>
+//                 <div className="subject-code-cell">{subject.subject_code}</div>
+//               </td>
+//               <td>
+//                 <div className="subject-desc">{subject.description}</div>
+//               </td>
+//               <td>
+//                 <div className="units-badge">{subject.units}</div>
+//               </td>
+//               <td className="text-center">
+//                 <button
+//                   className="delete-btn"
+//                   onClick={() => onDelete(subject.id)}
+//                   title="Delete subject"
+//                 >
+//                   <Trash2 size={16} />
+//                   Delete
+//                 </button>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// });
+
+// // ==================== ADD SUBJECT MODAL ====================
+// const AddSubjectModal = React.memo(({ 
+//   show, 
+//   onClose, 
+//   onSave, 
+//   courseName, 
+//   yearLevel, 
+//   semester 
+// }) => {
+//   const [formData, setFormData] = useState({
+//     subject_code: '',
+//     description: '',
+//     units: 3
+//   });
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (formData.subject_code.trim() && formData.description.trim() && formData.units) {
+//       onSave(formData);
+//       setFormData({ subject_code: '', description: '', units: 3 });
+//     }
+//   };
+
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <form onSubmit={handleSubmit}>
+//           <div className="modal-header">
+//             <h3>Add New Subject</h3>
+//             <button type="button" onClick={onClose} className="modal-close">
+//               <X size={20} />
+//             </button>
+//           </div>
+
+//           <div className="modal-body">
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Subject Code
+//               </label>
+//               <input
+//                 type="text"
+//                 className="form-input"
+//                 placeholder="e.g., CS101, MATH201"
+//                 value={formData.subject_code}
+//                 onChange={e => setFormData({ ...formData, subject_code: e.target.value })}
+//                 required
+//                 autoFocus
+//               />
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Description
+//               </label>
+//               <input
+//                 type="text"
+//                 className="form-input"
+//                 placeholder="e.g., Introduction to Programming"
+//                 value={formData.description}
+//                 onChange={e => setFormData({ ...formData, description: e.target.value })}
+//                 required
+//               />
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Award size={16} />
+//                 Units
+//               </label>
+//               <input
+//                 type="number"
+//                 className="form-input"
+//                 step="0.5"
+//                 min="0"
+//                 max="10"
+//                 value={formData.units}
+//                 onChange={e => setFormData({ ...formData, units: parseFloat(e.target.value) })}
+//                 required
+//               />
+//             </div>
+
+//             <div className="form-info">
+//               <div className="info-label">Will be added to:</div>
+//               <div className="info-details">
+//                 <strong>{courseName}</strong> • {getYearLabel(yearLevel)} • {getSemesterLabel(semester)}
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="modal-footer">
+//             <button type="button" onClick={onClose} className="btn-secondary">
+//               Cancel
+//             </button>
+//             <button type="submit" className="btn-primary">
+//               <Plus size={16} />
+//               Add Subject
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== DELETE CONFIRMATION MODAL ====================
+// const DeleteConfirmModal = React.memo(({ show, onClose, onConfirm, subjectCode }) => {
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content confirm-modal" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header">
+//           <AlertCircle size={24} className="warning-icon" />
+//           <h3>Delete Subject?</h3>
+//         </div>
+
+//         <div className="modal-body">
+//           <p>
+//             Are you sure you want to delete <strong>{subjectCode}</strong>? 
+//             This action cannot be undone.
+//           </p>
+//         </div>
+
+//         <div className="modal-footer">
+//           <button onClick={onClose} className="btn-secondary">
+//             Cancel
+//           </button>
+//           <button onClick={onConfirm} className="btn-danger">
+//             <Trash2 size={16} />
+//             Delete
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== MAIN COMPONENT ====================
+// export default function CoursesPage() {
+//   // State Management
+//   const [courses, setCourses] = useState([]);
+//   const [selectedCourseId, setSelectedCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [subjects, setSubjects] = useState([]);
+  
+//   const [loading, setLoading] = useState({
+//     initial: true,
+//     subjects: false,
+//   });
+  
+//   const [showAddModal, setShowAddModal] = useState(false);
+//   const [showDeleteModal, setShowDeleteModal] = useState(false);
+//   const [deleteTarget, setDeleteTarget] = useState(null);
+  
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [sortBy, setSortBy] = useState('code');
+  
+//   const [toast, setToast] = useState({ message: '', type: '' });
+
+//   // Initial data fetch
+//   useEffect(() => {
+//     fetchCourses();
+//   }, []);
+
+//   // Fetch subjects when course/year/semester changes
+//   useEffect(() => {
+//     if (selectedCourseId) {
+//       loadSubjects();
+//     } else {
+//       setSubjects([]);
+//     }
+//   }, [selectedCourseId, yearLevel, semester]);
+
+//   // API Functions
+//   const fetchCourses = async () => {
+//     setLoading(prev => ({ ...prev, initial: true }));
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+      
+//       if (data.length && !selectedCourseId) {
+//         setSelectedCourseId(data[0].id);
+//       }
+//     } catch (err) {
+//       console.error('fetchCourses error:', err);
+//       showToast('Failed to load courses', 'danger');
+//     } finally {
+//       setLoading(prev => ({ ...prev, initial: false }));
+//     }
+//   };
+
+//   const loadSubjects = async () => {
+//     setLoading(prev => ({ ...prev, subjects: true }));
+//     try {
+//       const params = new URLSearchParams({ 
+//         courseId: selectedCourseId, 
+//         yearLevel, 
+//         semester 
+//       });
+//       const res = await fetch(`${API}/api/subjects?${params}`);
+//       const data = await res.json();
+//       setSubjects(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('loadSubjects error:', err);
+//       showToast('Failed to load subjects', 'danger');
+//     } finally {
+//       setLoading(prev => ({ ...prev, subjects: false }));
+//     }
+//   };
+
+//   const handleAddSubject = async (formData) => {
+//     if (!selectedCourseId) {
+//       showToast('Please select a course first', 'danger');
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`${API}/api/subjects`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({
+//           courseId: Number(selectedCourseId),
+//           yearLevel: Number(yearLevel),
+//           semester,
+//           subject_code: formData.subject_code.trim(),
+//           description: formData.description.trim(),
+//           units: Number(formData.units)
+//         })
+//       });
+
+//       if (!res.ok) throw new Error('Failed to add subject');
+
+//       setShowAddModal(false);
+//       await loadSubjects();
+//       showToast('Subject added successfully! 🎉', 'success');
+//     } catch (err) {
+//       console.error('handleAddSubject error:', err);
+//       showToast('Failed to add subject', 'danger');
+//     }
+//   };
+
+//   const handleDeleteClick = (subject) => {
+//     setDeleteTarget(subject);
+//     setShowDeleteModal(true);
+//   };
+
+//   const handleDeleteConfirm = async () => {
+//     if (!deleteTarget) return;
+
+//     try {
+//       const res = await fetch(`${API}/api/subjects/${deleteTarget.id}`, {
+//         method: 'DELETE'
+//       });
+
+//       if (!res.ok) throw new Error('Failed to delete subject');
+
+//       setShowDeleteModal(false);
+//       setDeleteTarget(null);
+//       await loadSubjects();
+//       showToast('Subject deleted successfully ✓', 'success');
+//     } catch (err) {
+//       console.error('handleDeleteConfirm error:', err);
+//       showToast('Failed to delete subject', 'danger');
+//     }
+//   };
+
+//   const handleRefresh = useCallback(async () => {
+//     await Promise.all([fetchCourses(), selectedCourseId && loadSubjects()]);
+//     showToast('Data refreshed successfully', 'success');
+//   }, [selectedCourseId]);
+
+//   const showToast = (message, type) => {
+//     setToast({ message, type });
+//   };
+
+//   const closeToast = () => {
+//     setToast({ message: '', type: '' });
+//   };
+
+//   // Get selected course info
+//   const selectedCourse = useMemo(() => {
+//     return courses.find(c => c.id === selectedCourseId);
+//   }, [courses, selectedCourseId]);
+
+//   // Calculate stats
+//   const stats = useMemo(() => {
+//     const totalUnits = subjects.reduce((sum, s) => sum + (s.units || 0), 0);
+//     return {
+//       courses: courses.length,
+//       subjects: subjects.length,
+//       totalUnits,
+//     };
+//   }, [courses, subjects]);
+
+//   return (
+//     <div className="courses-page">
+//       {/* Toast Notification */}
+//       <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+
+//       {/* Page Header with Gradient */}
+//       <div className="page-header-courses">
+//         <div className="page-title-section-gradient-courses">
+//           <div className="page-title-content-courses">
+//             <h1 className="page-title-gradient-courses">
+//               <BookOpen size={36} />
+//               Course & Subject Management
+//             </h1>
+//             <p className="page-subtitle-gradient-courses">
+//               {selectedCourse 
+//                 ? `${selectedCourse.code} — ${selectedCourse.name}`
+//                 : 'Select a course to manage subjects'
+//               }
+//             </p>
+//           </div>
+//           <div className="header-actions-courses">
+//             <button 
+//               className="action-btn-courses"
+//               onClick={() => setShowAddModal(true)}
+//               disabled={!selectedCourseId}
+//             >
+//               <Plus size={18} />
+//               Add Subject
+//             </button>
+//             <button 
+//               className="action-btn-courses"
+//               onClick={handleRefresh}
+//               disabled={loading.initial}
+//             >
+//               <RefreshCw size={18} className={loading.initial ? 'spinning' : ''} />
+//               Refresh
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Stats Dashboard */}
+//       <div className="stats-grid">
+//         <StatsCard
+//           icon={BookOpen}
+//           label="Total Courses"
+//           value={stats.courses}
+//           color={COLORS.primary}
+//         />
+//         <StatsCard
+//           icon={BookOpen}
+//           label="Subjects Loaded"
+//           value={stats.subjects}
+//           color={COLORS.accent}
+//         />
+//         <StatsCard
+//           icon={Award}
+//           label="Total Units"
+//           value={stats.totalUnits}
+//           color={COLORS.light}
+//         />
+//       </div>
+
+//       {/* Selectors Section */}
+//       <div className="selectors-section">
+//         <CourseSelector
+//           courses={courses}
+//           selectedCourseId={selectedCourseId}
+//           onChange={setSelectedCourseId}
+//         />
+
+//         <div className="dual-selectors">
+//           <YearSelector yearLevel={yearLevel} onChange={setYearLevel} />
+//           <SemesterSelector semester={semester} onChange={setSemester} />
+//         </div>
+//       </div>
+
+//       {/* Subjects Table Section */}
+//       <div className="table-section">
+//         <div className="table-header">
+//           <div className="table-title">
+//             <h2>
+//               {getYearLabel(yearLevel)} — {getSemesterLabel(semester)}
+//             </h2>
+//             <span className="subject-count">{subjects.length} Subjects</span>
+//           </div>
+
+//           <div className="table-controls">
+//             <div className="search-container">
+//               <Search size={16} className="search-icon" />
+//               <input
+//                 type="text"
+//                 className="search-input"
+//                 placeholder="Search subjects..."
+//                 value={searchTerm}
+//                 onChange={e => setSearchTerm(e.target.value)}
+//               />
+//               {searchTerm && (
+//                 <button 
+//                   className="search-clear"
+//                   onClick={() => setSearchTerm('')}
+//                 >
+//                   <X size={14} />
+//                 </button>
+//               )}
+//             </div>
+
+//             <div className="sort-container">
+//               <Filter size={16} />
+//               <select
+//                 className="sort-select"
+//                 value={sortBy}
+//                 onChange={e => setSortBy(e.target.value)}
+//               >
+//                 <option value="code">Sort by Code</option>
+//                 <option value="description">Sort by Description</option>
+//                 <option value="units">Sort by Units</option>
+//               </select>
+//             </div>
+//           </div>
+//         </div>
+
+//         <SubjectTable
+//           subjects={subjects}
+//           loading={loading.subjects}
+//           onDelete={handleDeleteClick}
+//           searchTerm={searchTerm}
+//           sortBy={sortBy}
+//         />
+//       </div>
+
+//       {/* Modals */}
+//       <AddSubjectModal
+//         show={showAddModal}
+//         onClose={() => setShowAddModal(false)}
+//         onSave={handleAddSubject}
+//         courseName={selectedCourse?.code || ''}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//       />
+
+//       <DeleteConfirmModal
+//         show={showDeleteModal}
+//         onClose={() => {
+//           setShowDeleteModal(false);
+//           setDeleteTarget(null);
+//         }}
+//         onConfirm={handleDeleteConfirm}
+//         subjectCode={deleteTarget?.subject_code}
+//       />
+
+//       {/* Inline Styles */}
+//       <style jsx>{`
+//         .courses-page {
+//           min-height: 100vh;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           padding: 2rem;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+//         }
+
+//         /* ===== TOAST NOTIFICATION ===== */
+//         .toast-notification {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           z-index: 10000;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           padding: 1rem 1.5rem;
+//           border-radius: 12px;
+//           border: 2px solid;
+//           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+//           animation: slideInRight 0.3s ease;
+//           max-width: 400px;
+//         }
+
+//         .toast-close {
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           opacity: 0.7;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .toast-close:hover {
+//           opacity: 1;
+//         }
+
+//         /* ===== PAGE HEADER WITH GRADIENT ===== */
+//         .page-header-courses {
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-section-gradient-courses {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-content-courses {
+//           color: white;
+//         }
+
+//         .page-title-gradient-courses {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           color: white;
+//           margin: 0 0 0.5rem 0;
+//           letter-spacing: -0.5px;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .page-subtitle-gradient-courses {
+//           font-size: 1.05rem;
+//           color: white;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions-courses {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn-courses {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           backdrop-filter: blur(10px);
+//           font-size: 0.95rem;
+//         }
+
+//         .action-btn-courses:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn-courses:disabled {
+//           opacity: 0.5;
+//           cursor: not-allowed;
+//         }
+
+//         .spinning {
+//           animation: spin 1s linear infinite;
+//         }
+
+//         @keyframes spin {
+//           from { transform: rotate(0deg); }
+//           to { transform: rotate(360deg); }
+//         }
+
+//         @keyframes slideInRight {
+//           from {
+//             opacity: 0;
+//             transform: translateX(100%);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateX(0);
+//           }
+//         }
+
+//         /* ===== STATS GRID ===== */
+//         .stats-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+//           gap: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stats-card {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           background: white;
+//           padding: 1.5rem;
+//           border-radius: 12px;
+//           border-top: 4px solid;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+//           transition: transform 0.2s ease;
+//         }
+
+//         .stats-card:hover {
+//           transform: translateY(-4px);
+//           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+//         }
+
+//         .stats-icon {
+//           width: 56px;
+//           height: 56px;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           border-radius: 12px;
+//         }
+
+//         .stats-content {
+//           flex: 1;
+//         }
+
+//         .stats-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           line-height: 1;
+//         }
+
+//         .stats-label {
+//           font-size: 0.9rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//           margin-top: 0.25rem;
+//         }
+
+//         /* ===== SELECTORS SECTION ===== */
+//         .selectors-section {
+//           display: grid;
+//           gap: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .selector-section {
+//           background: white;
+//           padding: 1.5rem;
+//           border-radius: 12px;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+//         }
+
+//         .selector-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           margin-bottom: 1rem;
+//           color: ${COLORS.primary};
+//         }
+
+//         .selector-header h3 {
+//           margin: 0;
+//           font-size: 1.1rem;
+//           font-weight: 700;
+//         }
+
+//         .course-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+//           gap: 1rem;
+//         }
+
+//         .course-btn {
+//           padding: 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 10px;
+//           background: white;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           text-align: left;
+//         }
+
+//         .course-btn:hover {
+//           border-color: ${COLORS.lighter};
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .course-btn.active {
+//           border-color: ${COLORS.primary};
+//           background: ${COLORS.lightest};
+//           box-shadow: 0 0 0 3px ${COLORS.primary}20;
+//         }
+
+//         .course-code {
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           font-size: 1.1rem;
+//           margin-bottom: 0.25rem;
+//         }
+
+//         .course-name {
+//           font-size: 0.85rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.8;
+//         }
+
+//         .dual-selectors {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+//           gap: 1.5rem;
+//         }
+
+//         .button-group {
+//           display: flex;
+//           gap: 0.75rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .selector-btn {
+//           flex: 1;
+//           min-width: 140px;
+//           padding: 0.75rem 1.25rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 10px;
+//           background: white;
+//           color: ${COLORS.secondary};
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .selector-btn:hover {
+//           border-color: ${COLORS.lighter};
+//           background: ${COLORS.lightest};
+//         }
+
+//         .selector-btn.active {
+//           border-color: ${COLORS.light};
+//           background: ${COLORS.light};
+//           color: white;
+//         }
+
+//         /* ===== TABLE SECTION ===== */
+//         .table-section {
+//           background: white;
+//           border-radius: 16px;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+//           overflow: hidden;
+//         }
+
+//         .table-header {
+//           padding: 1.5rem;
+//           border-bottom: 2px solid ${COLORS.lightest};
+//         }
+
+//         .table-title {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .table-title h2 {
+//           margin: 0;
+//           font-size: 1.5rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//         }
+
+//         .subject-count {
+//           background: ${COLORS.lighter};
+//           color: ${COLORS.primary};
+//           padding: 0.35rem 0.75rem;
+//           border-radius: 20px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .table-controls {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .search-container {
+//           position: relative;
+//           flex: 1;
+//           min-width: 250px;
+//           max-width: 400px;
+//         }
+
+//         .search-icon {
+//           position: absolute;
+//           left: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: ${COLORS.secondary};
+//           opacity: 0.5;
+//         }
+
+//         .search-input {
+//           width: 100%;
+//           padding: 0.65rem 2.5rem 0.65rem 2.5rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           transition: all 0.3s ease;
+//           background: #f8f9fa;
+//         }
+
+//         .search-input:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           background: white;
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         .search-clear {
+//           position: absolute;
+//           right: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           color: ${COLORS.secondary};
+//           opacity: 0.5;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .search-clear:hover {
+//           opacity: 1;
+//         }
+
+//         .sort-container {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .sort-select {
+//           padding: 0.65rem 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           background: #f8f9fa;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .sort-select:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           background: white;
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         /* ===== SUBJECTS TABLE ===== */
+//         .table-wrapper {
+//           overflow-x: auto;
+//         }
+
+//         .subjects-table {
+//           width: 100%;
+//           border-collapse: collapse;
+//         }
+
+//         .subjects-table thead {
+//           background: ${COLORS.lightest};
+//         }
+
+//         .subjects-table th {
+//           padding: 1rem 1.25rem;
+//           text-align: left;
+//           font-weight: 600;
+//           color: ${COLORS.secondary};
+//           border-bottom: 2px solid ${COLORS.lighter};
+//           white-space: nowrap;
+//         }
+
+//         .subjects-table th.text-center {
+//           text-align: center;
+//         }
+
+//         .subjects-table td {
+//           padding: 1rem 1.25rem;
+//           border-bottom: 1px solid ${COLORS.lightest};
+//         }
+
+//         .subjects-table td.text-center {
+//           text-align: center;
+//         }
+
+//         .subject-row {
+//           transition: background 0.2s ease;
+//         }
+
+//         .subject-row:hover {
+//           background: ${COLORS.lightest};
+//         }
+
+//         .row-number {
+//           font-weight: 700;
+//           color: ${COLORS.accent};
+//         }
+
+//         .subject-code-cell {
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           font-size: 0.95rem;
+//         }
+
+//         .subject-desc {
+//           color: ${COLORS.secondary};
+//         }
+
+//         .units-badge {
+//           display: inline-block;
+//           background: ${COLORS.light};
+//           color: white;
+//           padding: 0.35rem 0.75rem;
+//           border-radius: 20px;
+//           font-weight: 600;
+//           font-size: 0.85rem;
+//         }
+
+//         .delete-btn {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.35rem;
+//           padding: 0.5rem 1rem;
+//           background: #fee;
+//           color: #c33;
+//           border: 1px solid #fcc;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .delete-btn:hover {
+//           background: #fcc;
+//           border-color: #faa;
+//           transform: translateY(-1px);
+//         }
+
+//         /* ===== EMPTY STATE ===== */
+//         .empty-state {
+//           text-align: center;
+//           padding: 4rem 2rem;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .empty-icon {
+//           color: ${COLORS.lighter};
+//           margin-bottom: 1rem;
+//         }
+
+//         .empty-state h3 {
+//           color: ${COLORS.primary};
+//           margin: 0 0 0.5rem 0;
+//         }
+
+//         .empty-state p {
+//           opacity: 0.7;
+//           margin: 0;
+//         }
+
+//         /* ===== LOADING SKELETON ===== */
+//         .skeleton {
+//           background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+//           background-size: 200% 100%;
+//           animation: shimmer 1.5s infinite;
+//           border-radius: 8px;
+//         }
+
+//         .table-skeleton {
+//           padding: 1rem;
+//         }
+
+//         .skeleton-row {
+//           display: grid;
+//           grid-template-columns: 60px 120px 1fr 80px 100px;
+//           gap: 1rem;
+//           margin-bottom: 1rem;
+//         }
+
+//         @keyframes shimmer {
+//           0% { background-position: 200% 0; }
+//           100% { background-position: -200% 0; }
+//         }
+
+//         /* ===== MODALS ===== */
+//         .modal-overlay {
+//           position: fixed;
+//           top: 0;
+//           left: 0;
+//           right: 0;
+//           bottom: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9999;
+//           animation: fadeIn 0.2s ease;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 500px;
+//           width: 90%;
+//           max-height: 90vh;
+//           overflow-y: auto;
+//           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+//           animation: scaleIn 0.3s ease;
+//         }
+
+//         .confirm-modal {
+//           max-width: 400px;
+//         }
+
+//         @keyframes fadeIn {
+//           from { opacity: 0; }
+//           to { opacity: 1; }
+//         }
+
+//         @keyframes scaleIn {
+//           from {
+//             opacity: 0;
+//             transform: scale(0.95) translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: scale(1) translateY(0);
+//           }
+//         }
+
+//         .modal-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           padding: 1.5rem;
+//           border-bottom: 2px solid ${COLORS.lightest};
+//         }
+
+//         .modal-header h3 {
+//           margin: 0;
+//           font-size: 1.5rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .warning-icon {
+//           color: #f59e0b;
+//         }
+
+//         .modal-close {
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.5rem;
+//           display: flex;
+//           align-items: center;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .modal-close:hover {
+//           opacity: 1;
+//         }
+
+//         .modal-body {
+//           padding: 1.5rem;
+//         }
+
+//         .modal-footer {
+//           padding: 1.5rem;
+//           border-top: 2px solid ${COLORS.lightest};
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 1rem;
+//         }
+
+//         .form-group {
+//           margin-bottom: 1.25rem;
+//         }
+
+//         .form-label {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .form-input {
+//           width: 100%;
+//           padding: 0.75rem 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .form-input:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         .form-info {
+//           background: ${COLORS.lightest};
+//           padding: 1rem;
+//           border-radius: 8px;
+//           margin-top: 1rem;
+//         }
+
+//         .info-label {
+//           font-size: 0.85rem;
+//           color: ${COLORS.secondary};
+//           margin-bottom: 0.5rem;
+//           font-weight: 600;
+//         }
+
+//         .info-details {
+//           font-size: 0.95rem;
+//           color: ${COLORS.primary};
+//         }
+
+//         .btn-primary {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1.5rem;
+//           background: ${COLORS.primary};
+//           color: white;
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-primary:hover {
+//           background: ${COLORS.secondary};
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(3, 4, 94, 0.3);
+//         }
+
+//         .btn-secondary {
+//           padding: 0.75rem 1.5rem;
+//           background: #e2e8f0;
+//           color: ${COLORS.secondary};
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-secondary:hover {
+//           background: #cbd5e1;
+//         }
+
+//         .btn-danger {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1.5rem;
+//           background: #dc2626;
+//           color: white;
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-danger:hover {
+//           background: #b91c1c;
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+//         }
+
+//         /* ===== RESPONSIVE DESIGN ===== */
+//         @media (max-width: 992px) {
+//           .page-title-section-gradient-courses {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .header-actions-courses {
+//             width: 100%;
+//           }
+
+//           .action-btn-courses {
+//             flex: 1;
+//             justify-content: center;
+//           }
+//         }
+
+//         @media (max-width: 768px) {
+//           .courses-page {
+//             padding: 1rem;
+//           }
+
+//           .page-title-gradient-courses {
+//             font-size: 2rem;
+//           }
+
+//           .course-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .dual-selectors {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .table-controls {
+//             flex-direction: column;
+//           }
+
+//           .search-container {
+//             width: 100%;
+//             max-width: none;
+//           }
+
+//           .subjects-table th,
+//           .subjects-table td {
+//             padding: 0.75rem 0.5rem;
+//             font-size: 0.85rem;
+//           }
+//         }
+
+//         @media (max-width: 576px) {
+//           .courses-page {
+//             padding: 0.5rem;
+//           }
+
+//           .page-title-gradient-courses {
+//             font-size: 1.5rem;
+//           }
+
+//           .stats-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .button-group {
+//             flex-direction: column;
+//           }
+
+//           .selector-btn {
+//             width: 100%;
+//           }
+//         }
+//       `}</style>
+//     </div>
+//   );
+// }
+
+//WORKING WITHOUT BTLED MAJOR 
+
+// import React, { useEffect, useState, useMemo, useCallback } from 'react';
+// import { 
+//   BookOpen, Plus, Search, RefreshCw, Edit2, Trash2, X, 
+//   Check, ChevronDown, ChevronUp, Filter, Download, 
+//   AlertCircle, CheckCircle, Calendar, Users, Award, Clock
+// } from 'lucide-react';
+
+// // ==================== CONSTANTS ====================
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// const DURATION_OPTIONS = [
+//   { value: 0.5, label: '30 minutes' },
+//   { value: 1, label: '1 hour' },
+//   { value: 1.5, label: '1.5 hours' },
+//   { value: 2, label: '2 hours' },
+//   { value: 2.5, label: '2.5 hours' },
+//   { value: 3, label: '3 hours' },
+//   { value: 4, label: '4 hours' }
+// ];
+
+// // ==================== UTILITY FUNCTIONS ====================
+// const getYearLabel = (year) => {
+//   const labels = { 1: 'First Year', 2: 'Second Year', 3: 'Third Year', 4: 'Fourth Year' };
+//   return labels[year] || `Year ${year}`;
+// };
+
+// const getSemesterLabel = (sem) => {
+//   const labels = { '1': '1st Semester', '2': '2nd Semester', 'Summer': 'Summer' };
+//   return labels[sem] || sem;
+// };
+
+// // ==================== TOAST NOTIFICATION ====================
+// const Toast = React.memo(({ message, type, onClose }) => {
+//   useEffect(() => {
+//     if (message) {
+//       const timer = setTimeout(onClose, 4000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [message, onClose]);
+
+//   if (!message) return null;
+
+//   const styles = {
+//     success: { bg: '#d4edda', border: '#c3e6cb', color: '#155724', Icon: CheckCircle },
+//     danger: { bg: '#f8d7da', border: '#f5c6cb', color: '#721c24', Icon: AlertCircle },
+//   };
+
+//   const style = styles[type] || styles.success;
+//   const Icon = style.Icon;
+
+//   return (
+//     <div className="toast-notification" style={{ 
+//       background: style.bg, 
+//       borderColor: style.border, 
+//       color: style.color 
+//     }}>
+//       <Icon size={20} />
+//       <span>{message}</span>
+//       <button onClick={onClose} className="toast-close">
+//         <X size={16} />
+//       </button>
+//     </div>
+//   );
+// });
+
+// // ==================== LOADING SKELETON ====================
+// const Skeleton = React.memo(({ width = '100%', height = '40px' }) => (
+//   <div className="skeleton" style={{ width, height }} />
+// ));
+
+// const TableSkeleton = React.memo(() => (
+//   <div className="table-skeleton">
+//     {[1, 2, 3, 4, 5].map(i => (
+//       <div key={i} className="skeleton-row">
+//         <Skeleton width="40px" height="50px" />
+//         <Skeleton width="120px" height="50px" />
+//         <Skeleton height="50px" />
+//         <Skeleton width="80px" height="50px" />
+//         <Skeleton width="100px" height="50px" />
+//       </div>
+//     ))}
+//   </div>
+// ));
+
+// // ==================== STATS CARD ====================
+// const StatsCard = React.memo(({ icon: Icon, label, value, color }) => (
+//   <div className="stats-card" style={{ borderTopColor: color }}>
+//     <div className="stats-icon" style={{ background: `${color}20`, color }}>
+//       <Icon size={24} />
+//     </div>
+//     <div className="stats-content">
+//       <div className="stats-value">{value}</div>
+//       <div className="stats-label">{label}</div>
+//     </div>
+//   </div>
+// ));
+
+// // ==================== COURSE SELECTOR ====================
+// const CourseSelector = React.memo(({ courses, selectedCourseId, onChange }) => {
+//   const regularCourses = courses.filter(course => !course.is_general);
+  
+//   return (
+//     <div className="selector-section">
+//       <div className="selector-header">
+//         <BookOpen size={18} />
+//         <h3>Select Course</h3>
+//       </div>
+//       <div className="course-grid">
+//         {regularCourses.map(course => (
+//           <button
+//             key={course.id}
+//             className={`course-btn ${course.id === selectedCourseId ? 'active' : ''}`}
+//             onClick={() => onChange(course.id)}
+//           >
+//             <div className="course-code">{course.code}</div>
+//             <div className="course-name">{course.name}</div>
+//           </button>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== YEAR SELECTOR ====================
+// const YearSelector = React.memo(({ yearLevel, onChange }) => (
+//   <div className="selector-section">
+//     <div className="selector-header">
+//       <Users size={18} />
+//       <h3>Year Level</h3>
+//     </div>
+//     <div className="button-group">
+//       {[1, 2, 3, 4].map(year => (
+//         <button
+//           key={year}
+//           className={`selector-btn ${year === yearLevel ? 'active' : ''}`}
+//           onClick={() => onChange(year)}
+//         >
+//           {getYearLabel(year)}
+//         </button>
+//       ))}
+//     </div>
+//   </div>
+// ));
+
+// // ==================== SEMESTER SELECTOR ====================
+// const SemesterSelector = React.memo(({ semester, onChange }) => (
+//   <div className="selector-section">
+//     <div className="selector-header">
+//       <Calendar size={18} />
+//       <h3>Semester</h3>
+//     </div>
+//     <div className="button-group">
+//       {['1', '2'].map(sem => (
+//         <button
+//           key={sem}
+//           className={`selector-btn ${sem === semester ? 'active' : ''}`}
+//           onClick={() => onChange(sem)}
+//         >
+//           {getSemesterLabel(sem)}
+//         </button>
+//       ))}
+//     </div>
+//   </div>
+// ));
+
+// // ==================== SUBJECT TABLE ====================
+// const SubjectTable = React.memo(({ 
+//   subjects, 
+//   loading, 
+//   onEdit,
+//   onDelete, 
+//   searchTerm, 
+//   sortBy 
+// }) => {
+//   const filteredAndSortedSubjects = useMemo(() => {
+//     let filtered = subjects;
+
+//     if (searchTerm.trim()) {
+//       const term = searchTerm.toLowerCase();
+//       filtered = subjects.filter(s =>
+//         s.subject_code?.toLowerCase().includes(term) ||
+//         s.description?.toLowerCase().includes(term)
+//       );
+//     }
+
+//     const sorted = [...filtered].sort((a, b) => {
+//       switch (sortBy) {
+//         case 'code':
+//           return (a.subject_code || '').localeCompare(b.subject_code || '');
+//         case 'description':
+//           return (a.description || '').localeCompare(b.description || '');
+//         case 'units':
+//           return (b.units || 0) - (a.units || 0);
+//         default:
+//           return 0;
+//       }
+//     });
+
+//     return sorted;
+//   }, [subjects, searchTerm, sortBy]);
+
+//   if (loading) return <TableSkeleton />;
+
+//   if (filteredAndSortedSubjects.length === 0) {
+//     return (
+//       <div className="empty-state">
+//         <BookOpen size={48} className="empty-icon" />
+//         <h3>No Subjects Found</h3>
+//         <p>
+//           {searchTerm 
+//             ? "No subjects match your search criteria"
+//             : "No subjects available for this selection"}
+//         </p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="table-wrapper">
+//       <table className="subjects-table">
+//         <thead>
+//           <tr>
+//             <th style={{ width: '60px' }}>#</th>
+//             <th>Subject Code</th>
+//             <th>Description</th>
+//             <th style={{ width: '100px' }}>Units</th>
+//             <th style={{ width: '150px' }} className="text-center">Actions</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {filteredAndSortedSubjects.map((subject, index) => (
+//             <tr key={subject.id} className="subject-row">
+//               <td className="row-number">{index + 1}</td>
+//               <td>
+//                 <div className="subject-code-cell">{subject.subject_code}</div>
+//               </td>
+//               <td>
+//                 <div className="subject-desc">{subject.description}</div>
+//               </td>
+//               <td>
+//                 <div className="units-badge">{subject.units}</div>
+//               </td>
+//               <td className="text-center">
+//                 <div className="action-buttons">
+//                   <button
+//                     className="edit-btn"
+//                     onClick={() => onEdit(subject)}
+//                     title="Edit subject"
+//                   >
+//                     <Edit2 size={16} />
+//                   </button>
+//                   <button
+//                     className="delete-btn-small"
+//                     onClick={() => onDelete(subject)}
+//                     title="Delete subject"
+//                   >
+//                     <Trash2 size={16} />
+//                   </button>
+//                 </div>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// });
+
+// // ==================== TEACHER ASSIGNMENTS TABLE ====================
+// const TeacherAssignmentsTable = React.memo(({ assignments, loading, onEdit, onDelete }) => {
+//   if (loading) return <TableSkeleton />;
+
+//   if (assignments.length === 0) {
+//     return (
+//       <div className="empty-state">
+//         <Users size={48} className="empty-icon" />
+//         <h3>No Teacher Assignments</h3>
+//         <p>No teachers have been assigned to subjects yet</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="table-wrapper">
+//       <table className="subjects-table">
+//         <thead>
+//           <tr>
+//             <th style={{ width: '60px' }}>#</th>
+//             <th>Teacher Name</th>
+//             <th>Subject Code</th>
+//             <th>Description</th>
+//             <th style={{ width: '120px' }}>Duration</th>
+//             <th style={{ width: '150px' }} className="text-center">Actions</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {assignments.map((assignment, index) => (
+//             <tr key={`${assignment.id}-${index}`} className="subject-row">
+//               <td className="row-number">{index + 1}</td>
+//               <td>
+//                 <div className="teacher-name-cell">
+//                   <Users size={16} />
+//                   {assignment.teacher_name || assignment.name || 'Unknown Teacher'}
+//                 </div>
+//               </td>
+//               <td>
+//                 <div className="subject-code-cell">{assignment.subject_code}</div>
+//               </td>
+//               <td>
+//                 <div className="subject-desc">{assignment.description}</div>
+//               </td>
+//               <td>
+//                 <div className="duration-badge">
+//                   <Clock size={14} />
+//                   {assignment.duration ? `${assignment.duration}h` : 'N/A'}
+//                 </div>
+//               </td>
+//               <td className="text-center">
+//                 <div className="action-buttons">
+//                   <button
+//                     className="edit-btn"
+//                     onClick={() => onEdit(assignment)}
+//                     title="Edit assignment"
+//                   >
+//                     <Edit2 size={16} />
+//                   </button>
+//                   <button
+//                     className="delete-btn-small"
+//                     onClick={() => onDelete(assignment)}
+//                     title="Delete assignment"
+//                   >
+//                     <Trash2 size={16} />
+//                   </button>
+//                 </div>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// });
+
+// // ==================== ADD/EDIT SUBJECT MODAL ====================
+// const SubjectModal = React.memo(({ 
+//   show, 
+//   onClose, 
+//   onSave, 
+//   courseName, 
+//   yearLevel, 
+//   semester,
+//   editMode = false,
+//   initialData = null
+// }) => {
+//   const [formData, setFormData] = useState({
+//     subject_code: '',
+//     description: '',
+//     units: 3
+//   });
+
+//   useEffect(() => {
+//     if (editMode && initialData) {
+//       setFormData({
+//         subject_code: initialData.subject_code || '',
+//         description: initialData.description || '',
+//         units: initialData.units || 3
+//       });
+//     } else {
+//       setFormData({ subject_code: '', description: '', units: 3 });
+//     }
+//   }, [editMode, initialData, show]);
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (formData.subject_code.trim() && formData.description.trim() && formData.units) {
+//       onSave(formData);
+//       if (!editMode) {
+//         setFormData({ subject_code: '', description: '', units: 3 });
+//       }
+//     }
+//   };
+
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <form onSubmit={handleSubmit}>
+//           <div className="modal-header">
+//             <h3>{editMode ? 'Edit Subject' : 'Add New Subject'}</h3>
+//             <button type="button" onClick={onClose} className="modal-close">
+//               <X size={20} />
+//             </button>
+//           </div>
+
+//           <div className="modal-body">
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Subject Code
+//               </label>
+//               <input
+//                 type="text"
+//                 className="form-input"
+//                 placeholder="e.g., CS101, MATH201"
+//                 value={formData.subject_code}
+//                 onChange={e => setFormData({ ...formData, subject_code: e.target.value })}
+//                 required
+//                 autoFocus
+//               />
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Description
+//               </label>
+//               <input
+//                 type="text"
+//                 className="form-input"
+//                 placeholder="e.g., Introduction to Programming"
+//                 value={formData.description}
+//                 onChange={e => setFormData({ ...formData, description: e.target.value })}
+//                 required
+//               />
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Award size={16} />
+//                 Units
+//               </label>
+//               <input
+//                 type="number"
+//                 className="form-input"
+//                 step="0.5"
+//                 min="0"
+//                 max="10"
+//                 value={formData.units}
+//                 onChange={e => setFormData({ ...formData, units: parseFloat(e.target.value) })}
+//                 required
+//               />
+//             </div>
+
+//             {!editMode && (
+//               <div className="form-info">
+//                 <div className="info-label">Will be added to:</div>
+//                 <div className="info-details">
+//                   <strong>{courseName}</strong> • {getYearLabel(yearLevel)} • {getSemesterLabel(semester)}
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+
+//           <div className="modal-footer">
+//             <button type="button" onClick={onClose} className="btn-secondary">
+//               Cancel
+//             </button>
+//             <button type="submit" className="btn-primary">
+//               {editMode ? <Check size={16} /> : <Plus size={16} />}
+//               {editMode ? 'Update Subject' : 'Add Subject'}
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== ASSIGN TEACHER MODAL ====================
+// const AssignTeacherModal = React.memo(({ 
+//   show, 
+//   onClose, 
+//   onSave,
+//   subjects,
+//   courseName,
+//   courseId,
+//   yearLevel,
+//   semester,
+//   allCourses
+// }) => {
+//   const [teachers, setTeachers] = useState([]);
+//   const [selectedTeacherId, setSelectedTeacherId] = useState('');
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [duration, setDuration] = useState(1);
+//   const [loading, setLoading] = useState(false);
+//   const [teacherAssignments, setTeacherAssignments] = useState([]);
+//   const [selectedCourseFilter, setSelectedCourseFilter] = useState(courseId);
+
+//   useEffect(() => {
+//     if (show) {
+//       fetchTeachers();
+//     }
+//   }, [show, selectedCourseFilter]);
+
+//   useEffect(() => {
+//     if (selectedTeacherId) {
+//       fetchTeacherAssignments(selectedTeacherId);
+//     } else {
+//       setTeacherAssignments([]);
+//     }
+//   }, [selectedTeacherId]);
+
+//   useEffect(() => {
+//     if (show) {
+//       setSelectedCourseFilter(courseId);
+//     }
+//   }, [show, courseId]);
+
+//   const fetchTeachers = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/instructors`);
+//       const data = await res.json();
+//       const filteredTeachers = Array.isArray(data) 
+//         ? (selectedCourseFilter === 'all' 
+//             ? data 
+//             : data.filter(t => t.course_id === selectedCourseFilter || t.courseId === selectedCourseFilter))
+//         : [];
+//       setTeachers(filteredTeachers);
+//     } catch (err) {
+//       console.error('fetchTeachers error:', err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const fetchTeacherAssignments = async (teacherId) => {
+//     try {
+//       const res = await fetch(`${API}/api/teacher-assignments/${teacherId}`);
+//       const data = await res.json();
+//       setTeacherAssignments(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('fetchTeacherAssignments error:', err);
+//       setTeacherAssignments([]);
+//     }
+//   };
+
+//   const handleSubjectToggle = (subjectId) => {
+//     setSelectedSubjects(prev => {
+//       if (prev.includes(subjectId)) {
+//         return prev.filter(id => id !== subjectId);
+//       } else {
+//         return [...prev, subjectId];
+//       }
+//     });
+//   };
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (selectedTeacherId && selectedSubjects.length > 0 && duration) {
+//       onSave({
+//         teacherId: selectedTeacherId,
+//         subjectIds: selectedSubjects,
+//         duration
+//       });
+//       setSelectedTeacherId('');
+//       setSelectedSubjects([]);
+//       setDuration(1);
+//     }
+//   };
+
+//   const selectedTeacher = teachers.find(t => t.id === Number(selectedTeacherId));
+
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content assign-teacher-modal" onClick={e => e.stopPropagation()}>
+//         <form onSubmit={handleSubmit}>
+//           <div className="modal-header">
+//             <h3>
+//               <Users size={24} />
+//               Assign Teacher to Subject(s)
+//             </h3>
+//             <button type="button" onClick={onClose} className="modal-close">
+//               <X size={20} />
+//             </button>
+//           </div>
+
+//           <div className="modal-body">
+//             <div className="form-info" style={{ marginBottom: '1.5rem' }}>
+//               <div className="info-label">Assignment Context:</div>
+//               <div className="info-details">
+//                 <strong>{courseName}</strong> • {getYearLabel(yearLevel)} • {getSemesterLabel(semester)}
+//               </div>
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Filter Teachers by Course
+//               </label>
+//               <select
+//                 className="form-input"
+//                 value={selectedCourseFilter}
+//                 onChange={e => {
+//                   setSelectedCourseFilter(e.target.value === 'all' ? 'all' : Number(e.target.value));
+//                   setSelectedTeacherId('');
+//                 }}
+//               >
+//                 <option value="all">All Courses</option>
+//                 {allCourses.map(course => (
+//                   <option key={course.id} value={course.id}>
+//                     {course.code} - {course.name}
+//                   </option>
+//                 ))}
+//               </select>
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Users size={16} />
+//                 Select Teacher
+//               </label>
+//               {teachers.length === 0 ? (
+//                 <div className="no-teachers-warning">
+//                   <AlertCircle size={16} />
+//                   <span>
+//                     {selectedCourseFilter === 'all' 
+//                       ? 'No instructors found. Please add instructors first.'
+//                       : 'No instructors found for this course. Try selecting "All Courses" or add instructors first.'
+//                     }
+//                   </span>
+//                 </div>
+//               ) : (
+//                 <select
+//                   className="form-input"
+//                   value={selectedTeacherId}
+//                   onChange={e => setSelectedTeacherId(e.target.value)}
+//                   required
+//                   disabled={loading}
+//                 >
+//                   <option value="">-- Choose a teacher --</option>
+//                   {teachers.map(teacher => {
+//                     const teacherCourse = allCourses.find(c => c.id === (teacher.course_id || teacher.courseId));
+//                     const displayName = teacherCourse 
+//                       ? `${teacher.name} ${teacher.last_name || ''} (${teacherCourse.code})`
+//                       : `${teacher.name} ${teacher.last_name || ''}`;
+//                     return (
+//                       <option key={teacher.id} value={teacher.id}>
+//                         {displayName}
+//                       </option>
+//                     );
+//                   })}
+//                 </select>
+//               )}
+//             </div>
+
+//             {selectedTeacherId && teacherAssignments.length > 0 && (
+//               <div className="teacher-assignments-section">
+//                 <div className="assignments-header">
+//                   <Award size={16} />
+//                   <strong>Current Assignments for {selectedTeacher?.name}</strong>
+//                 </div>
+//                 <div className="assignments-list">
+//                   {teacherAssignments.map((assignment, idx) => (
+//                     <div key={idx} className="assignment-item">
+//                       <div className="assignment-subject">
+//                         <BookOpen size={14} />
+//                         {assignment.subject_code} - {assignment.description}
+//                       </div>
+//                       <div className="assignment-time">
+//                         <Clock size={14} />
+//                         {assignment.duration ? `${assignment.duration} hour${assignment.duration > 1 ? 's' : ''}` : assignment.time_slot}
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             )}
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Select Subject(s) *
+//               </label>
+//               <div className="checkbox-group">
+//                 {subjects.length === 0 ? (
+//                   <div className="no-subjects-warning">
+//                     <AlertCircle size={16} />
+//                     <span>No subjects available. Please add subjects first.</span>
+//                   </div>
+//                 ) : (
+//                   subjects.map(subject => (
+//                     <label key={subject.id} className="checkbox-label">
+//                       <input
+//                         type="checkbox"
+//                         checked={selectedSubjects.includes(subject.id)}
+//                         onChange={() => handleSubjectToggle(subject.id)}
+//                         disabled={!selectedTeacherId}
+//                       />
+//                       <span className="checkbox-text">
+//                         <strong>{subject.subject_code}</strong> - {subject.description} ({subject.units} units)
+//                       </span>
+//                     </label>
+//                   ))
+//                 )}
+//               </div>
+//               {selectedSubjects.length > 0 && (
+//                 <div className="selected-count">
+//                   {selectedSubjects.length} subject(s) selected
+//                 </div>
+//               )}
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Clock size={16} />
+//                 Class Duration *
+//               </label>
+//               <select
+//                 className="form-input"
+//                 value={duration}
+//                 onChange={e => setDuration(Number(e.target.value))}
+//                 required
+//                 disabled={selectedSubjects.length === 0}
+//               >
+//                 {DURATION_OPTIONS.map(option => (
+//                   <option key={option.value} value={option.value}>
+//                     {option.label}
+//                   </option>
+//                 ))}
+//               </select>
+//             </div>
+
+//             {duration && selectedSubjects.length > 0 && (
+//               <div className="time-preview">
+//                 <Clock size={16} />
+//                 <span>Duration: <strong>{DURATION_OPTIONS.find(d => d.value === duration)?.label}</strong> per class</span>
+//               </div>
+//             )}
+//           </div>
+
+//           <div className="modal-footer">
+//             <button type="button" onClick={onClose} className="btn-secondary">
+//               Cancel
+//             </button>
+//             <button 
+//               type="submit" 
+//               className="btn-primary"
+//               disabled={!selectedTeacherId || selectedSubjects.length === 0 || !duration}
+//             >
+//               <Check size={16} />
+//               Assign Teacher
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== EDIT ASSIGNMENT MODAL ====================
+// const EditAssignmentModal = React.memo(({ 
+//   show, 
+//   onClose, 
+//   onSave,
+//   assignment,
+//   allCourses
+// }) => {
+//   const [duration, setDuration] = useState(1);
+//   const [teachers, setTeachers] = useState([]);
+//   const [selectedTeacherId, setSelectedTeacherId] = useState('');
+//   const [loading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     if (show && assignment) {
+//       setDuration(assignment.duration || 1);
+//       setSelectedTeacherId(assignment.teacher_id || '');
+//       fetchTeachers();
+//     }
+//   }, [show, assignment]);
+
+//   const fetchTeachers = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/instructors`);
+//       const data = await res.json();
+//       setTeachers(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('fetchTeachers error:', err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (selectedTeacherId && duration) {
+//       onSave({
+//         id: assignment.id,
+//         teacherId: selectedTeacherId,
+//         duration
+//       });
+//     }
+//   };
+
+//   if (!show || !assignment) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <form onSubmit={handleSubmit}>
+//           <div className="modal-header">
+//             <h3>
+//               <Edit2 size={24} />
+//               Edit Teacher Assignment
+//             </h3>
+//             <button type="button" onClick={onClose} className="modal-close">
+//               <X size={20} />
+//             </button>
+//           </div>
+
+//           <div className="modal-body">
+//             <div className="form-info" style={{ marginBottom: '1.5rem' }}>
+//               <div className="info-label">Subject:</div>
+//               <div className="info-details">
+//                 <strong>{assignment.subject_code}</strong> - {assignment.description}
+//               </div>
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Users size={16} />
+//                 Select Teacher *
+//               </label>
+//               <select
+//                 className="form-input"
+//                 value={selectedTeacherId}
+//                 onChange={e => setSelectedTeacherId(e.target.value)}
+//                 required
+//                 disabled={loading}
+//               >
+//                 <option value="">-- Choose a teacher --</option>
+//                 {teachers.map(teacher => {
+//                   const teacherCourse = allCourses.find(c => c.id === (teacher.course_id || teacher.courseId));
+//                   const displayName = teacherCourse 
+//                     ? `${teacher.name} ${teacher.last_name || ''} (${teacherCourse.code})`
+//                     : `${teacher.name} ${teacher.last_name || ''}`;
+//                   return (
+//                     <option key={teacher.id} value={teacher.id}>
+//                       {displayName}
+//                     </option>
+//                   );
+//                 })}
+//               </select>
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Clock size={16} />
+//                 Class Duration *
+//               </label>
+//               <select
+//                 className="form-input"
+//                 value={duration}
+//                 onChange={e => setDuration(Number(e.target.value))}
+//                 required
+//               >
+//                 {DURATION_OPTIONS.map(option => (
+//                   <option key={option.value} value={option.value}>
+//                     {option.label}
+//                   </option>
+//                 ))}
+//               </select>
+//             </div>
+
+//             {duration && (
+//               <div className="time-preview">
+//                 <Clock size={16} />
+//                 <span>Duration: <strong>{DURATION_OPTIONS.find(d => d.value === duration)?.label}</strong> per class</span>
+//               </div>
+//             )}
+//           </div>
+
+//           <div className="modal-footer">
+//             <button type="button" onClick={onClose} className="btn-secondary">
+//               Cancel
+//             </button>
+//             <button 
+//               type="submit" 
+//               className="btn-primary"
+//               disabled={!selectedTeacherId || !duration}
+//             >
+//               <Check size={16} />
+//               Update Assignment
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== DELETE CONFIRMATION MODAL ====================
+// const DeleteConfirmModal = React.memo(({ show, onClose, onConfirm, itemName, itemType = 'subject' }) => {
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content confirm-modal" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header">
+//           <AlertCircle size={24} className="warning-icon" />
+//           <h3>Delete {itemType === 'assignment' ? 'Assignment' : 'Subject'}?</h3>
+//         </div>
+
+//         <div className="modal-body">
+//           <p>
+//             Are you sure you want to delete <strong>{itemName}</strong>? 
+//             This action cannot be undone.
+//           </p>
+//         </div>
+
+//         <div className="modal-footer">
+//           <button onClick={onClose} className="btn-secondary">
+//             Cancel
+//           </button>
+//           <button onClick={onConfirm} className="btn-danger">
+//             <Trash2 size={16} />
+//             Delete
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== MAIN COMPONENT ====================
+// export default function CoursesPage() {
+//   // State Management
+//   const [courses, setCourses] = useState([]);
+//   const [selectedCourseId, setSelectedCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [subjects, setSubjects] = useState([]);
+  
+//   const [loading, setLoading] = useState({
+//     initial: true,
+//     subjects: false,
+//   });
+  
+//   const [showAddModal, setShowAddModal] = useState(false);
+//   const [showEditSubjectModal, setShowEditSubjectModal] = useState(false);
+//   const [editSubjectTarget, setEditSubjectTarget] = useState(null);
+//   const [showDeleteModal, setShowDeleteModal] = useState(false);
+//   const [showAssignTeacherModal, setShowAssignTeacherModal] = useState(false);
+//   const [showEditAssignmentModal, setShowEditAssignmentModal] = useState(false);
+//   const [showDeleteAssignmentModal, setShowDeleteAssignmentModal] = useState(false);
+//   const [deleteTarget, setDeleteTarget] = useState(null);
+//   const [editAssignmentTarget, setEditAssignmentTarget] = useState(null);
+//   const [deleteAssignmentTarget, setDeleteAssignmentTarget] = useState(null);
+  
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [sortBy, setSortBy] = useState('code');
+  
+//   const [toast, setToast] = useState({ message: '', type: '' });
+//   const [teacherAssignments, setTeacherAssignments] = useState([]);
+//   const [loadingAssignments, setLoadingAssignments] = useState(false);
+
+//   // Toast helper
+//   const showToast = useCallback((message, type) => {
+//     setToast({ message, type });
+//   }, []);
+
+//   const closeToast = useCallback(() => {
+//     setToast({ message: '', type: '' });
+//   }, []);
+
+//   // API Functions - Memoized with useCallback
+//   const fetchCourses = useCallback(async () => {
+//     setLoading(prev => ({ ...prev, initial: true }));
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+      
+//       if (data.length && !selectedCourseId) {
+//         setSelectedCourseId(data[0].id);
+//       }
+//     } catch (err) {
+//       console.error('fetchCourses error:', err);
+//       showToast('Failed to load courses', 'danger');
+//     } finally {
+//       setLoading(prev => ({ ...prev, initial: false }));
+//     }
+//   }, [selectedCourseId, showToast]);
+
+//   const loadSubjects = useCallback(async () => {
+//     if (!selectedCourseId) return;
+    
+//     setLoading(prev => ({ ...prev, subjects: true }));
+//     try {
+//       const params = new URLSearchParams({ 
+//         courseId: selectedCourseId, 
+//         yearLevel, 
+//         semester 
+//       });
+//       const res = await fetch(`${API}/api/subjects?${params}`);
+//       const data = await res.json();
+//       setSubjects(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('loadSubjects error:', err);
+//       showToast('Failed to load subjects', 'danger');
+//     } finally {
+//       setLoading(prev => ({ ...prev, subjects: false }));
+//     }
+//   }, [selectedCourseId, yearLevel, semester, showToast]);
+
+//   const loadTeacherAssignments = useCallback(async () => {
+//     if (!selectedCourseId) return;
+    
+//     setLoadingAssignments(true);
+//     try {
+//       const params = new URLSearchParams({ 
+//         courseId: selectedCourseId, 
+//         yearLevel, 
+//         semester 
+//       });
+//       const res = await fetch(`${API}/api/teacher-assignments?${params}`);
+//       const data = await res.json();
+//       setTeacherAssignments(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('loadTeacherAssignments error:', err);
+//       setTeacherAssignments([]);
+//     } finally {
+//       setLoadingAssignments(false);
+//     }
+//   }, [selectedCourseId, yearLevel, semester]);
+
+//   // Initial data fetch
+//   useEffect(() => {
+//     fetchCourses();
+//   }, [fetchCourses]);
+
+//   // Fetch subjects when course/year/semester changes
+//   useEffect(() => {
+//     if (selectedCourseId) {
+//       loadSubjects();
+//       loadTeacherAssignments();
+//     } else {
+//       setSubjects([]);
+//       setTeacherAssignments([]);
+//     }
+//   }, [selectedCourseId, yearLevel, semester, loadSubjects, loadTeacherAssignments]);
+
+//   const handleAddSubject = useCallback(async (formData) => {
+//     if (!selectedCourseId) {
+//       showToast('Please select a course first', 'danger');
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`${API}/api/subjects`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({
+//           courseId: Number(selectedCourseId),
+//           yearLevel: Number(yearLevel),
+//           semester,
+//           subject_code: formData.subject_code.trim(),
+//           description: formData.description.trim(),
+//           units: Number(formData.units)
+//         })
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to add subject');
+//       }
+
+//       setShowAddModal(false);
+//       await loadSubjects();
+//       showToast('Subject added successfully! 🎉', 'success');
+//     } catch (err) {
+//       console.error('handleAddSubject error:', err);
+//       showToast(err.message || 'Failed to add subject', 'danger');
+//     }
+//   }, [selectedCourseId, yearLevel, semester, loadSubjects, showToast]);
+
+//   const handleEditSubjectClick = useCallback((subject) => {
+//     setEditSubjectTarget(subject);
+//     setShowEditSubjectModal(true);
+//   }, []);
+
+//   const handleEditSubject = useCallback(async (formData) => {
+//     if (!editSubjectTarget) return;
+
+//     try {
+//       const res = await fetch(`${API}/api/subjects/${editSubjectTarget.id}`, {
+//         method: 'PUT',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({
+//           subject_code: formData.subject_code.trim(),
+//           description: formData.description.trim(),
+//           units: Number(formData.units)
+//         })
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to update subject');
+//       }
+
+//       setShowEditSubjectModal(false);
+//       setEditSubjectTarget(null);
+//       await loadSubjects();
+//       showToast('Subject updated successfully! ✓', 'success');
+//     } catch (err) {
+//       console.error('handleEditSubject error:', err);
+//       showToast(err.message || 'Failed to update subject', 'danger');
+//     }
+//   }, [editSubjectTarget, loadSubjects, showToast]);
+
+//   const handleDeleteClick = useCallback((subject) => {
+//     setDeleteTarget(subject);
+//     setShowDeleteModal(true);
+//   }, []);
+
+//   const handleDeleteConfirm = useCallback(async () => {
+//     if (!deleteTarget) return;
+
+//     try {
+//       const res = await fetch(`${API}/api/subjects/${deleteTarget.id}`, {
+//         method: 'DELETE'
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to delete subject');
+//       }
+
+//       setShowDeleteModal(false);
+//       setDeleteTarget(null);
+//       await loadSubjects();
+//       showToast('Subject deleted successfully ✓', 'success');
+//     } catch (err) {
+//       console.error('handleDeleteConfirm error:', err);
+//       showToast(err.message || 'Failed to delete subject', 'danger');
+//     }
+//   }, [deleteTarget, loadSubjects, showToast]);
+
+//   const handleAssignTeacher = useCallback(async (formData) => {
+//     try {
+//       const assignedSubjects = subjects.filter(s => formData.subjectIds.includes(s.id));
+      
+//       const assignments = formData.subjectIds.map(subjectId => ({
+//         teacher_id: Number(formData.teacherId),
+//         subject_id: Number(subjectId),
+//         course_id: Number(selectedCourseId),
+//         year_level: Number(yearLevel),
+//         semester,
+//         duration: formData.duration
+//       }));
+
+//       const results = await Promise.allSettled(
+//         assignments.map(assignment =>
+//           fetch(`${API}/api/teacher-assignments`, {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify(assignment)
+//           }).then(async res => {
+//             if (!res.ok) {
+//               const errorData = await res.json().catch(() => ({}));
+//               throw new Error(errorData.message || `HTTP ${res.status}`);
+//             }
+//             return res.json();
+//           })
+//         )
+//       );
+
+//       const successful = results.filter(r => r.status === 'fulfilled').length;
+//       const failed = results.filter(r => r.status === 'rejected').length;
+      
+//       if (failed > 0) {
+//         const errors = results
+//           .filter(r => r.status === 'rejected')
+//           .map(r => r.reason.message)
+//           .join(', ');
+        
+//         if (successful > 0) {
+//           const successfulIndices = results
+//             .map((r, idx) => r.status === 'fulfilled' ? idx : -1)
+//             .filter(idx => idx !== -1);
+//           const successfulSubjects = successfulIndices
+//             .map(idx => assignedSubjects[idx]?.subject_code)
+//             .filter(Boolean)
+//             .join(', ');
+          
+//           showToast(
+//             `${successful} assignment(s) succeeded (${successfulSubjects}), but ${failed} failed: ${errors}`,
+//             'danger'
+//           );
+//         } else {
+//           throw new Error(`All assignments failed: ${errors}`);
+//         }
+//       } else {
+//         const subjectCodes = assignedSubjects.map(s => s.subject_code).join(', ');
+//         setShowAssignTeacherModal(false);
+//         await loadTeacherAssignments();
+//         showToast(`Teacher assigned to ${successful} subject(s) successfully! Subjects: ${subjectCodes} 🎉`, 'success');
+//       }
+//     } catch (err) {
+//       console.error('handleAssignTeacher error:', err);
+//       showToast(err.message || 'Failed to assign teacher', 'danger');
+//     }
+//   }, [selectedCourseId, yearLevel, semester, subjects, loadTeacherAssignments, showToast]);
+
+//   const handleEditAssignmentClick = useCallback((assignment) => {
+//     setEditAssignmentTarget(assignment);
+//     setShowEditAssignmentModal(true);
+//   }, []);
+
+//   const handleEditAssignment = useCallback(async (formData) => {
+//     try {
+//       const res = await fetch(`${API}/api/teacher-assignments/${formData.id}`, {
+//         method: 'PUT',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({
+//           teacher_id: Number(formData.teacherId),
+//           duration: formData.duration
+//         })
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to update assignment');
+//       }
+
+//       setShowEditAssignmentModal(false);
+//       setEditAssignmentTarget(null);
+//       await loadTeacherAssignments();
+//       showToast('Assignment updated successfully! ✓', 'success');
+//     } catch (err) {
+//       console.error('handleEditAssignment error:', err);
+//       showToast(err.message || 'Failed to update assignment', 'danger');
+//     }
+//   }, [loadTeacherAssignments, showToast]);
+
+//   const handleDeleteAssignmentClick = useCallback((assignment) => {
+//     setDeleteAssignmentTarget(assignment);
+//     setShowDeleteAssignmentModal(true);
+//   }, []);
+
+//   const handleDeleteAssignmentConfirm = useCallback(async () => {
+//     if (!deleteAssignmentTarget) return;
+
+//     try {
+//       const res = await fetch(`${API}/api/teacher-assignments/${deleteAssignmentTarget.id}`, {
+//         method: 'DELETE'
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to delete assignment');
+//       }
+
+//       setShowDeleteAssignmentModal(false);
+//       setDeleteAssignmentTarget(null);
+//       await loadTeacherAssignments();
+//       showToast('Assignment deleted successfully ✓', 'success');
+//     } catch (err) {
+//       console.error('handleDeleteAssignmentConfirm error:', err);
+//       showToast(err.message || 'Failed to delete assignment', 'danger');
+//     }
+//   }, [deleteAssignmentTarget, loadTeacherAssignments, showToast]);
+
+//   const handleRefresh = useCallback(async () => {
+//     await fetchCourses();
+//     if (selectedCourseId) {
+//       await loadSubjects();
+//       await loadTeacherAssignments();
+//     }
+//     showToast('Data refreshed successfully', 'success');
+//   }, [fetchCourses, loadSubjects, loadTeacherAssignments, selectedCourseId, showToast]);
+
+//   // Get selected course info
+//   const selectedCourse = useMemo(() => {
+//     return courses.find(c => c.id === selectedCourseId);
+//   }, [courses, selectedCourseId]);
+
+//   // Calculate stats
+//   const stats = useMemo(() => {
+//     const totalUnits = subjects.reduce((sum, s) => sum + (s.units || 0), 0);
+//     return {
+//       courses: courses.length,
+//       subjects: subjects.length,
+//       totalUnits,
+//     };
+//   }, [courses, subjects]);
+
+//   return (
+//     <div className="courses-page">
+//       {/* Toast Notification */}
+//       <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+
+//       {/* Page Header with Gradient */}
+//       <div className="page-header-courses">
+//         <div className="page-title-section-gradient-courses">
+//           <div className="page-title-content-courses">
+//             <h1 className="page-title-gradient-courses">
+//               <BookOpen size={36} />
+//               Course & Subject Management
+//             </h1>
+//             <p className="page-subtitle-gradient-courses">
+//               {selectedCourse 
+//                 ? `${selectedCourse.code} — ${selectedCourse.name}`
+//                 : 'Select a course to manage subjects'
+//               }
+//             </p>
+//           </div>
+//           <div className="header-actions-courses">
+//             <button 
+//               className="action-btn-courses"
+//               onClick={() => setShowAssignTeacherModal(true)}
+//               disabled={!selectedCourseId || subjects.length === 0}
+//             >
+//               <Users size={18} />
+//               Assign Teacher
+//             </button>
+//             <button 
+//               className="action-btn-courses"
+//               onClick={() => setShowAddModal(true)}
+//               disabled={!selectedCourseId}
+//             >
+//               <Plus size={18} />
+//               Add Subject
+//             </button>
+//             <button 
+//               className="action-btn-courses"
+//               onClick={handleRefresh}
+//               disabled={loading.initial}
+//             >
+//               <RefreshCw size={18} className={loading.initial ? 'spinning' : ''} />
+//               Refresh
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Stats Dashboard */}
+//       <div className="stats-grid">
+//         <StatsCard
+//           icon={BookOpen}
+//           label="Total Courses"
+//           value={stats.courses}
+//           color={COLORS.primary}
+//         />
+//         <StatsCard
+//           icon={BookOpen}
+//           label="Subjects Loaded"
+//           value={stats.subjects}
+//           color={COLORS.accent}
+//         />
+//         <StatsCard
+//           icon={Award}
+//           label="Total Units"
+//           value={stats.totalUnits}
+//           color={COLORS.light}
+//         />
+//       </div>
+
+//       {/* Selectors Section */}
+//       <div className="selectors-section">
+//         <CourseSelector
+//           courses={courses}
+//           selectedCourseId={selectedCourseId}
+//           onChange={setSelectedCourseId}
+//         />
+
+//         <div className="dual-selectors">
+//           <YearSelector yearLevel={yearLevel} onChange={setYearLevel} />
+//           <SemesterSelector semester={semester} onChange={setSemester} />
+//         </div>
+//       </div>
+
+//       {/* Subjects Table Section */}
+//       <div className="table-section">
+//         <div className="table-header">
+//           <div className="table-title">
+//             <h2>
+//               {getYearLabel(yearLevel)} — {getSemesterLabel(semester)}
+//             </h2>
+//             <span className="subject-count">{subjects.length} Subjects</span>
+//           </div>
+
+//           <div className="table-controls">
+//             <div className="search-container">
+//               <Search size={16} className="search-icon" />
+//               <input
+//                 type="text"
+//                 className="search-input"
+//                 placeholder="Search subjects..."
+//                 value={searchTerm}
+//                 onChange={e => setSearchTerm(e.target.value)}
+//               />
+//               {searchTerm && (
+//                 <button 
+//                   className="search-clear"
+//                   onClick={() => setSearchTerm('')}
+//                 >
+//                   <X size={14} />
+//                 </button>
+//               )}
+//             </div>
+
+//             <div className="sort-container">
+//               <Filter size={16} />
+//               <select
+//                 className="sort-select"
+//                 value={sortBy}
+//                 onChange={e => setSortBy(e.target.value)}
+//               >
+//                 <option value="code">Sort by Code</option>
+//                 <option value="description">Sort by Description</option>
+//                 <option value="units">Sort by Units</option>
+//               </select>
+//             </div>
+//           </div>
+//         </div>
+
+//         <SubjectTable
+//           subjects={subjects}
+//           loading={loading.subjects}
+//           onEdit={handleEditSubjectClick}
+//           onDelete={handleDeleteClick}
+//           searchTerm={searchTerm}
+//           sortBy={sortBy}
+//         />
+//       </div>
+
+//       {/* Teacher Assignments Table Section */}
+//       <div className="table-section" style={{ marginTop: '2rem' }}>
+//         <div className="table-header">
+//           <div className="table-title">
+//             <h2>
+//               <Users size={24} />
+//               Teacher Assignments
+//             </h2>
+//             <span className="subject-count">{teacherAssignments.length} Assignments</span>
+//           </div>
+//         </div>
+
+//         <TeacherAssignmentsTable
+//           assignments={teacherAssignments}
+//           loading={loadingAssignments}
+//           onEdit={handleEditAssignmentClick}
+//           onDelete={handleDeleteAssignmentClick}
+//         />
+//       </div>
+
+//       {/* Modals */}
+//       <SubjectModal
+//         show={showAddModal}
+//         onClose={() => setShowAddModal(false)}
+//         onSave={handleAddSubject}
+//         courseName={selectedCourse?.code || ''}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         editMode={false}
+//       />
+
+//       <SubjectModal
+//         show={showEditSubjectModal}
+//         onClose={() => {
+//           setShowEditSubjectModal(false);
+//           setEditSubjectTarget(null);
+//         }}
+//         onSave={handleEditSubject}
+//         courseName={selectedCourse?.code || ''}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         editMode={true}
+//         initialData={editSubjectTarget}
+//       />
+
+//       <AssignTeacherModal
+//         show={showAssignTeacherModal}
+//         onClose={() => setShowAssignTeacherModal(false)}
+//         onSave={handleAssignTeacher}
+//         subjects={subjects}
+//         courseName={selectedCourse?.code || ''}
+//         courseId={selectedCourseId}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         allCourses={courses}
+//       />
+
+//       <EditAssignmentModal
+//         show={showEditAssignmentModal}
+//         onClose={() => {
+//           setShowEditAssignmentModal(false);
+//           setEditAssignmentTarget(null);
+//         }}
+//         onSave={handleEditAssignment}
+//         assignment={editAssignmentTarget}
+//         allCourses={courses}
+//       />
+
+//       <DeleteConfirmModal
+//         show={showDeleteModal}
+//         onClose={() => {
+//           setShowDeleteModal(false);
+//           setDeleteTarget(null);
+//         }}
+//         onConfirm={handleDeleteConfirm}
+//         itemName={deleteTarget?.subject_code}
+//         itemType="subject"
+//       />
+
+//       <DeleteConfirmModal
+//         show={showDeleteAssignmentModal}
+//         onClose={() => {
+//           setShowDeleteAssignmentModal(false);
+//           setDeleteAssignmentTarget(null);
+//         }}
+//         onConfirm={handleDeleteAssignmentConfirm}
+//         itemName={deleteAssignmentTarget ? `${deleteAssignmentTarget.teacher_name} - ${deleteAssignmentTarget.subject_code}` : ''}
+//         itemType="assignment"
+//       />
+
+//       {/* Inline Styles */}
+//       <style jsx>{`
+//         .courses-page {
+//           min-height: 100vh;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           padding: 2rem;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+//         }
+
+//         /* ===== TOAST NOTIFICATION ===== */
+//         .toast-notification {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           z-index: 10000;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           padding: 1rem 1.5rem;
+//           border-radius: 12px;
+//           border: 2px solid;
+//           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+//           animation: slideInRight 0.3s ease;
+//           max-width: 500px;
+//           word-wrap: break-word;
+//         }
+        
+//         .toast-notification span {
+//           flex: 1;
+//           line-height: 1.4;
+//         }
+
+//         .toast-close {
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           opacity: 0.7;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .toast-close:hover {
+//           opacity: 1;
+//         }
+
+//         /* ===== PAGE HEADER WITH GRADIENT ===== */
+//         .page-header-courses {
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-section-gradient-courses {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-content-courses {
+//           color: white;
+//         }
+
+//         .page-title-gradient-courses {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           color: white;
+//           margin: 0 0 0.5rem 0;
+//           letter-spacing: -0.5px;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .page-subtitle-gradient-courses {
+//           font-size: 1.05rem;
+//           color: white;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .header-actions-courses {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn-courses {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           backdrop-filter: blur(10px);
+//           font-size: 0.95rem;
+//         }
+
+//         .action-btn-courses:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn-courses:disabled {
+//           opacity: 0.5;
+//           cursor: not-allowed;
+//         }
+
+//         .spinning {
+//           animation: spin 1s linear infinite;
+//         }
+
+//         @keyframes spin {
+//           from { transform: rotate(0deg); }
+//           to { transform: rotate(360deg); }
+//         }
+
+//         @keyframes slideInRight {
+//           from {
+//             opacity: 0;
+//             transform: translateX(100%);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateX(0);
+//           }
+//         }
+
+//         /* ===== STATS GRID ===== */
+//         .stats-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+//           gap: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stats-card {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           background: white;
+//           padding: 1.5rem;
+//           border-radius: 12px;
+//           border-top: 4px solid;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+//           transition: transform 0.2s ease;
+//         }
+
+//         .stats-card:hover {
+//           transform: translateY(-4px);
+//           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+//         }
+
+//         .stats-icon {
+//           width: 56px;
+//           height: 56px;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           border-radius: 12px;
+//         }
+
+//         .stats-content {
+//           flex: 1;
+//         }
+
+//         .stats-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           line-height: 1;
+//         }
+
+//         .stats-label {
+//           font-size: 0.9rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//           margin-top: 0.25rem;
+//         }
+
+//         /* ===== SELECTORS SECTION ===== */
+//         .selectors-section {
+//           display: grid;
+//           gap: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .selector-section {
+//           background: white;
+//           padding: 1.5rem;
+//           border-radius: 12px;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+//         }
+
+//         .selector-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           margin-bottom: 1rem;
+//           color: ${COLORS.primary};
+//         }
+
+//         .selector-header h3 {
+//           margin: 0;
+//           font-size: 1.1rem;
+//           font-weight: 700;
+//         }
+
+//         .course-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+//           gap: 1rem;
+//         }
+
+//         .course-btn {
+//           padding: 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 10px;
+//           background: white;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           text-align: left;
+//         }
+
+//         .course-btn:hover {
+//           border-color: ${COLORS.lighter};
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .course-btn.active {
+//           border-color: ${COLORS.primary};
+//           background: ${COLORS.lightest};
+//           box-shadow: 0 0 0 3px ${COLORS.primary}20;
+//         }
+
+//         .course-code {
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           font-size: 1.1rem;
+//           margin-bottom: 0.25rem;
+//         }
+
+//         .course-name {
+//           font-size: 0.85rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.8;
+//         }
+
+//         .dual-selectors {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+//           gap: 1.5rem;
+//         }
+
+//         .button-group {
+//           display: flex;
+//           gap: 0.75rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .selector-btn {
+//           flex: 1;
+//           min-width: 140px;
+//           padding: 0.75rem 1.25rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 10px;
+//           background: white;
+//           color: ${COLORS.secondary};
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .selector-btn:hover {
+//           border-color: ${COLORS.lighter};
+//           background: ${COLORS.lightest};
+//         }
+
+//         .selector-btn.active {
+//           border-color: ${COLORS.light};
+//           background: ${COLORS.light};
+//           color: white;
+//         }
+
+//         /* ===== TABLE SECTION ===== */
+//         .table-section {
+//           background: white;
+//           border-radius: 16px;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+//           overflow: hidden;
+//         }
+
+//         .table-header {
+//           padding: 1.5rem;
+//           border-bottom: 2px solid ${COLORS.lightest};
+//         }
+
+//         .table-title {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .table-title h2 {
+//           margin: 0;
+//           font-size: 1.5rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .subject-count {
+//           background: ${COLORS.lighter};
+//           color: ${COLORS.primary};
+//           padding: 0.35rem 0.75rem;
+//           border-radius: 20px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .table-controls {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .search-container {
+//           position: relative;
+//           flex: 1;
+//           min-width: 250px;
+//           max-width: 400px;
+//         }
+
+//         .search-icon {
+//           position: absolute;
+//           left: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: ${COLORS.secondary};
+//           opacity: 0.5;
+//         }
+
+//         .search-input {
+//           width: 100%;
+//           padding: 0.65rem 2.5rem 0.65rem 2.5rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           transition: all 0.3s ease;
+//           background: #f8f9fa;
+//         }
+
+//         .search-input:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           background: white;
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         .search-clear {
+//           position: absolute;
+//           right: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           color: ${COLORS.secondary};
+//           opacity: 0.5;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .search-clear:hover {
+//           opacity: 1;
+//         }
+
+//         .sort-container {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .sort-select {
+//           padding: 0.65rem 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           background: #f8f9fa;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .sort-select:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           background: white;
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         /* ===== SUBJECTS TABLE ===== */
+//         .table-wrapper {
+//           overflow-x: auto;
+//         }
+
+//         .subjects-table {
+//           width: 100%;
+//           border-collapse: collapse;
+//         }
+
+//         .subjects-table thead {
+//           background: ${COLORS.lightest};
+//         }
+
+//         .subjects-table th {
+//           padding: 1rem 1.25rem;
+//           text-align: left;
+//           font-weight: 600;
+//           color: ${COLORS.secondary};
+//           border-bottom: 2px solid ${COLORS.lighter};
+//           white-space: nowrap;
+//         }
+
+//         .subjects-table th.text-center {
+//           text-align: center;
+//         }
+
+//         .subjects-table td {
+//           padding: 1rem 1.25rem;
+//           border-bottom: 1px solid ${COLORS.lightest};
+//         }
+
+//         .subjects-table td.text-center {
+//           text-align: center;
+//         }
+
+//         .subject-row {
+//           transition: background 0.2s ease;
+//         }
+
+//         .subject-row:hover {
+//           background: ${COLORS.lightest};
+//         }
+
+//         .row-number {
+//           font-weight: 700;
+//           color: ${COLORS.accent};
+//         }
+
+//         .subject-code-cell {
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           font-size: 0.95rem;
+//         }
+
+//         .subject-desc {
+//           color: ${COLORS.secondary};
+//         }
+
+//         .teacher-name-cell {
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           font-size: 0.95rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .units-badge {
+//           display: inline-block;
+//           background: ${COLORS.light};
+//           color: white;
+//           padding: 0.35rem 0.75rem;
+//           border-radius: 20px;
+//           font-weight: 600;
+//           font-size: 0.85rem;
+//         }
+
+//         .duration-badge {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.35rem;
+//           background: ${COLORS.lighter};
+//           color: ${COLORS.primary};
+//           padding: 0.35rem 0.75rem;
+//           border-radius: 20px;
+//           font-weight: 600;
+//           font-size: 0.85rem;
+//         }
+
+//         .action-buttons {
+//           display: flex;
+//           gap: 0.5rem;
+//           justify-content: center;
+//         }
+
+//         .edit-btn {
+//           display: inline-flex;
+//           align-items: center;
+//           justify-content: center;
+//           padding: 0.5rem;
+//           background: #e3f2fd;
+//           color: #1976d2;
+//           border: 1px solid #bbdefb;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .edit-btn:hover {
+//           background: #bbdefb;
+//           border-color: #90caf9;
+//           transform: translateY(-1px);
+//         }
+
+//         .delete-btn {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.35rem;
+//           padding: 0.5rem 1rem;
+//           background: #fee;
+//           color: #c33;
+//           border: 1px solid #fcc;
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .delete-btn:hover {
+//           background: #fcc;
+//           border-color: #faa;
+//           transform: translateY(-1px);
+//         }
+
+//         .delete-btn-small {
+//           display: inline-flex;
+//           align-items: center;
+//           justify-content: center;
+//           padding: 0.5rem;
+//           background: #fee;
+//           color: #c33;
+//           border: 1px solid #fcc;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .delete-btn-small:hover {
+//           background: #fcc;
+//           border-color: #faa;
+//           transform: translateY(-1px);
+//         }
+
+//         /* ===== EMPTY STATE ===== */
+//         .empty-state {
+//           text-align: center;
+//           padding: 4rem 2rem;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .empty-icon {
+//           color: ${COLORS.lighter};
+//           margin-bottom: 1rem;
+//         }
+
+//         .empty-state h3 {
+//           color: ${COLORS.primary};
+//           margin: 0 0 0.5rem 0;
+//         }
+
+//         .empty-state p {
+//           opacity: 0.7;
+//           margin: 0;
+//         }
+
+//         /* ===== LOADING SKELETON ===== */
+//         .skeleton {
+//           background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+//           background-size: 200% 100%;
+//           animation: shimmer 1.5s infinite;
+//           border-radius: 8px;
+//         }
+
+//         .table-skeleton {
+//           padding: 1rem;
+//         }
+
+//         .skeleton-row {
+//           display: grid;
+//           grid-template-columns: 60px 120px 1fr 80px 100px;
+//           gap: 1rem;
+//           margin-bottom: 1rem;
+//         }
+
+//         @keyframes shimmer {
+//           0% { background-position: 200% 0; }
+//           100% { background-position: -200% 0; }
+//         }
+
+//         /* ===== MODALS ===== */
+//         .modal-overlay {
+//           position: fixed;
+//           top: 0;
+//           left: 0;
+//           right: 0;
+//           bottom: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9999;
+//           animation: fadeIn 0.2s ease;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 500px;
+//           width: 90%;
+//           max-height: 90vh;
+//           overflow-y: auto;
+//           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+//           animation: scaleIn 0.3s ease;
+//         }
+
+//         .confirm-modal {
+//           max-width: 400px;
+//         }
+
+//         .assign-teacher-modal {
+//           max-width: 650px;
+//         }
+
+//         /* ===== CHECKBOX STYLING ===== */
+//         .checkbox-group {
+//           max-height: 300px;
+//           overflow-y: auto;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           padding: 0.75rem;
+//           background: #f8f9fa;
+//         }
+
+//         .checkbox-label {
+//           display: flex;
+//           align-items: start;
+//           gap: 0.75rem;
+//           padding: 0.75rem;
+//           margin-bottom: 0.5rem;
+//           background: white;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .checkbox-label:hover {
+//           border-color: ${COLORS.lighter};
+//           background: ${COLORS.lightest};
+//         }
+
+//         .checkbox-label:has(input:checked) {
+//           border-color: ${COLORS.light};
+//           background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+//         }
+
+//         .checkbox-label input[type="checkbox"] {
+//           width: 18px;
+//           height: 18px;
+//           margin-top: 2px;
+//           cursor: pointer;
+//           accent-color: ${COLORS.light};
+//         }
+
+//         .checkbox-label input[type="checkbox"]:disabled {
+//           cursor: not-allowed;
+//           opacity: 0.5;
+//         }
+
+//         .checkbox-text {
+//           flex: 1;
+//           font-size: 0.9rem;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .checkbox-text strong {
+//           color: ${COLORS.primary};
+//         }
+
+//         .selected-count {
+//           margin-top: 0.5rem;
+//           padding: 0.5rem 0.75rem;
+//           background: ${COLORS.lightest};
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           text-align: center;
+//         }
+
+//         .no-teachers-warning,
+//         .no-subjects-warning {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1rem;
+//           background: #fff3cd;
+//           border: 2px solid #ffc107;
+//           border-radius: 8px;
+//           color: #856404;
+//           font-size: 0.9rem;
+//         }
+
+//         .time-preview {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1rem;
+//           background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+//           border-radius: 8px;
+//           color: ${COLORS.primary};
+//           font-size: 0.9rem;
+//           margin-top: 1rem;
+//         }
+
+//         .time-preview strong {
+//           color: ${COLORS.primary};
+//           font-weight: 700;
+//         }
+
+//         .teacher-assignments-section {
+//           background: #f8f9fa;
+//           border-radius: 8px;
+//           padding: 1rem;
+//           margin: 1rem 0;
+//           border: 2px solid ${COLORS.lightest};
+//         }
+
+//         .assignments-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.75rem;
+//           font-size: 0.9rem;
+//         }
+
+//         .assignments-list {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//           max-height: 200px;
+//           overflow-y: auto;
+//         }
+
+//         .assignment-item {
+//           background: white;
+//           padding: 0.75rem;
+//           border-radius: 6px;
+//           border-left: 3px solid ${COLORS.light};
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//         }
+
+//         .assignment-subject {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           font-size: 0.9rem;
+//         }
+
+//         .assignment-time {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           color: ${COLORS.secondary};
+//           font-size: 0.85rem;
+//           opacity: 0.8;
+//         }
+
+//         @keyframes fadeIn {
+//           from { opacity: 0; }
+//           to { opacity: 1; }
+//         }
+
+//         @keyframes scaleIn {
+//           from {
+//             opacity: 0;
+//             transform: scale(0.95) translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: scale(1) translateY(0);
+//           }
+//         }
+
+//         .modal-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           padding: 1.5rem;
+//           border-bottom: 2px solid ${COLORS.lightest};
+//         }
+
+//         .modal-header h3 {
+//           margin: 0;
+//           font-size: 1.5rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .warning-icon {
+//           color: #f59e0b;
+//         }
+
+//         .modal-close {
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.5rem;
+//           display: flex;
+//           align-items: center;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .modal-close:hover {
+//           opacity: 1;
+//         }
+
+//         .modal-body {
+//           padding: 1.5rem;
+//         }
+
+//         .modal-footer {
+//           padding: 1.5rem;
+//           border-top: 2px solid ${COLORS.lightest};
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 1rem;
+//         }
+
+//         .form-group {
+//           margin-bottom: 1.25rem;
+//         }
+
+//         .form-label {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .form-input {
+//           width: 100%;
+//           padding: 0.75rem 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .form-input:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         .form-info {
+//           background: ${COLORS.lightest};
+//           padding: 1rem;
+//           border-radius: 8px;
+//           margin-top: 1rem;
+//         }
+
+//         .info-label {
+//           font-size: 0.85rem;
+//           color: ${COLORS.secondary};
+//           margin-bottom: 0.5rem;
+//           font-weight: 600;
+//         }
+
+//         .info-details {
+//           font-size: 0.95rem;
+//           color: ${COLORS.primary};
+//         }
+
+//         .btn-primary {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1.5rem;
+//           background: ${COLORS.primary};
+//           color: white;
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-primary:hover:not(:disabled) {
+//           background: ${COLORS.secondary};
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(3, 4, 94, 0.3);
+//         }
+
+//         .btn-primary:disabled {
+//           opacity: 0.5;
+//           cursor: not-allowed;
+//         }
+
+//         .btn-secondary {
+//           padding: 0.75rem 1.5rem;
+//           background: #e2e8f0;
+//           color: ${COLORS.secondary};
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-secondary:hover {
+//           background: #cbd5e1;
+//         }
+
+//         .btn-danger {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1.5rem;
+//           background: #dc2626;
+//           color: white;
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-danger:hover {
+//           background: #b91c1c;
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+//         }
+
+//         /* ===== RESPONSIVE DESIGN ===== */
+//         @media (max-width: 992px) {
+//           .page-title-section-gradient-courses {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .header-actions-courses {
+//             width: 100%;
+//           }
+
+//           .action-btn-courses {
+//             flex: 1;
+//             justify-content: center;
+//           }
+//         }
+
+//         @media (max-width: 768px) {
+//           .courses-page {
+//             padding: 1rem;
+//           }
+
+//           .page-title-gradient-courses {
+//             font-size: 2rem;
+//           }
+
+//           .course-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .dual-selectors {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .table-controls {
+//             flex-direction: column;
+//           }
+
+//           .search-container {
+//             width: 100%;
+//             max-width: none;
+//           }
+
+//           .subjects-table th,
+//           .subjects-table td {
+//             padding: 0.75rem 0.5rem;
+//             font-size: 0.85rem;
+//           }
+
+//           .checkbox-group {
+//             max-height: 200px;
+//           }
+
+//           .checkbox-label {
+//             padding: 0.5rem;
+//           }
+
+//           .checkbox-text {
+//             font-size: 0.85rem;
+//           }
+
+//           .action-buttons {
+//             flex-direction: column;
+//           }
+//         }
+
+//         @media (max-width: 576px) {
+//           .courses-page {
+//             padding: 0.5rem;
+//           }
+
+//           .page-title-gradient-courses {
+//             font-size: 1.5rem;
+//           }
+
+//           .stats-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .button-group {
+//             flex-direction: column;
+//           }
+
+//           .selector-btn {
+//             width: 100%;
+//           }
+
+//           .header-actions-courses {
+//             flex-direction: column;
+//           }
+
+//           .action-btn-courses {
+//             width: 100%;
+//             justify-content: center;
+//           }
+
+//           .modal-content {
+//             width: 95%;
+//           }
+
+//           .assign-teacher-modal {
+//             max-width: 95%;
+//           }
+//         }
+//       `}</style>
+//     </div>
+//   );
+// }
+
+//FUNCTION NAL WITH MAJOR BTLED FILTER
+// import React, { useEffect, useState, useMemo, useCallback } from 'react';
+// import { 
+//   BookOpen, Plus, Search, RefreshCw, Edit2, Trash2, X, 
+//   Check, ChevronDown, ChevronUp, Filter, Download, 
+//   AlertCircle, CheckCircle, Calendar, Users, Award, Clock
+// } from 'lucide-react';
+
+// // ==================== CONSTANTS ====================
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// const COLORS = {
+//   primary: "#03045E",
+//   secondary: "#023E8A",
+//   accent: "#0077B6",
+//   light: "#00B4D8",
+//   lighter: "#48CAE4",
+//   lightest: "#CAF0F8",
+// };
+
+// const DURATION_OPTIONS = [
+//   { value: 0.5, label: '30 minutes' },
+//   { value: 1, label: '1 hour' },
+//   { value: 1.5, label: '1.5 hours' },
+//   { value: 2, label: '2 hours' },
+//   { value: 2.5, label: '2.5 hours' },
+//   { value: 3, label: '3 hours' },
+//   { value: 4, label: '4 hours' }
+// ];
+
+// const BTLED_MAJORS = [
+//   { value: 'ICT', label: 'ICT - Information and Communication Technology' },
+//   { value: 'HE', label: 'HE - Home Economics' }
+// ];
+
+// // ==================== UTILITY FUNCTIONS ====================
+// const getYearLabel = (year) => {
+//   const labels = { 1: 'First Year', 2: 'Second Year', 3: 'Third Year', 4: 'Fourth Year' };
+//   return labels[year] || `Year ${year}`;
+// };
+
+// const getSemesterLabel = (sem) => {
+//   const labels = { '1': '1st Semester', '2': '2nd Semester', 'Summer': 'Summer' };
+//   return labels[sem] || sem;
+// };
+
+// const isBTLEDCourse = (courseCode) => {
+//   return courseCode === 'BTLED' || courseCode?.startsWith('BTLED');
+// };
+
+// // ==================== TOAST NOTIFICATION ====================
+// const Toast = React.memo(({ message, type, onClose }) => {
+//   useEffect(() => {
+//     if (message) {
+//       const timer = setTimeout(onClose, 4000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [message, onClose]);
+
+//   if (!message) return null;
+
+//   const styles = {
+//     success: { bg: '#d4edda', border: '#c3e6cb', color: '#155724', Icon: CheckCircle },
+//     danger: { bg: '#f8d7da', border: '#f5c6cb', color: '#721c24', Icon: AlertCircle },
+//   };
+
+//   const style = styles[type] || styles.success;
+//   const Icon = style.Icon;
+
+//   return (
+//     <div className="toast-notification" style={{ 
+//       background: style.bg, 
+//       borderColor: style.border, 
+//       color: style.color 
+//     }}>
+//       <Icon size={20} />
+//       <span>{message}</span>
+//       <button onClick={onClose} className="toast-close">
+//         <X size={16} />
+//       </button>
+//     </div>
+//   );
+// });
+
+// // ==================== LOADING SKELETON ====================
+// const Skeleton = React.memo(({ width = '100%', height = '40px' }) => (
+//   <div className="skeleton" style={{ width, height }} />
+// ));
+
+// const TableSkeleton = React.memo(() => (
+//   <div className="table-skeleton">
+//     {[1, 2, 3, 4, 5].map(i => (
+//       <div key={i} className="skeleton-row">
+//         <Skeleton width="40px" height="50px" />
+//         <Skeleton width="120px" height="50px" />
+//         <Skeleton height="50px" />
+//         <Skeleton width="80px" height="50px" />
+//         <Skeleton width="100px" height="50px" />
+//       </div>
+//     ))}
+//   </div>
+// ));
+
+// // ==================== STATS CARD ====================
+// const StatsCard = React.memo(({ icon: Icon, label, value, color }) => (
+//   <div className="stats-card" style={{ borderTopColor: color }}>
+//     <div className="stats-icon" style={{ background: `${color}20`, color }}>
+//       <Icon size={24} />
+//     </div>
+//     <div className="stats-content">
+//       <div className="stats-value">{value}</div>
+//       <div className="stats-label">{label}</div>
+//     </div>
+//   </div>
+// ));
+
+// // ==================== COURSE SELECTOR ====================
+// const CourseSelector = React.memo(({ courses, selectedCourseId, onChange }) => {
+//   const regularCourses = courses.filter(course => !course.is_general);
+  
+//   return (
+//     <div className="selector-section">
+//       <div className="selector-header">
+//         <BookOpen size={18} />
+//         <h3>Select Course</h3>
+//       </div>
+//       <div className="course-grid">
+//         {regularCourses.map(course => (
+//           <button
+//             key={course.id}
+//             className={`course-btn ${course.id === selectedCourseId ? 'active' : ''}`}
+//             onClick={() => onChange(course.id)}
+//           >
+//             <div className="course-code">{course.code}</div>
+//             <div className="course-name">{course.name}</div>
+//           </button>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== YEAR SELECTOR ====================
+// const YearSelector = React.memo(({ yearLevel, onChange }) => (
+//   <div className="selector-section">
+//     <div className="selector-header">
+//       <Users size={18} />
+//       <h3>Year Level</h3>
+//     </div>
+//     <div className="button-group">
+//       {[1, 2, 3, 4].map(year => (
+//         <button
+//           key={year}
+//           className={`selector-btn ${year === yearLevel ? 'active' : ''}`}
+//           onClick={() => onChange(year)}
+//         >
+//           {getYearLabel(year)}
+//         </button>
+//       ))}
+//     </div>
+//   </div>
+// ));
+
+// // ==================== SEMESTER SELECTOR ====================
+// const SemesterSelector = React.memo(({ semester, onChange }) => (
+//   <div className="selector-section">
+//     <div className="selector-header">
+//       <Calendar size={18} />
+//       <h3>Semester</h3>
+//     </div>
+//     <div className="button-group">
+//       {['1', '2'].map(sem => (
+//         <button
+//           key={sem}
+//           className={`selector-btn ${sem === semester ? 'active' : ''}`}
+//           onClick={() => onChange(sem)}
+//         >
+//           {getSemesterLabel(sem)}
+//         </button>
+//       ))}
+//     </div>
+//   </div>
+// ));
+
+// // ==================== BTLED MAJOR SELECTOR ====================
+// const BTLEDMajorSelector = React.memo(({ major, onChange, show }) => {
+//   if (!show) return null;
+  
+//   return (
+//     <div className="selector-section btled-major-section">
+//       <div className="selector-header">
+//         <Award size={18} />
+//         <h3>BTLED Major</h3>
+//       </div>
+//       <div className="button-group">
+//         {BTLED_MAJORS.map(m => (
+//           <button
+//             key={m.value}
+//             className={`selector-btn btled-major-btn ${m.value === major ? 'active' : ''}`}
+//             onClick={() => onChange(m.value)}
+//           >
+//             {m.label}
+//           </button>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== SUBJECT TABLE ====================
+// const SubjectTable = React.memo(({ 
+//   subjects, 
+//   loading, 
+//   onEdit,
+//   onDelete, 
+//   searchTerm, 
+//   sortBy 
+// }) => {
+//   const filteredAndSortedSubjects = useMemo(() => {
+//     let filtered = subjects;
+
+//     if (searchTerm.trim()) {
+//       const term = searchTerm.toLowerCase();
+//       filtered = subjects.filter(s =>
+//         s.subject_code?.toLowerCase().includes(term) ||
+//         s.description?.toLowerCase().includes(term)
+//       );
+//     }
+
+//     const sorted = [...filtered].sort((a, b) => {
+//       switch (sortBy) {
+//         case 'code':
+//           return (a.subject_code || '').localeCompare(b.subject_code || '');
+//         case 'description':
+//           return (a.description || '').localeCompare(b.description || '');
+//         case 'units':
+//           return (b.units || 0) - (a.units || 0);
+//         default:
+//           return 0;
+//       }
+//     });
+
+//     return sorted;
+//   }, [subjects, searchTerm, sortBy]);
+
+//   if (loading) return <TableSkeleton />;
+
+//   if (filteredAndSortedSubjects.length === 0) {
+//     return (
+//       <div className="empty-state">
+//         <BookOpen size={48} className="empty-icon" />
+//         <h3>No Subjects Found</h3>
+//         <p>
+//           {searchTerm 
+//             ? "No subjects match your search criteria"
+//             : "No subjects available for this selection"}
+//         </p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="table-wrapper">
+//       <table className="subjects-table">
+//         <thead>
+//           <tr>
+//             <th style={{ width: '60px' }}>#</th>
+//             <th>Subject Code</th>
+//             <th>Description</th>
+//             <th style={{ width: '100px' }}>Units</th>
+//             <th style={{ width: '150px' }} className="text-center">Actions</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {filteredAndSortedSubjects.map((subject, index) => (
+//             <tr key={subject.id} className="subject-row">
+//               <td className="row-number">{index + 1}</td>
+//               <td>
+//                 <div className="subject-code-cell">{subject.subject_code}</div>
+//               </td>
+//               <td>
+//                 <div className="subject-desc">{subject.description}</div>
+//               </td>
+//               <td>
+//                 <div className="units-badge">{subject.units}</div>
+//               </td>
+//               <td className="text-center">
+//                 <div className="action-buttons">
+//                   <button
+//                     className="edit-btn"
+//                     onClick={() => onEdit(subject)}
+//                     title="Edit subject"
+//                   >
+//                     <Edit2 size={16} />
+//                   </button>
+//                   <button
+//                     className="delete-btn-small"
+//                     onClick={() => onDelete(subject)}
+//                     title="Delete subject"
+//                   >
+//                     <Trash2 size={16} />
+//                   </button>
+//                 </div>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// });
+
+// // ==================== TEACHER ASSIGNMENTS TABLE ====================
+// const TeacherAssignmentsTable = React.memo(({ assignments, loading, onEdit, onDelete }) => {
+//   if (loading) return <TableSkeleton />;
+
+//   if (assignments.length === 0) {
+//     return (
+//       <div className="empty-state">
+//         <Users size={48} className="empty-icon" />
+//         <h3>No Teacher Assignments</h3>
+//         <p>No teachers have been assigned to subjects yet</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="table-wrapper">
+//       <table className="subjects-table">
+//         <thead>
+//           <tr>
+//             <th style={{ width: '60px' }}>#</th>
+//             <th>Teacher Name</th>
+//             <th>Subject Code</th>
+//             <th>Description</th>
+//             <th style={{ width: '120px' }}>Duration</th>
+//             <th style={{ width: '150px' }} className="text-center">Actions</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {assignments.map((assignment, index) => (
+//             <tr key={`${assignment.id}-${index}`} className="subject-row">
+//               <td className="row-number">{index + 1}</td>
+//               <td>
+//                 <div className="teacher-name-cell">
+//                   <Users size={16} />
+//                   {assignment.teacher_name || assignment.name || 'Unknown Teacher'}
+//                 </div>
+//               </td>
+//               <td>
+//                 <div className="subject-code-cell">{assignment.subject_code}</div>
+//               </td>
+//               <td>
+//                 <div className="subject-desc">{assignment.description}</div>
+//               </td>
+//               <td>
+//                 <div className="duration-badge">
+//                   <Clock size={14} />
+//                   {assignment.duration ? `${assignment.duration}h` : 'N/A'}
+//                 </div>
+//               </td>
+//               <td className="text-center">
+//                 <div className="action-buttons">
+//                   <button
+//                     className="edit-btn"
+//                     onClick={() => onEdit(assignment)}
+//                     title="Edit assignment"
+//                   >
+//                     <Edit2 size={16} />
+//                   </button>
+//                   <button
+//                     className="delete-btn-small"
+//                     onClick={() => onDelete(assignment)}
+//                     title="Delete assignment"
+//                   >
+//                     <Trash2 size={16} />
+//                   </button>
+//                 </div>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// });
+
+// // ==================== ADD/EDIT SUBJECT MODAL ====================
+// const SubjectModal = React.memo(({ 
+//   show, 
+//   onClose, 
+//   onSave, 
+//   courseName, 
+//   yearLevel, 
+//   semester,
+//   btledMajor,
+//   isBTLED,
+//   editMode = false,
+//   initialData = null
+// }) => {
+//   const [formData, setFormData] = useState({
+//     subject_code: '',
+//     description: '',
+//     units: 3
+//   });
+
+//   useEffect(() => {
+//     if (editMode && initialData) {
+//       setFormData({
+//         subject_code: initialData.subject_code || '',
+//         description: initialData.description || '',
+//         units: initialData.units || 3
+//       });
+//     } else {
+//       setFormData({ subject_code: '', description: '', units: 3 });
+//     }
+//   }, [editMode, initialData, show]);
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (formData.subject_code.trim() && formData.description.trim() && formData.units) {
+//       onSave(formData);
+//       if (!editMode) {
+//         setFormData({ subject_code: '', description: '', units: 3 });
+//       }
+//     }
+//   };
+
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <form onSubmit={handleSubmit}>
+//           <div className="modal-header">
+//             <h3>{editMode ? 'Edit Subject' : 'Add New Subject'}</h3>
+//             <button type="button" onClick={onClose} className="modal-close">
+//               <X size={20} />
+//             </button>
+//           </div>
+
+//           <div className="modal-body">
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Subject Code
+//               </label>
+//               <input
+//                 type="text"
+//                 className="form-input"
+//                 placeholder="e.g., CS101, MATH201"
+//                 value={formData.subject_code}
+//                 onChange={e => setFormData({ ...formData, subject_code: e.target.value })}
+//                 required
+//                 autoFocus
+//               />
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Description
+//               </label>
+//               <input
+//                 type="text"
+//                 className="form-input"
+//                 placeholder="e.g., Introduction to Programming"
+//                 value={formData.description}
+//                 onChange={e => setFormData({ ...formData, description: e.target.value })}
+//                 required
+//               />
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Award size={16} />
+//                 Units
+//               </label>
+//               <input
+//                 type="number"
+//                 className="form-input"
+//                 step="0.5"
+//                 min="0"
+//                 max="10"
+//                 value={formData.units}
+//                 onChange={e => setFormData({ ...formData, units: parseFloat(e.target.value) })}
+//                 required
+//               />
+//             </div>
+
+//             {!editMode && (
+//               <div className="form-info">
+//                 <div className="info-label">Will be added to:</div>
+//                 <div className="info-details">
+//                   <strong>{courseName}</strong> • {getYearLabel(yearLevel)} • {getSemesterLabel(semester)}
+//                   {isBTLED && btledMajor && (yearLevel === 3 || yearLevel === 4) && (
+//                     <> • Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}</>
+//                   )}
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+
+//           <div className="modal-footer">
+//             <button type="button" onClick={onClose} className="btn-secondary">
+//               Cancel
+//             </button>
+//             <button type="submit" className="btn-primary">
+//               {editMode ? <Check size={16} /> : <Plus size={16} />}
+//               {editMode ? 'Update Subject' : 'Add Subject'}
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== ASSIGN TEACHER MODAL ====================
+// const AssignTeacherModal = React.memo(({ 
+//   show, 
+//   onClose, 
+//   onSave,
+//   subjects,
+//   courseName,
+//   courseId,
+//   yearLevel,
+//   semester,
+//   allCourses
+// }) => {
+//   const [teachers, setTeachers] = useState([]);
+//   const [selectedTeacherId, setSelectedTeacherId] = useState('');
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+//   const [duration, setDuration] = useState(1);
+//   const [loading, setLoading] = useState(false);
+//   const [teacherAssignments, setTeacherAssignments] = useState([]);
+//   const [selectedCourseFilter, setSelectedCourseFilter] = useState(courseId);
+
+//   useEffect(() => {
+//     if (show) {
+//       fetchTeachers();
+//     }
+//   }, [show, selectedCourseFilter]);
+
+//   useEffect(() => {
+//     if (selectedTeacherId) {
+//       fetchTeacherAssignments(selectedTeacherId);
+//     } else {
+//       setTeacherAssignments([]);
+//     }
+//   }, [selectedTeacherId]);
+
+//   useEffect(() => {
+//     if (show) {
+//       setSelectedCourseFilter(courseId);
+//     }
+//   }, [show, courseId]);
+
+//   const fetchTeachers = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/instructors`);
+//       const data = await res.json();
+//       const filteredTeachers = Array.isArray(data) 
+//         ? (selectedCourseFilter === 'all' 
+//             ? data 
+//             : data.filter(t => t.course_id === selectedCourseFilter || t.courseId === selectedCourseFilter))
+//         : [];
+//       setTeachers(filteredTeachers);
+//     } catch (err) {
+//       console.error('fetchTeachers error:', err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const fetchTeacherAssignments = async (teacherId) => {
+//     try {
+//       const res = await fetch(`${API}/api/teacher-assignments/${teacherId}`);
+//       const data = await res.json();
+//       setTeacherAssignments(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('fetchTeacherAssignments error:', err);
+//       setTeacherAssignments([]);
+//     }
+//   };
+
+//   const handleSubjectToggle = (subjectId) => {
+//     setSelectedSubjects(prev => {
+//       if (prev.includes(subjectId)) {
+//         return prev.filter(id => id !== subjectId);
+//       } else {
+//         return [...prev, subjectId];
+//       }
+//     });
+//   };
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (selectedTeacherId && selectedSubjects.length > 0 && duration) {
+//       onSave({
+//         teacherId: selectedTeacherId,
+//         subjectIds: selectedSubjects,
+//         duration
+//       });
+//       setSelectedTeacherId('');
+//       setSelectedSubjects([]);
+//       setDuration(1);
+//     }
+//   };
+
+//   const selectedTeacher = teachers.find(t => t.id === Number(selectedTeacherId));
+
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content assign-teacher-modal" onClick={e => e.stopPropagation()}>
+//         <form onSubmit={handleSubmit}>
+//           <div className="modal-header">
+//             <h3>
+//               <Users size={24} />
+//               Assign Teacher to Subject(s)
+//             </h3>
+//             <button type="button" onClick={onClose} className="modal-close">
+//               <X size={20} />
+//             </button>
+//           </div>
+
+//           <div className="modal-body">
+//             <div className="form-info" style={{ marginBottom: '1.5rem' }}>
+//               <div className="info-label">Assignment Context:</div>
+//               <div className="info-details">
+//                 <strong>{courseName}</strong> • {getYearLabel(yearLevel)} • {getSemesterLabel(semester)}
+//               </div>
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Filter Teachers by Course
+//               </label>
+//               <select
+//                 className="form-input"
+//                 value={selectedCourseFilter}
+//                 onChange={e => {
+//                   setSelectedCourseFilter(e.target.value === 'all' ? 'all' : Number(e.target.value));
+//                   setSelectedTeacherId('');
+//                 }}
+//               >
+//                 <option value="all">All Courses</option>
+//                 {allCourses.map(course => (
+//                   <option key={course.id} value={course.id}>
+//                     {course.code} - {course.name}
+//                   </option>
+//                 ))}
+//               </select>
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Users size={16} />
+//                 Select Teacher
+//               </label>
+//               {teachers.length === 0 ? (
+//                 <div className="no-teachers-warning">
+//                   <AlertCircle size={16} />
+//                   <span>
+//                     {selectedCourseFilter === 'all' 
+//                       ? 'No instructors found. Please add instructors first.'
+//                       : 'No instructors found for this course. Try selecting "All Courses" or add instructors first.'
+//                     }
+//                   </span>
+//                 </div>
+//               ) : (
+//                 <select
+//                   className="form-input"
+//                   value={selectedTeacherId}
+//                   onChange={e => setSelectedTeacherId(e.target.value)}
+//                   required
+//                   disabled={loading}
+//                 >
+//                   <option value="">-- Choose a teacher --</option>
+//                   {teachers.map(teacher => {
+//                     const teacherCourse = allCourses.find(c => c.id === (teacher.course_id || teacher.courseId));
+//                     const displayName = teacherCourse 
+//                       ? `${teacher.name} ${teacher.last_name || ''} (${teacherCourse.code})`
+//                       : `${teacher.name} ${teacher.last_name || ''}`;
+//                     return (
+//                       <option key={teacher.id} value={teacher.id}>
+//                         {displayName}
+//                       </option>
+//                     );
+//                   })}
+//                 </select>
+//               )}
+//             </div>
+
+//             {selectedTeacherId && teacherAssignments.length > 0 && (
+//               <div className="teacher-assignments-section">
+//                 <div className="assignments-header">
+//                   <Award size={16} />
+//                   <strong>Current Assignments for {selectedTeacher?.name}</strong>
+//                 </div>
+//                 <div className="assignments-list">
+//                   {teacherAssignments.map((assignment, idx) => (
+//                     <div key={idx} className="assignment-item">
+//                       <div className="assignment-subject">
+//                         <BookOpen size={14} />
+//                         {assignment.subject_code} - {assignment.description}
+//                       </div>
+//                       <div className="assignment-time">
+//                         <Clock size={14} />
+//                         {assignment.duration ? `${assignment.duration} hour${assignment.duration > 1 ? 's' : ''}` : assignment.time_slot}
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             )}
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <BookOpen size={16} />
+//                 Select Subject(s) *
+//               </label>
+//               <div className="checkbox-group">
+//                 {subjects.length === 0 ? (
+//                   <div className="no-subjects-warning">
+//                     <AlertCircle size={16} />
+//                     <span>No subjects available. Please add subjects first.</span>
+//                   </div>
+//                 ) : (
+//                   subjects.map(subject => (
+//                     <label key={subject.id} className="checkbox-label">
+//                       <input
+//                         type="checkbox"
+//                         checked={selectedSubjects.includes(subject.id)}
+//                         onChange={() => handleSubjectToggle(subject.id)}
+//                         disabled={!selectedTeacherId}
+//                       />
+//                       <span className="checkbox-text">
+//                         <strong>{subject.subject_code}</strong> - {subject.description} ({subject.units} units)
+//                       </span>
+//                     </label>
+//                   ))
+//                 )}
+//               </div>
+//               {selectedSubjects.length > 0 && (
+//                 <div className="selected-count">
+//                   {selectedSubjects.length} subject(s) selected
+//                 </div>
+//               )}
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Clock size={16} />
+//                 Class Duration *
+//               </label>
+//               <select
+//                 className="form-input"
+//                 value={duration}
+//                 onChange={e => setDuration(Number(e.target.value))}
+//                 required
+//                 disabled={selectedSubjects.length === 0}
+//               >
+//                 {DURATION_OPTIONS.map(option => (
+//                   <option key={option.value} value={option.value}>
+//                     {option.label}
+//                   </option>
+//                 ))}
+//               </select>
+//             </div>
+
+//             {duration && selectedSubjects.length > 0 && (
+//               <div className="time-preview">
+//                 <Clock size={16} />
+//                 <span>Duration: <strong>{DURATION_OPTIONS.find(d => d.value === duration)?.label}</strong> per class</span>
+//               </div>
+//             )}
+//           </div>
+
+//           <div className="modal-footer">
+//             <button type="button" onClick={onClose} className="btn-secondary">
+//               Cancel
+//             </button>
+//             <button 
+//               type="submit" 
+//               className="btn-primary"
+//               disabled={!selectedTeacherId || selectedSubjects.length === 0 || !duration}
+//             >
+//               <Check size={16} />
+//               Assign Teacher
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== EDIT ASSIGNMENT MODAL ====================
+// const EditAssignmentModal = React.memo(({ 
+//   show, 
+//   onClose, 
+//   onSave,
+//   assignment,
+//   allCourses
+// }) => {
+//   const [duration, setDuration] = useState(1);
+//   const [teachers, setTeachers] = useState([]);
+//   const [selectedTeacherId, setSelectedTeacherId] = useState('');
+//   const [loading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     if (show && assignment) {
+//       setDuration(assignment.duration || 1);
+//       setSelectedTeacherId(assignment.teacher_id || '');
+//       fetchTeachers();
+//     }
+//   }, [show, assignment]);
+
+//   const fetchTeachers = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await fetch(`${API}/api/instructors`);
+//       const data = await res.json();
+//       setTeachers(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('fetchTeachers error:', err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (selectedTeacherId && duration) {
+//       onSave({
+//         id: assignment.id,
+//         teacherId: selectedTeacherId,
+//         duration
+//       });
+//     }
+//   };
+
+//   if (!show || !assignment) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <form onSubmit={handleSubmit}>
+//           <div className="modal-header">
+//             <h3>
+//               <Edit2 size={24} />
+//               Edit Teacher Assignment
+//             </h3>
+//             <button type="button" onClick={onClose} className="modal-close">
+//               <X size={20} />
+//             </button>
+//           </div>
+
+//           <div className="modal-body">
+//             <div className="form-info" style={{ marginBottom: '1.5rem' }}>
+//               <div className="info-label">Subject:</div>
+//               <div className="info-details">
+//                 <strong>{assignment.subject_code}</strong> - {assignment.description}
+//               </div>
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Users size={16} />
+//                 Select Teacher *
+//               </label>
+//               <select
+//                 className="form-input"
+//                 value={selectedTeacherId}
+//                 onChange={e => setSelectedTeacherId(e.target.value)}
+//                 required
+//                 disabled={loading}
+//               >
+//                 <option value="">-- Choose a teacher --</option>
+//                 {teachers.map(teacher => {
+//                   const teacherCourse = allCourses.find(c => c.id === (teacher.course_id || teacher.courseId));
+//                   const displayName = teacherCourse 
+//                     ? `${teacher.name} ${teacher.last_name || ''} (${teacherCourse.code})`
+//                     : `${teacher.name} ${teacher.last_name || ''}`;
+//                   return (
+//                     <option key={teacher.id} value={teacher.id}>
+//                       {displayName}
+//                     </option>
+//                   );
+//                 })}
+//               </select>
+//             </div>
+
+//             <div className="form-group">
+//               <label className="form-label">
+//                 <Clock size={16} />
+//                 Class Duration *
+//               </label>
+//               <select
+//                 className="form-input"
+//                 value={duration}
+//                 onChange={e => setDuration(Number(e.target.value))}
+//                 required
+//               >
+//                 {DURATION_OPTIONS.map(option => (
+//                   <option key={option.value} value={option.value}>
+//                     {option.label}
+//                   </option>
+//                 ))}
+//               </select>
+//             </div>
+
+//             {duration && (
+//               <div className="time-preview">
+//                 <Clock size={16} />
+//                 <span>Duration: <strong>{DURATION_OPTIONS.find(d => d.value === duration)?.label}</strong> per class</span>
+//               </div>
+//             )}
+//           </div>
+
+//           <div className="modal-footer">
+//             <button type="button" onClick={onClose} className="btn-secondary">
+//               Cancel
+//             </button>
+//             <button 
+//               type="submit" 
+//               className="btn-primary"
+//               disabled={!selectedTeacherId || !duration}
+//             >
+//               <Check size={16} />
+//               Update Assignment
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== DELETE CONFIRMATION MODAL ====================
+// const DeleteConfirmModal = React.memo(({ show, onClose, onConfirm, itemName, itemType = 'subject' }) => {
+//   if (!show) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content confirm-modal" onClick={e => e.stopPropagation()}>
+//         <div className="modal-header">
+//           <AlertCircle size={24} className="warning-icon" />
+//           <h3>Delete {itemType === 'assignment' ? 'Assignment' : 'Subject'}?</h3>
+//         </div>
+
+//         <div className="modal-body">
+//           <p>
+//             Are you sure you want to delete <strong>{itemName}</strong>? 
+//             This action cannot be undone.
+//           </p>
+//         </div>
+
+//         <div className="modal-footer">
+//           <button onClick={onClose} className="btn-secondary">
+//             Cancel
+//           </button>
+//           <button onClick={onConfirm} className="btn-danger">
+//             <Trash2 size={16} />
+//             Delete
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+
+// // ==================== MAIN COMPONENT ====================
+// export default function CoursesPage() {
+//   // State Management
+//   const [courses, setCourses] = useState([]);
+//   const [selectedCourseId, setSelectedCourseId] = useState('');
+//   const [yearLevel, setYearLevel] = useState(1);
+//   const [semester, setSemester] = useState('1');
+//   const [btledMajor, setBtledMajor] = useState('ICT');
+//   const [subjects, setSubjects] = useState([]);
+  
+//   const [loading, setLoading] = useState({
+//     initial: true,
+//     subjects: false,
+//   });
+  
+//   const [showAddModal, setShowAddModal] = useState(false);
+//   const [showEditSubjectModal, setShowEditSubjectModal] = useState(false);
+//   const [editSubjectTarget, setEditSubjectTarget] = useState(null);
+//   const [showDeleteModal, setShowDeleteModal] = useState(false);
+//   const [showAssignTeacherModal, setShowAssignTeacherModal] = useState(false);
+//   const [showEditAssignmentModal, setShowEditAssignmentModal] = useState(false);
+//   const [showDeleteAssignmentModal, setShowDeleteAssignmentModal] = useState(false);
+//   const [deleteTarget, setDeleteTarget] = useState(null);
+//   const [editAssignmentTarget, setEditAssignmentTarget] = useState(null);
+//   const [deleteAssignmentTarget, setDeleteAssignmentTarget] = useState(null);
+  
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [sortBy, setSortBy] = useState('code');
+  
+//   const [toast, setToast] = useState({ message: '', type: '' });
+//   const [teacherAssignments, setTeacherAssignments] = useState([]);
+//   const [loadingAssignments, setLoadingAssignments] = useState(false);
+
+//   // Toast helper
+//   const showToast = useCallback((message, type) => {
+//     setToast({ message, type });
+//   }, []);
+
+//   const closeToast = useCallback(() => {
+//     setToast({ message: '', type: '' });
+//   }, []);
+
+//   // API Functions - Memoized with useCallback
+//   const fetchCourses = useCallback(async () => {
+//     setLoading(prev => ({ ...prev, initial: true }));
+//     try {
+//       const res = await fetch(`${API}/api/courses`);
+//       const data = await res.json();
+//       setCourses(Array.isArray(data) ? data : []);
+      
+//       if (data.length && !selectedCourseId) {
+//         setSelectedCourseId(data[0].id);
+//       }
+//     } catch (err) {
+//       console.error('fetchCourses error:', err);
+//       showToast('Failed to load courses', 'danger');
+//     } finally {
+//       setLoading(prev => ({ ...prev, initial: false }));
+//     }
+//   }, [selectedCourseId, showToast]);
+
+//   const loadSubjects = useCallback(async () => {
+//     if (!selectedCourseId) return;
+    
+//     setLoading(prev => ({ ...prev, subjects: true }));
+//     try {
+//       const selectedCourse = courses.find(c => c.id === selectedCourseId);
+//       const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+      
+//       const params = new URLSearchParams({ 
+//         courseId: selectedCourseId, 
+//         yearLevel, 
+//         semester 
+//       });
+      
+//       // Only add major parameter for BTLED in 3rd and 4th year
+//       if (isBTLED && (yearLevel === 3 || yearLevel === 4)) {
+//         params.append('major', btledMajor);
+//       }
+      
+//       const res = await fetch(`${API}/api/subjects?${params}`);
+//       const data = await res.json();
+//       setSubjects(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('loadSubjects error:', err);
+//       showToast('Failed to load subjects', 'danger');
+//     } finally {
+//       setLoading(prev => ({ ...prev, subjects: false }));
+//     }
+//   }, [selectedCourseId, yearLevel, semester, btledMajor, courses, showToast]);
+
+//   const loadTeacherAssignments = useCallback(async () => {
+//     if (!selectedCourseId) return;
+    
+//     setLoadingAssignments(true);
+//     try {
+//       const params = new URLSearchParams({ 
+//         courseId: selectedCourseId, 
+//         yearLevel, 
+//         semester 
+//       });
+//       const res = await fetch(`${API}/api/teacher-assignments?${params}`);
+//       const data = await res.json();
+//       setTeacherAssignments(Array.isArray(data) ? data : []);
+//     } catch (err) {
+//       console.error('loadTeacherAssignments error:', err);
+//       setTeacherAssignments([]);
+//     } finally {
+//       setLoadingAssignments(false);
+//     }
+//   }, [selectedCourseId, yearLevel, semester]);
+
+//   // Initial data fetch
+//   useEffect(() => {
+//     fetchCourses();
+//   }, [fetchCourses]);
+
+//   // Fetch subjects when course/year/semester/btledMajor changes
+//   useEffect(() => {
+//     if (selectedCourseId) {
+//       loadSubjects();
+//       loadTeacherAssignments();
+//     } else {
+//       setSubjects([]);
+//       setTeacherAssignments([]);
+//     }
+//   }, [selectedCourseId, yearLevel, semester, btledMajor, loadSubjects, loadTeacherAssignments]);
+
+//   const handleAddSubject = useCallback(async (formData) => {
+//   if (!selectedCourseId) {
+//     showToast('Please select a course first', 'danger');
+//     return;
+//   }
+
+//   try {
+//     const selectedCourse = courses.find(c => c.id === selectedCourseId);
+//     const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+//     const requestBody = {
+//       courseId: Number(selectedCourseId),
+//       yearLevel: Number(yearLevel),
+//       semester,
+//       subject_code: formData.subject_code.trim(),
+//       description: formData.description.trim(),
+//       units: Number(formData.units)
+//     };
+
+//     // CRITICAL FIX: Attach major only for BTLED 3rd/4th year
+//     if (isBTLED && (yearLevel === 3 || yearLevel === 4)) {
+//       requestBody.major = btledMajor; // 'ICT' or 'HE'
+//     }
+
+//     const res = await fetch(`${API}/api/subjects`, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(requestBody)
+//     });
+
+//     if (!res.ok) {
+//       const errorData = await res.json().catch(() => ({}));
+//       throw new Error(errorData.error || errorData.message || 'Failed to add subject');
+//     }
+
+//     setShowAddModal(false);
+//     await loadSubjects();
+//     showToast('Subject added successfully! 🎉', 'success');
+//   } catch (err) {
+//     console.error('handleAddSubject error:', err);
+//     showToast(err.message || 'Failed to add subject', 'danger');
+//   }
+// }, [selectedCourseId, yearLevel, semester, btledMajor, courses, loadSubjects, showToast]);
+
+//   const handleEditSubjectClick = useCallback((subject) => {
+//     setEditSubjectTarget(subject);
+//     setShowEditSubjectModal(true);
+//   }, []);
+
+//   const handleEditSubject = useCallback(async (formData) => {
+//     if (!editSubjectTarget) return;
+
+//     try {
+//       const res = await fetch(`${API}/api/subjects/${editSubjectTarget.id}`, {
+//         method: 'PUT',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({
+//           subject_code: formData.subject_code.trim(),
+//           description: formData.description.trim(),
+//           units: Number(formData.units)
+//         })
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to update subject');
+//       }
+
+//       setShowEditSubjectModal(false);
+//       setEditSubjectTarget(null);
+//       await loadSubjects();
+//       showToast('Subject updated successfully! ✓', 'success');
+//     } catch (err) {
+//       console.error('handleEditSubject error:', err);
+//       showToast(err.message || 'Failed to update subject', 'danger');
+//     }
+//   }, [editSubjectTarget, loadSubjects, showToast]);
+
+//   const handleDeleteClick = useCallback((subject) => {
+//     setDeleteTarget(subject);
+//     setShowDeleteModal(true);
+//   }, []);
+
+//   const handleDeleteConfirm = useCallback(async () => {
+//     if (!deleteTarget) return;
+
+//     try {
+//       const res = await fetch(`${API}/api/subjects/${deleteTarget.id}`, {
+//         method: 'DELETE'
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to delete subject');
+//       }
+
+//       setShowDeleteModal(false);
+//       setDeleteTarget(null);
+//       await loadSubjects();
+//       showToast('Subject deleted successfully ✓', 'success');
+//     } catch (err) {
+//       console.error('handleDeleteConfirm error:', err);
+//       showToast(err.message || 'Failed to delete subject', 'danger');
+//     }
+//   }, [deleteTarget, loadSubjects, showToast]);
+
+//   const handleAssignTeacher = useCallback(async (formData) => {
+//     try {
+//       const assignedSubjects = subjects.filter(s => formData.subjectIds.includes(s.id));
+      
+//       const assignments = formData.subjectIds.map(subjectId => ({
+//         teacher_id: Number(formData.teacherId),
+//         subject_id: Number(subjectId),
+//         course_id: Number(selectedCourseId),
+//         year_level: Number(yearLevel),
+//         semester,
+//         duration: formData.duration
+//       }));
+
+//       const results = await Promise.allSettled(
+//         assignments.map(assignment =>
+//           fetch(`${API}/api/teacher-assignments`, {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify(assignment)
+//           }).then(async res => {
+//             if (!res.ok) {
+//               const errorData = await res.json().catch(() => ({}));
+//               throw new Error(errorData.message || `HTTP ${res.status}`);
+//             }
+//             return res.json();
+//           })
+//         )
+//       );
+
+//       const successful = results.filter(r => r.status === 'fulfilled').length;
+//       const failed = results.filter(r => r.status === 'rejected').length;
+      
+//       if (failed > 0) {
+//         const errors = results
+//           .filter(r => r.status === 'rejected')
+//           .map(r => r.reason.message)
+//           .join(', ');
+        
+//         if (successful > 0) {
+//           const successfulIndices = results
+//             .map((r, idx) => r.status === 'fulfilled' ? idx : -1)
+//             .filter(idx => idx !== -1);
+//           const successfulSubjects = successfulIndices
+//             .map(idx => assignedSubjects[idx]?.subject_code)
+//             .filter(Boolean)
+//             .join(', ');
+          
+//           showToast(
+//             `${successful} assignment(s) succeeded (${successfulSubjects}), but ${failed} failed: ${errors}`,
+//             'danger'
+//           );
+//         } else {
+//           throw new Error(`All assignments failed: ${errors}`);
+//         }
+//       } else {
+//         const subjectCodes = assignedSubjects.map(s => s.subject_code).join(', ');
+//         setShowAssignTeacherModal(false);
+//         await loadTeacherAssignments();
+//         showToast(`Teacher assigned to ${successful} subject(s) successfully! Subjects: ${subjectCodes} 🎉`, 'success');
+//       }
+//     } catch (err) {
+//       console.error('handleAssignTeacher error:', err);
+//       showToast(err.message || 'Failed to assign teacher', 'danger');
+//     }
+//   }, [selectedCourseId, yearLevel, semester, subjects, loadTeacherAssignments, showToast]);
+
+//   const handleEditAssignmentClick = useCallback((assignment) => {
+//     setEditAssignmentTarget(assignment);
+//     setShowEditAssignmentModal(true);
+//   }, []);
+
+//   const handleEditAssignment = useCallback(async (formData) => {
+//     try {
+//       const res = await fetch(`${API}/api/teacher-assignments/${formData.id}`, {
+//         method: 'PUT',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({
+//           teacher_id: Number(formData.teacherId),
+//           duration: formData.duration
+//         })
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to update assignment');
+//       }
+
+//       setShowEditAssignmentModal(false);
+//       setEditAssignmentTarget(null);
+//       await loadTeacherAssignments();
+//       showToast('Assignment updated successfully! ✓', 'success');
+//     } catch (err) {
+//       console.error('handleEditAssignment error:', err);
+//       showToast(err.message || 'Failed to update assignment', 'danger');
+//     }
+//   }, [loadTeacherAssignments, showToast]);
+
+//   const handleDeleteAssignmentClick = useCallback((assignment) => {
+//     setDeleteAssignmentTarget(assignment);
+//     setShowDeleteAssignmentModal(true);
+//   }, []);
+
+//   const handleDeleteAssignmentConfirm = useCallback(async () => {
+//     if (!deleteAssignmentTarget) return;
+
+//     try {
+//       const res = await fetch(`${API}/api/teacher-assignments/${deleteAssignmentTarget.id}`, {
+//         method: 'DELETE'
+//       });
+
+//       if (!res.ok) {
+//         const errorData = await res.json();
+//         throw new Error(errorData.message || 'Failed to delete assignment');
+//       }
+
+//       setShowDeleteAssignmentModal(false);
+//       setDeleteAssignmentTarget(null);
+//       await loadTeacherAssignments();
+//       showToast('Assignment deleted successfully ✓', 'success');
+//     } catch (err) {
+//       console.error('handleDeleteAssignmentConfirm error:', err);
+//       showToast(err.message || 'Failed to delete assignment', 'danger');
+//     }
+//   }, [deleteAssignmentTarget, loadTeacherAssignments, showToast]);
+
+//   const handleRefresh = useCallback(async () => {
+//     await fetchCourses();
+//     if (selectedCourseId) {
+//       await loadSubjects();
+//       await loadTeacherAssignments();
+//     }
+//     showToast('Data refreshed successfully', 'success');
+//   }, [fetchCourses, loadSubjects, loadTeacherAssignments, selectedCourseId, showToast]);
+
+//   // Get selected course info
+//   const selectedCourse = useMemo(() => {
+//     return courses.find(c => c.id === selectedCourseId);
+//   }, [courses, selectedCourseId]);
+
+//   // Check if selected course is BTLED
+//   const isBTLED = useMemo(() => {
+//     return selectedCourse && isBTLEDCourse(selectedCourse.code);
+//   }, [selectedCourse]);
+
+//   // Calculate stats
+//   const stats = useMemo(() => {
+//     const totalUnits = subjects.reduce((sum, s) => sum + (s.units || 0), 0);
+//     return {
+//       courses: courses.length,
+//       subjects: subjects.length,
+//       totalUnits,
+//     };
+//   }, [courses, subjects]);
+
+//   return (
+//     <div className="courses-page">
+//       {/* Toast Notification */}
+//       <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+
+//       {/* Page Header with Gradient */}
+//       <div className="page-header-courses">
+//         <div className="page-title-section-gradient-courses">
+//           <div className="page-title-content-courses">
+//             <h1 className="page-title-gradient-courses">
+//               <BookOpen size={36} />
+//               Course & Subject Management
+//             </h1>
+//             <p className="page-subtitle-gradient-courses">
+//               {selectedCourse 
+//                 ? `${selectedCourse.code} — ${selectedCourse.name}`
+//                 : 'Select a course to manage subjects'
+//               }
+//               {isBTLED && btledMajor && (yearLevel === 3 || yearLevel === 4) && (
+//                 <span className="btled-major-indicator">
+//                   {' '}• Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}
+//                 </span>
+//               )}
+//             </p>
+//           </div>
+//           <div className="header-actions-courses">
+//             <button 
+//               className="action-btn-courses"
+//               onClick={() => setShowAssignTeacherModal(true)}
+//               disabled={!selectedCourseId || subjects.length === 0}
+//             >
+//               <Users size={18} />
+//               Assign Teacher
+//             </button>
+//             <button 
+//               className="action-btn-courses"
+//               onClick={() => setShowAddModal(true)}
+//               disabled={!selectedCourseId}
+//             >
+//               <Plus size={18} />
+//               Add Subject
+//             </button>
+//             <button 
+//               className="action-btn-courses"
+//               onClick={handleRefresh}
+//               disabled={loading.initial}
+//             >
+//               <RefreshCw size={18} className={loading.initial ? 'spinning' : ''} />
+//               Refresh
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Stats Dashboard */}
+//       <div className="stats-grid">
+//         <StatsCard
+//           icon={BookOpen}
+//           label="Total Courses"
+//           value={stats.courses}
+//           color={COLORS.primary}
+//         />
+//         <StatsCard
+//           icon={BookOpen}
+//           label="Subjects Loaded"
+//           value={stats.subjects}
+//           color={COLORS.accent}
+//         />
+//         <StatsCard
+//           icon={Award}
+//           label="Total Units"
+//           value={stats.totalUnits}
+//           color={COLORS.light}
+//         />
+//       </div>
+
+//       {/* Selectors Section */}
+//       <div className="selectors-section">
+//         <CourseSelector
+//           courses={courses}
+//           selectedCourseId={selectedCourseId}
+//           onChange={setSelectedCourseId}
+//         />
+
+//         <BTLEDMajorSelector
+//           major={btledMajor}
+//           onChange={setBtledMajor}
+//           show={isBTLED && (yearLevel === 3 || yearLevel === 4)}
+//         />
+
+//         <div className="dual-selectors">
+//           <YearSelector yearLevel={yearLevel} onChange={setYearLevel} />
+//           <SemesterSelector semester={semester} onChange={setSemester} />
+//         </div>
+//       </div>
+
+//       {/* Subjects Table Section */}
+//       <div className="table-section">
+//         <div className="table-header">
+//           <div className="table-title">
+//             <h2>
+//               {getYearLabel(yearLevel)} — {getSemesterLabel(semester)}
+//             </h2>
+//             <span className="subject-count">{subjects.length} Subjects</span>
+//           </div>
+
+//           <div className="table-controls">
+//             <div className="search-container">
+//               <Search size={16} className="search-icon" />
+//               <input
+//                 type="text"
+//                 className="search-input"
+//                 placeholder="Search subjects..."
+//                 value={searchTerm}
+//                 onChange={e => setSearchTerm(e.target.value)}
+//               />
+//               {searchTerm && (
+//                 <button 
+//                   className="search-clear"
+//                   onClick={() => setSearchTerm('')}
+//                 >
+//                   <X size={14} />
+//                 </button>
+//               )}
+//             </div>
+
+//             <div className="sort-container">
+//               <Filter size={16} />
+//               <select
+//                 className="sort-select"
+//                 value={sortBy}
+//                 onChange={e => setSortBy(e.target.value)}
+//               >
+//                 <option value="code">Sort by Code</option>
+//                 <option value="description">Sort by Description</option>
+//                 <option value="units">Sort by Units</option>
+//               </select>
+//             </div>
+//           </div>
+//         </div>
+
+//         <SubjectTable
+//           subjects={subjects}
+//           loading={loading.subjects}
+//           onEdit={handleEditSubjectClick}
+//           onDelete={handleDeleteClick}
+//           searchTerm={searchTerm}
+//           sortBy={sortBy}
+//         />
+//       </div>
+
+//       {/* Teacher Assignments Table Section */}
+//       <div className="table-section" style={{ marginTop: '2rem' }}>
+//         <div className="table-header">
+//           <div className="table-title">
+//             <h2>
+//               <Users size={24} />
+//               Teacher Assignments
+//             </h2>
+//             <span className="subject-count">{teacherAssignments.length} Assignments</span>
+//           </div>
+//         </div>
+
+//         <TeacherAssignmentsTable
+//           assignments={teacherAssignments}
+//           loading={loadingAssignments}
+//           onEdit={handleEditAssignmentClick}
+//           onDelete={handleDeleteAssignmentClick}
+//         />
+//       </div>
+
+//       {/* Modals */}
+//       <SubjectModal
+//         show={showAddModal}
+//         onClose={() => setShowAddModal(false)}
+//         onSave={handleAddSubject}
+//         courseName={selectedCourse?.code || ''}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         btledMajor={btledMajor}
+//         isBTLED={isBTLED}
+//         editMode={false}
+//       />
+
+//       <SubjectModal
+//         show={showEditSubjectModal}
+//         onClose={() => {
+//           setShowEditSubjectModal(false);
+//           setEditSubjectTarget(null);
+//         }}
+//         onSave={handleEditSubject}
+//         courseName={selectedCourse?.code || ''}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         btledMajor={btledMajor}
+//         isBTLED={isBTLED}
+//         editMode={true}
+//         initialData={editSubjectTarget}
+//       />
+
+//       <AssignTeacherModal
+//         show={showAssignTeacherModal}
+//         onClose={() => setShowAssignTeacherModal(false)}
+//         onSave={handleAssignTeacher}
+//         subjects={subjects}
+//         courseName={selectedCourse?.code || ''}
+//         courseId={selectedCourseId}
+//         yearLevel={yearLevel}
+//         semester={semester}
+//         allCourses={courses}
+//       />
+
+//       <EditAssignmentModal
+//         show={showEditAssignmentModal}
+//         onClose={() => {
+//           setShowEditAssignmentModal(false);
+//           setEditAssignmentTarget(null);
+//         }}
+//         onSave={handleEditAssignment}
+//         assignment={editAssignmentTarget}
+//         allCourses={courses}
+//       />
+
+//       <DeleteConfirmModal
+//         show={showDeleteModal}
+//         onClose={() => {
+//           setShowDeleteModal(false);
+//           setDeleteTarget(null);
+//         }}
+//         onConfirm={handleDeleteConfirm}
+//         itemName={deleteTarget?.subject_code}
+//         itemType="subject"
+//       />
+
+//       <DeleteConfirmModal
+//         show={showDeleteAssignmentModal}
+//         onClose={() => {
+//           setShowDeleteAssignmentModal(false);
+//           setDeleteAssignmentTarget(null);
+//         }}
+//         onConfirm={handleDeleteAssignmentConfirm}
+//         itemName={deleteAssignmentTarget ? `${deleteAssignmentTarget.teacher_name} - ${deleteAssignmentTarget.subject_code}` : ''}
+//         itemType="assignment"
+//       />
+
+//       {/* Inline Styles */}
+//       <style jsx>{`
+//         .courses-page {
+//           min-height: 100vh;
+//           background: linear-gradient(135deg, ${COLORS.lightest} 0%, #ffffff 100%);
+//           padding: 2rem;
+//           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+//         }
+
+//         /* ===== TOAST NOTIFICATION ===== */
+//         .toast-notification {
+//           position: fixed;
+//           top: 2rem;
+//           right: 2rem;
+//           z-index: 10000;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           padding: 1rem 1.5rem;
+//           border-radius: 12px;
+//           border: 2px solid;
+//           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+//           animation: slideInRight 0.3s ease;
+//           max-width: 500px;
+//           word-wrap: break-word;
+//         }
+        
+//         .toast-notification span {
+//           flex: 1;
+//           line-height: 1.4;
+//         }
+
+//         .toast-close {
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           opacity: 0.7;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .toast-close:hover {
+//           opacity: 1;
+//         }
+
+//         /* ===== PAGE HEADER WITH GRADIENT ===== */
+//         .page-header-courses {
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-section-gradient-courses {
+//           background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.accent} 100%);
+//           padding: 2rem;
+//           border-radius: 16px;
+//           box-shadow: 0 8px 24px rgba(3, 4, 94, 0.15);
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           flex-wrap: wrap;
+//           gap: 1rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .page-title-content-courses {
+//           color: white;
+//         }
+
+//         .page-title-gradient-courses {
+//           font-size: 2.5rem;
+//           font-weight: 700;
+//           color: white;
+//           margin: 0 0 0.5rem 0;
+//           letter-spacing: -0.5px;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//         }
+
+//         .page-subtitle-gradient-courses {
+//           font-size: 1.05rem;
+//           color: white;
+//           margin: 0;
+//           opacity: 0.9;
+//         }
+
+//         .btled-major-indicator {
+//           background: rgba(255, 255, 255, 0.2);
+//           padding: 0.25rem 0.75rem;
+//           border-radius: 20px;
+//           font-size: 0.9rem;
+//           display: inline-block;
+//           margin-left: 0.5rem;
+//         }
+
+//         .header-actions-courses {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .action-btn-courses {
+//           background: rgba(255, 255, 255, 0.2);
+//           border: 2px solid rgba(255, 255, 255, 0.3);
+//           color: white;
+//           padding: 0.75rem 1.5rem;
+//           border-radius: 10px;
+//           font-weight: 600;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           backdrop-filter: blur(10px);
+//           font-size: 0.95rem;
+//         }
+
+//         .action-btn-courses:hover:not(:disabled) {
+//           background: rgba(255, 255, 255, 0.3);
+//           border-color: rgba(255, 255, 255, 0.5);
+//           transform: translateY(-2px);
+//           box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+//         }
+
+//         .action-btn-courses:disabled {
+//           opacity: 0.5;
+//           cursor: not-allowed;
+//         }
+
+//         .spinning {
+//           animation: spin 1s linear infinite;
+//         }
+
+//         @keyframes spin {
+//           from { transform: rotate(0deg); }
+//           to { transform: rotate(360deg); }
+//         }
+
+//         @keyframes slideInRight {
+//           from {
+//             opacity: 0;
+//             transform: translateX(100%);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateX(0);
+//           }
+//         }
+
+//         /* ===== STATS GRID ===== */
+//         .stats-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+//           gap: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .stats-card {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           background: white;
+//           padding: 1.5rem;
+//           border-radius: 12px;
+//           border-top: 4px solid;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+//           transition: transform 0.2s ease;
+//         }
+
+//         .stats-card:hover {
+//           transform: translateY(-4px);
+//           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+//         }
+
+//         .stats-icon {
+//           width: 56px;
+//           height: 56px;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           border-radius: 12px;
+//         }
+
+//         .stats-content {
+//           flex: 1;
+//         }
+
+//         .stats-value {
+//           font-size: 2rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           line-height: 1;
+//         }
+
+//         .stats-label {
+//           font-size: 0.9rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//           margin-top: 0.25rem;
+//         }
+
+//         /* ===== SELECTORS SECTION ===== */
+//         .selectors-section {
+//           display: grid;
+//           gap: 1.5rem;
+//           margin-bottom: 2rem;
+//         }
+
+//         .selector-section {
+//           background: white;
+//           padding: 1.5rem;
+//           border-radius: 12px;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+//         }
+
+//         .btled-major-section {
+//           border: 2px solid ${COLORS.lighter};
+//           background: linear-gradient(135deg, #fff 0%, ${COLORS.lightest} 100%);
+//         }
+
+//         .selector-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.75rem;
+//           margin-bottom: 1rem;
+//           color: ${COLORS.primary};
+//         }
+
+//         .selector-header h3 {
+//           margin: 0;
+//           font-size: 1.1rem;
+//           font-weight: 700;
+//         }
+
+//         .course-grid {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+//           gap: 1rem;
+//         }
+
+//         .course-btn {
+//           padding: 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 10px;
+//           background: white;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           text-align: left;
+//         }
+
+//         .course-btn:hover {
+//           border-color: ${COLORS.lighter};
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15);
+//         }
+
+//         .course-btn.active {
+//           border-color: ${COLORS.primary};
+//           background: ${COLORS.lightest};
+//           box-shadow: 0 0 0 3px ${COLORS.primary}20;
+//         }
+
+//         .course-code {
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           font-size: 1.1rem;
+//           margin-bottom: 0.25rem;
+//         }
+
+//         .course-name {
+//           font-size: 0.85rem;
+//           color: ${COLORS.secondary};
+//           opacity: 0.8;
+//         }
+
+//         .dual-selectors {
+//           display: grid;
+//           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+//           gap: 1.5rem;
+//         }
+
+//         .button-group {
+//           display: flex;
+//           gap: 0.75rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .selector-btn {
+//           flex: 1;
+//           min-width: 140px;
+//           padding: 0.75rem 1.25rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 10px;
+//           background: white;
+//           color: ${COLORS.secondary};
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .selector-btn:hover {
+//           border-color: ${COLORS.lighter};
+//           background: ${COLORS.lightest};
+//         }
+
+//         .selector-btn.active {
+//           border-color: ${COLORS.light};
+//           background: ${COLORS.light};
+//           color: white;
+//         }
+
+//         .btled-major-btn {
+//           font-size: 0.9rem;
+//         }
+
+//         /* ===== TABLE SECTION ===== */
+//         .table-section {
+//           background: white;
+//           border-radius: 16px;
+//           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+//           overflow: hidden;
+//         }
+
+//         .table-header {
+//           padding: 1.5rem;
+//           border-bottom: 2px solid ${COLORS.lightest};
+//         }
+
+//         .table-title {
+//           display: flex;
+//           align-items: center;
+//           gap: 1rem;
+//           margin-bottom: 1.5rem;
+//         }
+
+//         .table-title h2 {
+//           margin: 0;
+//           font-size: 1.5rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .subject-count {
+//           background: ${COLORS.lighter};
+//           color: ${COLORS.primary};
+//           padding: 0.35rem 0.75rem;
+//           border-radius: 20px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//         }
+
+//         .table-controls {
+//           display: flex;
+//           gap: 1rem;
+//           flex-wrap: wrap;
+//         }
+
+//         .search-container {
+//           position: relative;
+//           flex: 1;
+//           min-width: 250px;
+//           max-width: 400px;
+//         }
+
+//         .search-icon {
+//           position: absolute;
+//           left: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           color: ${COLORS.secondary};
+//           opacity: 0.5;
+//         }
+
+//         .search-input {
+//           width: 100%;
+//           padding: 0.65rem 2.5rem 0.65rem 2.5rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           transition: all 0.3s ease;
+//           background: #f8f9fa;
+//         }
+
+//         .search-input:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           background: white;
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         .search-clear {
+//           position: absolute;
+//           right: 0.75rem;
+//           top: 50%;
+//           transform: translateY(-50%);
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.25rem;
+//           display: flex;
+//           align-items: center;
+//           color: ${COLORS.secondary};
+//           opacity: 0.5;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .search-clear:hover {
+//           opacity: 1;
+//         }
+
+//         .sort-container {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .sort-select {
+//           padding: 0.65rem 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.9rem;
+//           background: #f8f9fa;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .sort-select:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           background: white;
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         /* ===== SUBJECTS TABLE ===== */
+//         .table-wrapper {
+//           overflow-x: auto;
+//         }
+
+//         .subjects-table {
+//           width: 100%;
+//           border-collapse: collapse;
+//         }
+
+//         .subjects-table thead {
+//           background: ${COLORS.lightest};
+//         }
+
+//         .subjects-table th {
+//           padding: 1rem 1.25rem;
+//           text-align: left;
+//           font-weight: 600;
+//           color: ${COLORS.secondary};
+//           border-bottom: 2px solid ${COLORS.lighter};
+//           white-space: nowrap;
+//         }
+
+//         .subjects-table th.text-center {
+//           text-align: center;
+//         }
+
+//         .subjects-table td {
+//           padding: 1rem 1.25rem;
+//           border-bottom: 1px solid ${COLORS.lightest};
+//         }
+
+//         .subjects-table td.text-center {
+//           text-align: center;
+//         }
+
+//         .subject-row {
+//           transition: background 0.2s ease;
+//         }
+
+//         .subject-row:hover {
+//           background: ${COLORS.lightest};
+//         }
+
+//         .row-number {
+//           font-weight: 700;
+//           color: ${COLORS.accent};
+//         }
+
+//         .subject-code-cell {
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           font-size: 0.95rem;
+//         }
+
+//         .subject-desc {
+//           color: ${COLORS.secondary};
+//         }
+
+//         .teacher-name-cell {
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           font-size: 0.95rem;
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .units-badge {
+//           display: inline-block;
+//           background: ${COLORS.light};
+//           color: white;
+//           padding: 0.35rem 0.75rem;
+//           border-radius: 20px;
+//           font-weight: 600;
+//           font-size: 0.85rem;
+//         }
+
+//         .duration-badge {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.35rem;
+//           background: ${COLORS.lighter};
+//           color: ${COLORS.primary};
+//           padding: 0.35rem 0.75rem;
+//           border-radius: 20px;
+//           font-weight: 600;
+//           font-size: 0.85rem;
+//         }
+
+//         .action-buttons {
+//           display: flex;
+//           gap: 0.5rem;
+//           justify-content: center;
+//         }
+
+//         .edit-btn {
+//           display: inline-flex;
+//           align-items: center;
+//           justify-content: center;
+//           padding: 0.5rem;
+//           background: #e3f2fd;
+//           color: #1976d2;
+//           border: 1px solid #bbdefb;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .edit-btn:hover {
+//           background: #bbdefb;
+//           border-color: #90caf9;
+//           transform: translateY(-1px);
+//         }
+
+//         .delete-btn-small {
+//           display: inline-flex;
+//           align-items: center;
+//           justify-content: center;
+//           padding: 0.5rem;
+//           background: #fee;
+//           color: #c33;
+//           border: 1px solid #fcc;
+//           border-radius: 6px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .delete-btn-small:hover {
+//           background: #fcc;
+//           border-color: #faa;
+//           transform: translateY(-1px);
+//         }
+
+//         /* ===== EMPTY STATE ===== */
+//         .empty-state {
+//           text-align: center;
+//           padding: 4rem 2rem;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .empty-icon {
+//           color: ${COLORS.lighter};
+//           margin-bottom: 1rem;
+//         }
+
+//         .empty-state h3 {
+//           color: ${COLORS.primary};
+//           margin: 0 0 0.5rem 0;
+//         }
+
+//         .empty-state p {
+//           opacity: 0.7;
+//           margin: 0;
+//         }
+
+//         /* ===== LOADING SKELETON ===== */
+//         .skeleton {
+//           background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+//           background-size: 200% 100%;
+//           animation: shimmer 1.5s infinite;
+//           border-radius: 8px;
+//         }
+
+//         .table-skeleton {
+//           padding: 1rem;
+//         }
+
+//         .skeleton-row {
+//           display: grid;
+//           grid-template-columns: 60px 120px 1fr 80px 100px;
+//           gap: 1rem;
+//           margin-bottom: 1rem;
+//         }
+
+//         @keyframes shimmer {
+//           0% { background-position: 200% 0; }
+//           100% { background-position: -200% 0; }
+//         }
+
+//         /* ===== MODALS ===== */
+//         .modal-overlay {
+//           position: fixed;
+//           top: 0;
+//           left: 0;
+//           right: 0;
+//           bottom: 0;
+//           background: rgba(0, 0, 0, 0.5);
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           z-index: 9999;
+//           animation: fadeIn 0.2s ease;
+//         }
+
+//         .modal-content {
+//           background: white;
+//           border-radius: 16px;
+//           max-width: 500px;
+//           width: 90%;
+//           max-height: 90vh;
+//           overflow-y: auto;
+//           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+//           animation: scaleIn 0.3s ease;
+//         }
+
+//         .confirm-modal {
+//           max-width: 400px;
+//         }
+
+//         .assign-teacher-modal {
+//           max-width: 650px;
+//         }
+
+//         .checkbox-group {
+//           max-height: 300px;
+//           overflow-y: auto;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           padding: 0.75rem;
+//           background: #f8f9fa;
+//         }
+
+//         .checkbox-label {
+//           display: flex;
+//           align-items: start;
+//           gap: 0.75rem;
+//           padding: 0.75rem;
+//           margin-bottom: 0.5rem;
+//           background: white;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .checkbox-label:hover {
+//           border-color: ${COLORS.lighter};
+//           background: ${COLORS.lightest};
+//         }
+
+//         .checkbox-label:has(input:checked) {
+//           border-color: ${COLORS.light};
+//           background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+//         }
+
+//         .checkbox-label input[type="checkbox"] {
+//           width: 18px;
+//           height: 18px;
+//           margin-top: 2px;
+//           cursor: pointer;
+//           accent-color: ${COLORS.light};
+//         }
+
+//         .checkbox-label input[type="checkbox"]:disabled {
+//           cursor: not-allowed;
+//           opacity: 0.5;
+//         }
+
+//         .checkbox-text {
+//           flex: 1;
+//           font-size: 0.9rem;
+//           color: ${COLORS.secondary};
+//         }
+
+//         .checkbox-text strong {
+//           color: ${COLORS.primary};
+//         }
+
+//         .selected-count {
+//           margin-top: 0.5rem;
+//           padding: 0.5rem 0.75rem;
+//           background: ${COLORS.lightest};
+//           border-radius: 6px;
+//           font-size: 0.85rem;
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           text-align: center;
+//         }
+
+//         .no-teachers-warning,
+//         .no-subjects-warning {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1rem;
+//           background: #fff3cd;
+//           border: 2px solid #ffc107;
+//           border-radius: 8px;
+//           color: #856404;
+//           font-size: 0.9rem;
+//         }
+
+//         .time-preview {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1rem;
+//           background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+//           border-radius: 8px;
+//           color: ${COLORS.primary};
+//           font-size: 0.9rem;
+//           margin-top: 1rem;
+//         }
+
+//         .time-preview strong {
+//           color: ${COLORS.primary};
+//           font-weight: 700;
+//         }
+
+//         .teacher-assignments-section {
+//           background: #f8f9fa;
+//           border-radius: 8px;
+//           padding: 1rem;
+//           margin: 1rem 0;
+//           border: 2px solid ${COLORS.lightest};
+//         }
+
+//         .assignments-header {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.75rem;
+//           font-size: 0.9rem;
+//         }
+
+//         .assignments-list {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//           max-height: 200px;
+//           overflow-y: auto;
+//         }
+
+//         .assignment-item {
+//           background: white;
+//           padding: 0.75rem;
+//           border-radius: 6px;
+//           border-left: 3px solid ${COLORS.light};
+//           display: flex;
+//           flex-direction: column;
+//           gap: 0.5rem;
+//         }
+
+//         .assignment-subject {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           font-size: 0.9rem;
+//         }
+
+//         .assignment-time {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           color: ${COLORS.secondary};
+//           font-size: 0.85rem;
+//           opacity: 0.8;
+//         }
+
+//         @keyframes fadeIn {
+//           from { opacity: 0; }
+//           to { opacity: 1; }
+//         }
+
+//         @keyframes scaleIn {
+//           from {
+//             opacity: 0;
+//             transform: scale(0.95) translateY(20px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: scale(1) translateY(0);
+//           }
+//         }
+
+//         .modal-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           padding: 1.5rem;
+//           border-bottom: 2px solid ${COLORS.lightest};
+//         }
+
+//         .modal-header h3 {
+//           margin: 0;
+//           font-size: 1.5rem;
+//           font-weight: 700;
+//           color: ${COLORS.primary};
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//         }
+
+//         .warning-icon {
+//           color: #f59e0b;
+//         }
+
+//         .modal-close {
+//           background: none;
+//           border: none;
+//           cursor: pointer;
+//           padding: 0.5rem;
+//           display: flex;
+//           align-items: center;
+//           color: ${COLORS.secondary};
+//           opacity: 0.7;
+//           transition: opacity 0.2s ease;
+//         }
+
+//         .modal-close:hover {
+//           opacity: 1;
+//         }
+
+//         .modal-body {
+//           padding: 1.5rem;
+//         }
+
+//         .modal-footer {
+//           padding: 1.5rem;
+//           border-top: 2px solid ${COLORS.lightest};
+//           display: flex;
+//           justify-content: flex-end;
+//           gap: 1rem;
+//         }
+
+//         .form-group {
+//           margin-bottom: 1.25rem;
+//         }
+
+//         .form-label {
+//           display: flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           font-weight: 600;
+//           color: ${COLORS.primary};
+//           margin-bottom: 0.5rem;
+//         }
+
+//         .form-input {
+//           width: 100%;
+//           padding: 0.75rem 1rem;
+//           border: 2px solid ${COLORS.lightest};
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           transition: all 0.3s ease;
+//         }
+
+//         .form-input:focus {
+//           outline: none;
+//           border-color: ${COLORS.light};
+//           box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+//         }
+
+//         .form-info {
+//           background: ${COLORS.lightest};
+//           padding: 1rem;
+//           border-radius: 8px;
+//           margin-top: 1rem;
+//         }
+
+//         .info-label {
+//           font-size: 0.85rem;
+//           color: ${COLORS.secondary};
+//           margin-bottom: 0.5rem;
+//           font-weight: 600;
+//         }
+
+//         .info-details {
+//           font-size: 0.95rem;
+//           color: ${COLORS.primary};
+//         }
+
+//         .btn-primary {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1.5rem;
+//           background: ${COLORS.primary};
+//           color: white;
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-primary:hover:not(:disabled) {
+//           background: ${COLORS.secondary};
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(3, 4, 94, 0.3);
+//         }
+
+//         .btn-primary:disabled {
+//           opacity: 0.5;
+//           cursor: not-allowed;
+//         }
+
+//         .btn-secondary {
+//           padding: 0.75rem 1.5rem;
+//           background: #e2e8f0;
+//           color: ${COLORS.secondary};
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-secondary:hover {
+//           background: #cbd5e1;
+//         }
+
+//         .btn-danger {
+//           display: inline-flex;
+//           align-items: center;
+//           gap: 0.5rem;
+//           padding: 0.75rem 1.5rem;
+//           background: #dc2626;
+//           color: white;
+//           border: none;
+//           border-radius: 8px;
+//           font-size: 0.95rem;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//         }
+
+//         .btn-danger:hover {
+//           background: #b91c1c;
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+//         }
+
+//         /* ===== RESPONSIVE DESIGN ===== */
+//         @media (max-width: 992px) {
+//           .page-title-section-gradient-courses {
+//             flex-direction: column;
+//             align-items: flex-start;
+//           }
+
+//           .header-actions-courses {
+//             width: 100%;
+//           }
+
+//           .action-btn-courses {
+//             flex: 1;
+//             justify-content: center;
+//           }
+//         }
+
+//         @media (max-width: 768px) {
+//           .courses-page {
+//             padding: 1rem;
+//           }
+
+//           .page-title-gradient-courses {
+//             font-size: 2rem;
+//           }
+
+//           .course-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .dual-selectors {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .table-controls {
+//             flex-direction: column;
+//           }
+
+//           .search-container {
+//             width: 100%;
+//             max-width: none;
+//           }
+
+//           .subjects-table th,
+//           .subjects-table td {
+//             padding: 0.75rem 0.5rem;
+//             font-size: 0.85rem;
+//           }
+
+//           .checkbox-group {
+//             max-height: 200px;
+//           }
+
+//           .checkbox-label {
+//             padding: 0.5rem;
+//           }
+
+//           .checkbox-text {
+//             font-size: 0.85rem;
+//           }
+
+//           .action-buttons {
+//             flex-direction: column;
+//           }
+//         }
+
+//         @media (max-width: 576px) {
+//           .courses-page {
+//             padding: 0.5rem;
+//           }
+
+//           .page-title-gradient-courses {
+//             font-size: 1.5rem;
+//           }
+
+//           .stats-grid {
+//             grid-template-columns: 1fr;
+//           }
+
+//           .button-group {
+//             flex-direction: column;
+//           }
+
+//           .selector-btn {
+//             width: 100%;
+//           }
+
+//           .header-actions-courses {
+//             flex-direction: column;
+//           }
+
+//           .action-btn-courses {
+//             width: 100%;
+//             justify-content: center;
+//           }
+
+//           .modal-content {
+//             width: 95%;
+//           }
+
+//           .assign-teacher-modal {
+//             max-width: 95%;
+//           }
+//         }
+//       `}</style>
+//     </div>
+//   );
+// }
+
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { 
-  BookOpen, Plus, Search, RefreshCw, Edit2, Trash2, X, 
-  Check, ChevronDown, ChevronUp, Filter, Download, 
-  AlertCircle, CheckCircle, Calendar, Users, Award
+  BookOpen, Plus, Search, RefreshCw, Edit2, Trash2, X, Check, 
+  Calendar, Users, Award, Clock, AlertCircle, CheckCircle, Filter 
 } from 'lucide-react';
-// import { API } from '../../config/api';
-
 
 // ==================== CONSTANTS ====================
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-// const API_BASE =
-//   process.env.REACT_APP_API_URL ||
-//   (window.location.hostname === 'localhost'
-//     ? 'http://localhost:5000'
-//     : 'https://lavenderblush-chinchilla-571128.hostingersite.com ');
 
 const COLORS = {
   primary: "#03045E",
@@ -4289,6 +11139,21 @@ const COLORS = {
   lightest: "#CAF0F8",
 };
 
+const DURATION_OPTIONS = [
+  { value: 0.5, label: '30 minutes' },
+  { value: 1, label: '1 hour' },
+  { value: 1.5, label: '1.5 hours' },
+  { value: 2, label: '2 hours' },
+  { value: 2.5, label: '2.5 hours' },
+  { value: 3, label: '3 hours' },
+  { value: 4, label: '4 hours' }
+];
+
+const BTLED_MAJORS = [
+  { value: 'ICT', label: 'ICT - Information and Communication Technology' },
+  { value: 'HE', label: 'HE - Home Economics' }
+];
+
 // ==================== UTILITY FUNCTIONS ====================
 const getYearLabel = (year) => {
   const labels = { 1: 'First Year', 2: 'Second Year', 3: 'Third Year', 4: 'Fourth Year' };
@@ -4298,6 +11163,10 @@ const getYearLabel = (year) => {
 const getSemesterLabel = (sem) => {
   const labels = { '1': '1st Semester', '2': '2nd Semester', 'Summer': 'Summer' };
   return labels[sem] || sem;
+};
+
+const isBTLEDCourse = (courseCode) => {
+  return courseCode === 'BTLED' || courseCode?.startsWith('BTLED');
 };
 
 // ==================== TOAST NOTIFICATION ====================
@@ -4320,11 +11189,7 @@ const Toast = React.memo(({ message, type, onClose }) => {
   const Icon = style.Icon;
 
   return (
-    <div className="toast-notification" style={{ 
-      background: style.bg, 
-      borderColor: style.border, 
-      color: style.color 
-    }}>
+    <div className="toast-notification" style={{ background: style.bg, borderColor: style.border, color: style.color }}>
       <Icon size={20} />
       <span>{message}</span>
       <button onClick={onClose} className="toast-close">
@@ -4367,26 +11232,30 @@ const StatsCard = React.memo(({ icon: Icon, label, value, color }) => (
 ));
 
 // ==================== COURSE SELECTOR ====================
-const CourseSelector = React.memo(({ courses, selectedCourseId, onChange }) => (
-  <div className="selector-section">
-    <div className="selector-header">
-      <BookOpen size={18} />
-      <h3>Select Course</h3>
+const CourseSelector = React.memo(({ courses, selectedCourseId, onChange }) => {
+  const regularCourses = courses.filter(course => !course.is_general);
+
+  return (
+    <div className="selector-section">
+      <div className="selector-header">
+        <BookOpen size={18} />
+        <h3>Select Course</h3>
+      </div>
+      <div className="course-grid">
+        {regularCourses.map(course => (
+          <button
+            key={course.id}
+            className={`course-btn ${course.id === selectedCourseId ? 'active' : ''}`}
+            onClick={() => onChange(course.id)}
+          >
+            <div className="course-code">{course.code}</div>
+            <div className="course-name">{course.name}</div>
+          </button>
+        ))}
+      </div>
     </div>
-    <div className="course-grid">
-      {courses.map(course => (
-        <button
-          key={course.id}
-          className={`course-btn ${course.id === selectedCourseId ? 'active' : ''}`}
-          onClick={() => onChange(course.id)}
-        >
-          <div className="course-code">{course.code}</div>
-          <div className="course-name">{course.name}</div>
-        </button>
-      ))}
-    </div>
-  </div>
-));
+  );
+});
 
 // ==================== YEAR SELECTOR ====================
 const YearSelector = React.memo(({ yearLevel, onChange }) => (
@@ -4417,7 +11286,7 @@ const SemesterSelector = React.memo(({ semester, onChange }) => (
       <h3>Semester</h3>
     </div>
     <div className="button-group">
-      {['1', '2', ].map(sem => (
+      {['1', '2'].map(sem => (
         <button
           key={sem}
           className={`selector-btn ${sem === semester ? 'active' : ''}`}
@@ -4430,18 +11299,35 @@ const SemesterSelector = React.memo(({ semester, onChange }) => (
   </div>
 ));
 
+// ==================== BTLED MAJOR SELECTOR ====================
+const BTLEDMajorSelector = React.memo(({ major, onChange, show }) => {
+  if (!show) return null;
+
+  return (
+    <div className="selector-section btled-major-section">
+      <div className="selector-header">
+        <Award size={18} />
+        <h3>BTLED Major</h3>
+      </div>
+      <div className="button-group">
+        {BTLED_MAJORS.map(m => (
+          <button
+            key={m.value}
+            className={`selector-btn btled-major-btn ${m.value === major ? 'active' : ''}`}
+            onClick={() => onChange(m.value)}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+});
+
 // ==================== SUBJECT TABLE ====================
-const SubjectTable = React.memo(({ 
-  subjects, 
-  loading, 
-  onDelete, 
-  searchTerm, 
-  sortBy 
-}) => {
+const SubjectTable = React.memo(({ subjects, loading, onEdit, onDelete, searchTerm, sortBy }) => {
   const filteredAndSortedSubjects = useMemo(() => {
     let filtered = subjects;
-
-    // Apply search filter
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       filtered = subjects.filter(s =>
@@ -4450,17 +11336,12 @@ const SubjectTable = React.memo(({
       );
     }
 
-    // Apply sorting
     const sorted = [...filtered].sort((a, b) => {
       switch (sortBy) {
-        case 'code':
-          return (a.subject_code || '').localeCompare(b.subject_code || '');
-        case 'description':
-          return (a.description || '').localeCompare(b.description || '');
-        case 'units':
-          return (b.units || 0) - (a.units || 0);
-        default:
-          return 0;
+        case 'code': return (a.subject_code || '').localeCompare(b.subject_code || '');
+        case 'description': return (a.description || '').localeCompare(b.description || '');
+        case 'units': return (b.units || 0) - (a.units || 0);
+        default: return 0;
       }
     });
 
@@ -4474,11 +11355,7 @@ const SubjectTable = React.memo(({
       <div className="empty-state">
         <BookOpen size={48} className="empty-icon" />
         <h3>No Subjects Found</h3>
-        <p>
-          {searchTerm 
-            ? "No subjects match your search criteria"
-            : "No subjects available for this selection"}
-        </p>
+        <p>{searchTerm ? "No subjects match your search criteria" : "No subjects available for this selection"}</p>
       </div>
     );
   }
@@ -4492,31 +11369,25 @@ const SubjectTable = React.memo(({
             <th>Subject Code</th>
             <th>Description</th>
             <th style={{ width: '100px' }}>Units</th>
-            <th style={{ width: '120px' }} className="text-center">Actions</th>
+            <th style={{ width: '150px' }} className="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
           {filteredAndSortedSubjects.map((subject, index) => (
             <tr key={subject.id} className="subject-row">
               <td className="row-number">{index + 1}</td>
-              <td>
-                <div className="subject-code-cell">{subject.subject_code}</div>
-              </td>
-              <td>
-                <div className="subject-desc">{subject.description}</div>
-              </td>
-              <td>
-                <div className="units-badge">{subject.units}</div>
-              </td>
+              <td><div className="subject-code-cell">{subject.subject_code}</div></td>
+              <td><div className="subject-desc">{subject.description}</div></td>
+              <td><div className="units-badge">{subject.units}</div></td>
               <td className="text-center">
-                <button
-                  className="delete-btn"
-                  onClick={() => onDelete(subject.id)}
-                  title="Delete subject"
-                >
-                  <Trash2 size={16} />
-                  Delete
-                </button>
+                <div className="action-buttons">
+                  <button className="edit-btn" onClick={() => onEdit(subject)} title="Edit subject">
+                    <Edit2 size={16} />
+                  </button>
+                  <button className="delete-btn-small" onClick={() => onDelete(subject)} title="Delete subject">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -4526,26 +11397,92 @@ const SubjectTable = React.memo(({
   );
 });
 
-// ==================== ADD SUBJECT MODAL ====================
-const AddSubjectModal = React.memo(({ 
-  show, 
-  onClose, 
-  onSave, 
-  courseName, 
-  yearLevel, 
-  semester 
-}) => {
-  const [formData, setFormData] = useState({
-    subject_code: '',
-    description: '',
-    units: 3
-  });
+// ==================== TEACHER ASSIGNMENTS TABLE ====================
+const TeacherAssignmentsTable = React.memo(({ assignments, loading, onEdit, onDelete }) => {
+  if (loading) return <TableSkeleton />;
+
+  if (assignments.length === 0) {
+    return (
+      <div className="empty-state">
+        <Users size={48} className="empty-icon" />
+        <h3>No Teacher Assignments</h3>
+        <p>No teachers have been assigned to subjects yet</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="table-wrapper">
+      <table className="subjects-table">
+        <thead>
+          <tr>
+            <th style={{ width: '60px' }}>#</th>
+            <th>Teacher Name</th>
+            <th>Subject Code</th>
+            <th>Description</th>
+            <th style={{ width: '120px' }}>Duration</th>
+            <th style={{ width: '150px' }} className="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {assignments.map((assignment, index) => (
+            <tr key={`${assignment.id}-${index}`} className="subject-row">
+              <td className="row-number">{index + 1}</td>
+              <td>
+                <div className="teacher-name-cell">
+                  <Users size={16} />
+                  {assignment.teacher_name || assignment.name || 'Unknown Teacher'}
+                </div>
+              </td>
+              <td><div className="subject-code-cell">{assignment.subject_code}</div></td>
+              <td><div className="subject-desc">{assignment.description}</div></td>
+              <td>
+                <div className="duration-badge">
+                  <Clock size={14} />
+                  {assignment.duration ? `${assignment.duration}h` : 'N/A'}
+                </div>
+              </td>
+              <td className="text-center">
+                <div className="action-buttons">
+                  <button className="edit-btn" onClick={() => onEdit(assignment)} title="Edit assignment">
+                    <Edit2 size={16} />
+                  </button>
+                  <button className="delete-btn-small" onClick={() => onDelete(assignment)} title="Delete assignment">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+});
+
+// ==================== ADD/EDIT SUBJECT MODAL ====================
+const SubjectModal = React.memo(({ show, onClose, onSave, courseName, yearLevel, semester, btledMajor, isBTLED, editMode = false, initialData = null }) => {
+  const [formData, setFormData] = useState({ subject_code: '', description: '', units: 3 });
+
+  useEffect(() => {
+    if (editMode && initialData) {
+      setFormData({
+        subject_code: initialData.subject_code || '',
+        description: initialData.description || '',
+        units: initialData.units || 3
+      });
+    } else {
+      setFormData({ subject_code: '', description: '', units: 3 });
+    }
+  }, [editMode, initialData, show]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.subject_code.trim() && formData.description.trim() && formData.units) {
       onSave(formData);
-      setFormData({ subject_code: '', description: '', units: 3 });
+      if (!editMode) {
+        setFormData({ subject_code: '', description: '', units: 3 });
+      }
     }
   };
 
@@ -4556,18 +11493,14 @@ const AddSubjectModal = React.memo(({
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <form onSubmit={handleSubmit}>
           <div className="modal-header">
-            <h3>Add New Subject</h3>
+            <h3>{editMode ? 'Edit Subject' : 'Add New Subject'}</h3>
             <button type="button" onClick={onClose} className="modal-close">
               <X size={20} />
             </button>
           </div>
-
           <div className="modal-body">
             <div className="form-group">
-              <label className="form-label">
-                <BookOpen size={16} />
-                Subject Code
-              </label>
+              <label className="form-label"><BookOpen size={16} /> Subject Code</label>
               <input
                 type="text"
                 className="form-input"
@@ -4578,12 +11511,8 @@ const AddSubjectModal = React.memo(({
                 autoFocus
               />
             </div>
-
             <div className="form-group">
-              <label className="form-label">
-                <BookOpen size={16} />
-                Description
-              </label>
+              <label className="form-label"><BookOpen size={16} /> Description</label>
               <input
                 type="text"
                 className="form-input"
@@ -4593,12 +11522,8 @@ const AddSubjectModal = React.memo(({
                 required
               />
             </div>
-
             <div className="form-group">
-              <label className="form-label">
-                <Award size={16} />
-                Units
-              </label>
+              <label className="form-label"><Award size={16} /> Units</label>
               <input
                 type="number"
                 className="form-input"
@@ -4610,22 +11535,350 @@ const AddSubjectModal = React.memo(({
                 required
               />
             </div>
+            {!editMode && (
+              <div className="form-info">
+                <div className="info-label">Will be added to:</div>
+                <div className="info-details">
+                  <strong>{courseName}</strong> • {getYearLabel(yearLevel)} • {getSemesterLabel(semester)}
+                  {isBTLED && yearLevel === 3 && (
+                    <> • Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}</>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="modal-footer">
+            <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
+            <button type="submit" className="btn-primary">
+              {editMode ? <Check size={16} /> : <Plus size={16} />}
+              {editMode ? 'Update Subject' : 'Add Subject'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+});
 
-            <div className="form-info">
-              <div className="info-label">Will be added to:</div>
+// ==================== ASSIGN TEACHER MODAL ====================
+const AssignTeacherModal = React.memo(({ show, onClose, onSave, subjects, courseName, courseId, yearLevel, semester, allCourses }) => {
+  const [teachers, setTeachers] = useState([]);
+  const [selectedTeacherId, setSelectedTeacherId] = useState('');
+  const [selectedSubjects, setSelectedSubjects] = useState([]);
+  const [duration, setDuration] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [teacherAssignments, setTeacherAssignments] = useState([]);
+  const [selectedCourseFilter, setSelectedCourseFilter] = useState(courseId);
+
+  useEffect(() => {
+    if (show) {
+      fetchTeachers();
+    }
+  }, [show, selectedCourseFilter]);
+
+  useEffect(() => {
+    if (selectedTeacherId) {
+      fetchTeacherAssignments(selectedTeacherId);
+    } else {
+      setTeacherAssignments([]);
+    }
+  }, [selectedTeacherId]);
+
+  useEffect(() => {
+    if (show) {
+      setSelectedCourseFilter(courseId);
+    }
+  }, [show, courseId]);
+
+  const fetchTeachers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/instructors`);
+      const data = await res.json();
+      const filteredTeachers = Array.isArray(data)
+        ? (selectedCourseFilter === 'all'
+            ? data
+            : data.filter(t => t.course_id === selectedCourseFilter || t.courseId === selectedCourseFilter))
+        : [];
+      setTeachers(filteredTeachers);
+    } catch (err) {
+      console.error('fetchTeachers error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTeacherAssignments = async (teacherId) => {
+    try {
+      const res = await fetch(`${API}/api/teacher-assignments/${teacherId}`);
+      const data = await res.json();
+      setTeacherAssignments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('fetchTeacherAssignments error:', err);
+      setTeacherAssignments([]);
+    }
+  };
+
+  const handleSubjectToggle = (subjectId) => {
+    setSelectedSubjects(prev => {
+      if (prev.includes(subjectId)) {
+        return prev.filter(id => id !== subjectId);
+      } else {
+        return [...prev, subjectId];
+      }
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (selectedTeacherId && selectedSubjects.length > 0 && duration) {
+      onSave({ teacherId: selectedTeacherId, subjectIds: selectedSubjects, duration });
+      setSelectedTeacherId('');
+      setSelectedSubjects([]);
+      setDuration(1);
+    }
+  };
+
+  const selectedTeacher = teachers.find(t => t.id === Number(selectedTeacherId));
+
+  if (!show) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content assign-teacher-modal" onClick={e => e.stopPropagation()}>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-header">
+            <h3><Users size={24} /> Assign Teacher to Subject(s)</h3>
+            <button type="button" onClick={onClose} className="modal-close">
+              <X size={20} />
+            </button>
+          </div>
+          <div className="modal-body">
+            <div className="form-info" style={{ marginBottom: '1.5rem' }}>
+              <div className="info-label">Assignment Context:</div>
               <div className="info-details">
                 <strong>{courseName}</strong> • {getYearLabel(yearLevel)} • {getSemesterLabel(semester)}
               </div>
             </div>
+
+            <div className="form-group">
+              <label className="form-label"><BookOpen size={16} /> Filter Teachers by Course</label>
+              <select className="form-input" value={selectedCourseFilter} onChange={e => {
+                setSelectedCourseFilter(e.target.value === 'all' ? 'all' : Number(e.target.value));
+                setSelectedTeacherId('');
+              }}>
+                <option value="all">All Courses</option>
+                {allCourses.map(course => (
+                  <option key={course.id} value={course.id}>
+                    {course.code} - {course.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label"><Users size={16} /> Select Teacher</label>
+              {teachers.length === 0 ? (
+                <div className="no-teachers-warning">
+                  <AlertCircle size={16} />
+                  <span>
+                    {selectedCourseFilter === 'all'
+                      ? 'No instructors found. Please add instructors first.'
+                      : 'No instructors found for this course. Try selecting "All Courses" or add instructors first.'
+                    }
+                  </span>
+                </div>
+              ) : (
+                <select className="form-input" value={selectedTeacherId} onChange={e => setSelectedTeacherId(e.target.value)} required disabled={loading}>
+                  <option value="">-- Choose a teacher --</option>
+                  {teachers.map(teacher => {
+                    const teacherCourse = allCourses.find(c => c.id === (teacher.course_id || teacher.courseId));
+                    const displayName = teacherCourse
+                      ? `${teacher.name} ${teacher.last_name || ''} (${teacherCourse.code})`
+                      : `${teacher.name} ${teacher.last_name || ''}`;
+                    return (
+                      <option key={teacher.id} value={teacher.id}>
+                        {displayName}
+                      </option>
+                    );
+                  })}
+                </select>
+              )}
+            </div>
+
+            {selectedTeacherId && teacherAssignments.length > 0 && (
+              <div className="teacher-assignments-section">
+                <div className="assignments-header">
+                  <Award size={16} />
+                  <strong>Current Assignments for {selectedTeacher?.name}</strong>
+                </div>
+                <div className="assignments-list">
+                  {teacherAssignments.map((assignment, idx) => (
+                    <div key={idx} className="assignment-item">
+                      <div className="assignment-subject">
+                        <BookOpen size={14} /> {assignment.subject_code} - {assignment.description}
+                      </div>
+                      <div className="assignment-time">
+                        <Clock size={14} /> {assignment.duration ? `${assignment.duration} hour${assignment.duration > 1 ? 's' : ''}` : assignment.time_slot}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="form-group">
+              <label className="form-label"><BookOpen size={16} /> Select Subject(s) *</label>
+              <div className="checkbox-group">
+                {subjects.length === 0 ? (
+                  <div className="no-subjects-warning">
+                    <AlertCircle size={16} />
+                    <span>No subjects available. Please add subjects first.</span>
+                  </div>
+                ) : (
+                  subjects.map(subject => (
+                    <label key={subject.id} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={selectedSubjects.includes(subject.id)}
+                        onChange={() => handleSubjectToggle(subject.id)}
+                        disabled={!selectedTeacherId}
+                      />
+                      <span className="checkbox-text">
+                        <strong>{subject.subject_code}</strong> - {subject.description} ({subject.units} units)
+                      </span>
+                    </label>
+                  ))
+                )}
+              </div>
+              {selectedSubjects.length > 0 && (
+                <div className="selected-count">{selectedSubjects.length} subject(s) selected</div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label"><Clock size={16} /> Class Duration *</label>
+              <select className="form-input" value={duration} onChange={e => setDuration(Number(e.target.value))} required disabled={selectedSubjects.length === 0}>
+                {DURATION_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {duration && selectedSubjects.length > 0 && (
+              <div className="time-preview">
+                <Clock size={16} />
+                <span>Duration: <strong>{DURATION_OPTIONS.find(d => d.value === duration)?.label}</strong> per class</span>
+              </div>
+            )}
           </div>
 
           <div className="modal-footer">
-            <button type="button" onClick={onClose} className="btn-secondary">
-              Cancel
+            <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
+            <button type="submit" className="btn-primary" disabled={!selectedTeacherId || selectedSubjects.length === 0 || !duration}>
+              <Check size={16} /> Assign Teacher
             </button>
-            <button type="submit" className="btn-primary">
-              <Plus size={16} />
-              Add Subject
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+});
+
+// ==================== EDIT ASSIGNMENT MODAL ====================
+const EditAssignmentModal = React.memo(({ show, onClose, onSave, assignment, allCourses }) => {
+  const [duration, setDuration] = useState(1);
+  const [teachers, setTeachers] = useState([]);
+  const [selectedTeacherId, setSelectedTeacherId] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (show && assignment) {
+      setDuration(assignment.duration || 1);
+      setSelectedTeacherId(assignment.teacher_id || '');
+      fetchTeachers();
+    }
+  }, [show, assignment]);
+
+  const fetchTeachers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/instructors`);
+      const data = await res.json();
+      setTeachers(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('fetchTeachers error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (selectedTeacherId && duration) {
+      onSave({ id: assignment.id, teacherId: selectedTeacherId, duration });
+    }
+  };
+
+  if (!show || !assignment) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-header">
+            <h3><Edit2 size={24} /> Edit Teacher Assignment</h3>
+            <button type="button" onClick={onClose} className="modal-close">
+              <X size={20} />
+            </button>
+          </div>
+          <div className="modal-body">
+            <div className="form-info" style={{ marginBottom: '1.5rem' }}>
+              <div className="info-label">Subject:</div>
+              <div className="info-details">
+                <strong>{assignment.subject_code}</strong> - {assignment.description}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label"><Users size={16} /> Select Teacher *</label>
+              <select className="form-input" value={selectedTeacherId} onChange={e => setSelectedTeacherId(e.target.value)} required disabled={loading}>
+                <option value="">-- Choose a teacher --</option>
+                {teachers.map(teacher => {
+                  const teacherCourse = allCourses.find(c => c.id === (teacher.course_id || teacher.courseId));
+                  const displayName = teacherCourse
+                    ? `${teacher.name} ${teacher.last_name || ''} (${teacherCourse.code})`
+                    : `${teacher.name} ${teacher.last_name || ''}`;
+                  return (
+                    <option key={teacher.id} value={teacher.id}>
+                      {displayName}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label"><Clock size={16} /> Class Duration *</label>
+              <select className="form-input" value={duration} onChange={e => setDuration(Number(e.target.value))} required>
+                {DURATION_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {duration && (
+              <div className="time-preview">
+                <Clock size={16} />
+                <span>Duration: <strong>{DURATION_OPTIONS.find(d => d.value === duration)?.label}</strong> per class</span>
+              </div>
+            )}
+          </div>
+
+          <div className="modal-footer">
+            <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
+            <button type="submit" className="btn-primary" disabled={!selectedTeacherId || !duration}>
+              <Check size={16} /> Update Assignment
             </button>
           </div>
         </form>
@@ -4635,7 +11888,7 @@ const AddSubjectModal = React.memo(({
 });
 
 // ==================== DELETE CONFIRMATION MODAL ====================
-const DeleteConfirmModal = React.memo(({ show, onClose, onConfirm, subjectCode }) => {
+const DeleteConfirmModal = React.memo(({ show, onClose, onConfirm, itemName, itemType = 'subject' }) => {
   if (!show) return null;
 
   return (
@@ -4643,23 +11896,15 @@ const DeleteConfirmModal = React.memo(({ show, onClose, onConfirm, subjectCode }
       <div className="modal-content confirm-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <AlertCircle size={24} className="warning-icon" />
-          <h3>Delete Subject?</h3>
+          <h3>Delete {itemType === 'assignment' ? 'Assignment' : 'Subject'}?</h3>
         </div>
-
         <div className="modal-body">
-          <p>
-            Are you sure you want to delete <strong>{subjectCode}</strong>? 
-            This action cannot be undone.
-          </p>
+          <p>Are you sure you want to delete <strong>{itemName}</strong>? This action cannot be undone.</p>
         </div>
-
         <div className="modal-footer">
-          <button onClick={onClose} className="btn-secondary">
-            Cancel
-          </button>
+          <button onClick={onClose} className="btn-secondary">Cancel</button>
           <button onClick={onConfirm} className="btn-danger">
-            <Trash2 size={16} />
-            Delete
+            <Trash2 size={16} /> Delete
           </button>
         </div>
       </div>
@@ -4669,49 +11914,43 @@ const DeleteConfirmModal = React.memo(({ show, onClose, onConfirm, subjectCode }
 
 // ==================== MAIN COMPONENT ====================
 export default function CoursesPage() {
-  // State Management
   const [courses, setCourses] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [yearLevel, setYearLevel] = useState(1);
   const [semester, setSemester] = useState('1');
+  const [btledMajor, setBtledMajor] = useState('ICT');
   const [subjects, setSubjects] = useState([]);
-  
-  const [loading, setLoading] = useState({
-    initial: true,
-    subjects: false,
-  });
-  
+  const [loading, setLoading] = useState({ initial: true, subjects: false });
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditSubjectModal, setShowEditSubjectModal] = useState(false);
+  const [editSubjectTarget, setEditSubjectTarget] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAssignTeacherModal, setShowAssignTeacherModal] = useState(false);
+  const [showEditAssignmentModal, setShowEditAssignmentModal] = useState(false);
+  const [showDeleteAssignmentModal, setShowDeleteAssignmentModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  
+  const [editAssignmentTarget, setEditAssignmentTarget] = useState(null);
+  const [deleteAssignmentTarget, setDeleteAssignmentTarget] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('code');
-  
   const [toast, setToast] = useState({ message: '', type: '' });
+  const [teacherAssignments, setTeacherAssignments] = useState([]);
+  const [loadingAssignments, setLoadingAssignments] = useState(false);
 
-  // Initial data fetch
-  useEffect(() => {
-    fetchCourses();
+  const showToast = useCallback((message, type) => {
+    setToast({ message, type });
   }, []);
 
-  // Fetch subjects when course/year/semester changes
-  useEffect(() => {
-    if (selectedCourseId) {
-      loadSubjects();
-    } else {
-      setSubjects([]);
-    }
-  }, [selectedCourseId, yearLevel, semester]);
+  const closeToast = useCallback(() => {
+    setToast({ message: '', type: '' });
+  }, []);
 
-  // API Functions
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
     setLoading(prev => ({ ...prev, initial: true }));
     try {
       const res = await fetch(`${API}/api/courses`);
       const data = await res.json();
       setCourses(Array.isArray(data) ? data : []);
-      
       if (data.length && !selectedCourseId) {
         setSelectedCourseId(data[0].id);
       }
@@ -4721,16 +11960,25 @@ export default function CoursesPage() {
     } finally {
       setLoading(prev => ({ ...prev, initial: false }));
     }
-  };
+  }, [selectedCourseId, showToast]);
 
-  const loadSubjects = async () => {
+  const loadSubjects = useCallback(async () => {
+    if (!selectedCourseId) return;
     setLoading(prev => ({ ...prev, subjects: true }));
     try {
-      const params = new URLSearchParams({ 
-        courseId: selectedCourseId, 
-        yearLevel, 
-        semester 
+      const selectedCourse = courses.find(c => c.id === selectedCourseId);
+      const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+      const params = new URLSearchParams({
+        courseId: selectedCourseId,
+        yearLevel,
+        semester
       });
+
+      if (isBTLED && yearLevel === 3) {
+        params.append('major', btledMajor);
+      }
+
       const res = await fetch(`${API}/api/subjects?${params}`);
       const data = await res.json();
       setSubjects(Array.isArray(data) ? data : []);
@@ -4740,179 +11988,321 @@ export default function CoursesPage() {
     } finally {
       setLoading(prev => ({ ...prev, subjects: false }));
     }
-  };
+  }, [selectedCourseId, yearLevel, semester, btledMajor, courses, showToast]);
 
-  const handleAddSubject = async (formData) => {
+  const loadTeacherAssignments = useCallback(async () => {
+    if (!selectedCourseId) return;
+    setLoadingAssignments(true);
+    try {
+      const params = new URLSearchParams({
+        courseId: selectedCourseId,
+        yearLevel,
+        semester
+      });
+
+      const selectedCourse = courses.find(c => c.id === selectedCourseId);
+      if (selectedCourse && isBTLEDCourse(selectedCourse.code) && yearLevel === 3) {
+        params.append('major', btledMajor);
+      }
+
+      const res = await fetch(`${API}/api/teacher-assignments?${params}`);
+      const data = await res.json();
+      setTeacherAssignments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('loadTeacherAssignments error:', err);
+      setTeacherAssignments([]);
+    } finally {
+      setLoadingAssignments(false);
+    }
+  }, [selectedCourseId, yearLevel, semester, btledMajor, courses]);
+
+  // Fixed: handleRefresh was missing!
+  const handleRefresh = useCallback(async () => {
+    await fetchCourses();
+    if (selectedCourseId) {
+      await loadSubjects();
+      await loadTeacherAssignments();
+    }
+    showToast('Data refreshed successfully', 'success');
+  }, [fetchCourses, loadSubjects, loadTeacherAssignments, selectedCourseId, showToast]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
+
+  useEffect(() => {
+    if (selectedCourseId) {
+      loadSubjects();
+      loadTeacherAssignments();
+    } else {
+      setSubjects([]);
+      setTeacherAssignments([]);
+    }
+  }, [selectedCourseId, yearLevel, semester, btledMajor, loadSubjects, loadTeacherAssignments]);
+
+  const handleAddSubject = useCallback(async (formData) => {
     if (!selectedCourseId) {
       showToast('Please select a course first', 'danger');
       return;
     }
-
     try {
+      const selectedCourse = courses.find(c => c.id === selectedCourseId);
+      const isBTLED = selectedCourse && isBTLEDCourse(selectedCourse.code);
+
+      const requestBody = {
+        courseId: Number(selectedCourseId),
+        yearLevel: Number(yearLevel),
+        semester,
+        subject_code: formData.subject_code.trim(),
+        description: formData.description.trim(),
+        units: Number(formData.units)
+      };
+
+      if (isBTLED && yearLevel === 3) {
+        requestBody.major = btledMajor;
+      }
+
       const res = await fetch(`${API}/api/subjects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          courseId: Number(selectedCourseId),
-          yearLevel: Number(yearLevel),
-          semester,
-          subject_code: formData.subject_code.trim(),
-          description: formData.description.trim(),
-          units: Number(formData.units)
-        })
+        body: JSON.stringify(requestBody)
       });
 
-      if (!res.ok) throw new Error('Failed to add subject');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.message || 'Failed to add subject');
+      }
 
       setShowAddModal(false);
       await loadSubjects();
       showToast('Subject added successfully! 🎉', 'success');
     } catch (err) {
       console.error('handleAddSubject error:', err);
-      showToast('Failed to add subject', 'danger');
+      showToast(err.message || 'Failed to add subject', 'danger');
     }
-  };
+  }, [selectedCourseId, yearLevel, semester, btledMajor, courses, loadSubjects, showToast]);
 
-  const handleDeleteClick = (subject) => {
+  const handleEditSubjectClick = useCallback((subject) => {
+    setEditSubjectTarget(subject);
+    setShowEditSubjectModal(true);
+  }, []);
+
+  const handleEditSubject = useCallback(async (formData) => {
+    if (!editSubjectTarget) return;
+    try {
+      const res = await fetch(`${API}/api/subjects/${editSubjectTarget.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject_code: formData.subject_code.trim(),
+          description: formData.description.trim(),
+          units: Number(formData.units)
+        })
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to update subject');
+      }
+      setShowEditSubjectModal(false);
+      setEditSubjectTarget(null);
+      await loadSubjects();
+      showToast('Subject updated successfully! ✓', 'success');
+    } catch (err) {
+      console.error('handleEditSubject error:', err);
+      showToast(err.message || 'Failed to update subject', 'danger');
+    }
+  }, [editSubjectTarget, loadSubjects, showToast]);
+
+  const handleDeleteClick = useCallback((subject) => {
     setDeleteTarget(subject);
     setShowDeleteModal(true);
-  };
+  }, []);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     if (!deleteTarget) return;
-
     try {
-      const res = await fetch(`${API}/api/subjects/${deleteTarget.id}`, {
-        method: 'DELETE'
-      });
-
-      if (!res.ok) throw new Error('Failed to delete subject');
-
+      const res = await fetch(`${API}/api/subjects/${deleteTarget.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to delete subject');
+      }
       setShowDeleteModal(false);
       setDeleteTarget(null);
       await loadSubjects();
       showToast('Subject deleted successfully ✓', 'success');
     } catch (err) {
       console.error('handleDeleteConfirm error:', err);
-      showToast('Failed to delete subject', 'danger');
+      showToast(err.message || 'Failed to delete subject', 'danger');
     }
-  };
+  }, [deleteTarget, loadSubjects, showToast]);
 
-  const handleRefresh = useCallback(async () => {
-    await Promise.all([fetchCourses(), selectedCourseId && loadSubjects()]);
-    showToast('Data refreshed successfully', 'success');
-  }, [selectedCourseId]);
+  const handleAssignTeacher = useCallback(async ({ teacherId, subjectIds, duration }) => {
+    try {
+      const assignments = subjectIds.map(subjectId => ({
+        teacher_id: Number(teacherId),
+        subject_id: Number(subjectId),
+        course_id: Number(selectedCourseId),
+        year_level: Number(yearLevel),
+        semester,
+        duration
+      }));
 
-  const showToast = (message, type) => {
-    setToast({ message, type });
-  };
+      const results = await Promise.allSettled(
+        assignments.map(assignment =>
+          fetch(`${API}/api/teacher-assignments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(assignment)
+          }).then(async res => {
+            if (!res.ok) {
+              const errorData = await res.json().catch(() => ({}));
+              throw new Error(errorData.message || `HTTP ${res.status}`);
+            }
+            return res.json();
+          })
+        )
+      );
 
-  const closeToast = () => {
-    setToast({ message: '', type: '' });
-  };
+      const successful = results.filter(r => r.status === 'fulfilled').length;
+      const failed = results.filter(r => r.status === 'rejected').length;
 
-  // Get selected course info
-  const selectedCourse = useMemo(() => {
-    return courses.find(c => c.id === selectedCourseId);
-  }, [courses, selectedCourseId]);
+      if (failed > 0 && successful === 0) {
+        throw new Error('All assignments failed');
+      }
 
-  // Calculate stats
+      setShowAssignTeacherModal(false);
+      await loadTeacherAssignments();
+      showToast(`Successfully assigned teacher to ${successful} subject(s)!`, 'success');
+    } catch (err) {
+      console.error('handleAssignTeacher error:', err);
+      showToast(err.message || 'Failed to assign teacher', 'danger');
+    }
+  }, [selectedCourseId, yearLevel, semester, loadTeacherAssignments, showToast]);
+
+  const handleEditAssignmentClick = useCallback((assignment) => {
+    setEditAssignmentTarget(assignment);
+    setShowEditAssignmentModal(true);
+  }, []);
+
+  const handleEditAssignment = useCallback(async ({ id, teacherId, duration }) => {
+    try {
+      const res = await fetch(`${API}/api/teacher-assignments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teacher_id: Number(teacherId), duration })
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to update assignment');
+      }
+      setShowEditAssignmentModal(false);
+      setEditAssignmentTarget(null);
+      await loadTeacherAssignments();
+      showToast('Assignment updated successfully! ✓', 'success');
+    } catch (err) {
+      console.error('handleEditAssignment error:', err);
+      showToast(err.message || 'Failed to update assignment', 'danger');
+    }
+  }, [loadTeacherAssignments, showToast]);
+
+  const handleDeleteAssignmentClick = useCallback((assignment) => {
+    setDeleteAssignmentTarget(assignment);
+    setShowDeleteAssignmentModal(true);
+  }, []);
+
+  const handleDeleteAssignmentConfirm = useCallback(async () => {
+    if (!deleteAssignmentTarget) return;
+    try {
+      const res = await fetch(`${API}/api/teacher-assignments/${deleteAssignmentTarget.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to delete assignment');
+      }
+      setShowDeleteAssignmentModal(false);
+      setDeleteAssignmentTarget(null);
+      await loadTeacherAssignments();
+      showToast('Assignment deleted successfully ✓', 'success');
+    } catch (err) {
+      console.error('handleDeleteAssignmentConfirm error:', err);
+      showToast(err.message || 'Failed to delete assignment', 'danger');
+    }
+  }, [deleteAssignmentTarget, loadTeacherAssignments, showToast]);
+
+  const selectedCourse = useMemo(() => courses.find(c => c.id === selectedCourseId), [courses, selectedCourseId]);
+  const isBTLED = useMemo(() => selectedCourse && isBTLEDCourse(selectedCourse.code), [selectedCourse]);
+  const showMajorSelector = isBTLED && yearLevel === 3;
+
   const stats = useMemo(() => {
     const totalUnits = subjects.reduce((sum, s) => sum + (s.units || 0), 0);
-    return {
-      courses: courses.length,
-      subjects: subjects.length,
-      totalUnits,
-    };
+    return { courses: courses.length, subjects: subjects.length, totalUnits };
   }, [courses, subjects]);
 
   return (
     <div className="courses-page">
-      {/* Toast Notification */}
       <Toast message={toast.message} type={toast.type} onClose={closeToast} />
 
-      {/* Page Header with Gradient */}
       <div className="page-header-courses">
         <div className="page-title-section-gradient-courses">
           <div className="page-title-content-courses">
             <h1 className="page-title-gradient-courses">
-              <BookOpen size={36} />
-              Course & Subject Management
+              <BookOpen size={36} /> Course & Subject Management
             </h1>
             <p className="page-subtitle-gradient-courses">
-              {selectedCourse 
-                ? `${selectedCourse.code} — ${selectedCourse.name}`
-                : 'Select a course to manage subjects'
-              }
+              {selectedCourse ? `${selectedCourse.code} — ${selectedCourse.name}` : 'Select a course to manage subjects'}
+              {isBTLED && yearLevel === 3 && (
+                <span className="btled-major-indicator">
+                  {' '}• Major: {BTLED_MAJORS.find(m => m.value === btledMajor)?.label}
+                </span>
+              )}
             </p>
           </div>
           <div className="header-actions-courses">
-            <button 
+            <button
+              className="action-btn-courses"
+              onClick={() => setShowAssignTeacherModal(true)}
+              disabled={!selectedCourseId || subjects.length === 0}
+            >
+              <Users size={18} /> Assign Teacher
+            </button>
+            <button
               className="action-btn-courses"
               onClick={() => setShowAddModal(true)}
               disabled={!selectedCourseId}
             >
-              <Plus size={18} />
-              Add Subject
+              <Plus size={18} /> Add Subject
             </button>
-            <button 
+            <button
               className="action-btn-courses"
               onClick={handleRefresh}
               disabled={loading.initial}
             >
-              <RefreshCw size={18} className={loading.initial ? 'spinning' : ''} />
-              Refresh
+              <RefreshCw size={18} className={loading.initial ? 'spinning' : ''} /> Refresh
             </button>
           </div>
         </div>
       </div>
 
-      {/* Stats Dashboard */}
       <div className="stats-grid">
-        <StatsCard
-          icon={BookOpen}
-          label="Total Courses"
-          value={stats.courses}
-          color={COLORS.primary}
-        />
-        <StatsCard
-          icon={BookOpen}
-          label="Subjects Loaded"
-          value={stats.subjects}
-          color={COLORS.accent}
-        />
-        <StatsCard
-          icon={Award}
-          label="Total Units"
-          value={stats.totalUnits}
-          color={COLORS.light}
-        />
+        <StatsCard icon={BookOpen} label="Total Courses" value={stats.courses} color={COLORS.primary} />
+        <StatsCard icon={BookOpen} label="Subjects Loaded" value={stats.subjects} color={COLORS.accent} />
+        <StatsCard icon={Award} label="Total Units" value={stats.totalUnits} color={COLORS.light} />
       </div>
 
-      {/* Selectors Section */}
       <div className="selectors-section">
-        <CourseSelector
-          courses={courses}
-          selectedCourseId={selectedCourseId}
-          onChange={setSelectedCourseId}
-        />
-
+        <CourseSelector courses={courses} selectedCourseId={selectedCourseId} onChange={setSelectedCourseId} />
+        <BTLEDMajorSelector major={btledMajor} onChange={setBtledMajor} show={showMajorSelector} />
         <div className="dual-selectors">
           <YearSelector yearLevel={yearLevel} onChange={setYearLevel} />
           <SemesterSelector semester={semester} onChange={setSemester} />
         </div>
       </div>
 
-      {/* Subjects Table Section */}
       <div className="table-section">
         <div className="table-header">
           <div className="table-title">
-            <h2>
-              {getYearLabel(yearLevel)} — {getSemesterLabel(semester)}
-            </h2>
+            <h2>{getYearLabel(yearLevel)} — {getSemesterLabel(semester)}</h2>
             <span className="subject-count">{subjects.length} Subjects</span>
           </div>
-
           <div className="table-controls">
             <div className="search-container">
               <Search size={16} className="search-icon" />
@@ -4924,57 +12314,101 @@ export default function CoursesPage() {
                 onChange={e => setSearchTerm(e.target.value)}
               />
               {searchTerm && (
-                <button 
-                  className="search-clear"
-                  onClick={() => setSearchTerm('')}
-                >
+                <button className="search-clear" onClick={() => setSearchTerm('')}>
                   <X size={14} />
                 </button>
               )}
             </div>
-
             <div className="sort-container">
               <Filter size={16} />
-              <select
-                className="sort-select"
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value)}
-              >
+              <select className="sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
                 <option value="code">Sort by Code</option>
                 <option value="description">Sort by Description</option>
-                <option value="units">Sort by Units</option>
+                <option value="units">Sort by Units (desc)</option>
               </select>
             </div>
           </div>
         </div>
-
         <SubjectTable
           subjects={subjects}
           loading={loading.subjects}
+          onEdit={handleEditSubjectClick}
           onDelete={handleDeleteClick}
           searchTerm={searchTerm}
           sortBy={sortBy}
         />
       </div>
 
+      <div className="table-section" style={{ marginTop: '2rem' }}>
+        <div className="table-header">
+          <div className="table-title">
+            <h2><Users size={24} /> Teacher Assignments</h2>
+            <span className="subject-count">{teacherAssignments.length} Assignments</span>
+          </div>
+        </div>
+        <TeacherAssignmentsTable
+          assignments={teacherAssignments}
+          loading={loadingAssignments}
+          onEdit={handleEditAssignmentClick}
+          onDelete={handleDeleteAssignmentClick}
+        />
+      </div>
+
       {/* Modals */}
-      <AddSubjectModal
+      <SubjectModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSave={handleAddSubject}
         courseName={selectedCourse?.code || ''}
         yearLevel={yearLevel}
         semester={semester}
+        btledMajor={btledMajor}
+        isBTLED={isBTLED}
+        editMode={false}
       />
-
+      <SubjectModal
+        show={showEditSubjectModal}
+        onClose={() => { setShowEditSubjectModal(false); setEditSubjectTarget(null); }}
+        onSave={handleEditSubject}
+        courseName={selectedCourse?.code || ''}
+        yearLevel={yearLevel}
+        semester={semester}
+        btledMajor={btledMajor}
+        isBTLED={isBTLED}
+        editMode={true}
+        initialData={editSubjectTarget}
+      />
+      <AssignTeacherModal
+        show={showAssignTeacherModal}
+        onClose={() => setShowAssignTeacherModal(false)}
+        onSave={handleAssignTeacher}
+        subjects={subjects}
+        courseName={selectedCourse?.code || ''}
+        courseId={selectedCourseId}
+        yearLevel={yearLevel}
+        semester={semester}
+        allCourses={courses}
+      />
+      <EditAssignmentModal
+        show={showEditAssignmentModal}
+        onClose={() => { setShowEditAssignmentModal(false); setEditAssignmentTarget(null); }}
+        onSave={handleEditAssignment}
+        assignment={editAssignmentTarget}
+        allCourses={courses}
+      />
       <DeleteConfirmModal
         show={showDeleteModal}
-        onClose={() => {
-          setShowDeleteModal(false);
-          setDeleteTarget(null);
-        }}
+        onClose={() => { setShowDeleteModal(false); setDeleteTarget(null); }}
         onConfirm={handleDeleteConfirm}
-        subjectCode={deleteTarget?.subject_code}
+        itemName={deleteTarget?.subject_code || ''}
+        itemType="subject"
+      />
+      <DeleteConfirmModal
+        show={showDeleteAssignmentModal}
+        onClose={() => { setShowDeleteAssignmentModal(false); setDeleteAssignmentTarget(null); }}
+        onConfirm={handleDeleteAssignmentConfirm}
+        itemName={deleteAssignmentTarget ? `${deleteAssignmentTarget.teacher_name || 'Teacher'} - ${deleteAssignmentTarget.subject_code}` : ''}
+        itemType="assignment"
       />
 
       {/* Inline Styles */}
@@ -5000,7 +12434,13 @@ export default function CoursesPage() {
           border: 2px solid;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           animation: slideInRight 0.3s ease;
-          max-width: 400px;
+          max-width: 500px;
+          word-wrap: break-word;
+        }
+        
+        .toast-notification span {
+          flex: 1;
+          line-height: 1.4;
         }
 
         .toast-close {
@@ -5056,6 +12496,15 @@ export default function CoursesPage() {
           color: white;
           margin: 0;
           opacity: 0.9;
+        }
+
+        .btled-major-indicator {
+          background: rgba(255, 255, 255, 0.2);
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          display: inline-block;
+          margin-left: 0.5rem;
         }
 
         .header-actions-courses {
@@ -5178,6 +12627,11 @@ export default function CoursesPage() {
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
+        .btled-major-section {
+          border: 2px solid ${COLORS.lighter};
+          background: linear-gradient(135deg, #fff 0%, ${COLORS.lightest} 100%);
+        }
+
         .selector-header {
           display: flex;
           align-items: center;
@@ -5269,6 +12723,10 @@ export default function CoursesPage() {
           color: white;
         }
 
+        .btled-major-btn {
+          font-size: 0.9rem;
+        }
+
         /* ===== TABLE SECTION ===== */
         .table-section {
           background: white;
@@ -5294,6 +12752,9 @@ export default function CoursesPage() {
           font-size: 1.5rem;
           font-weight: 700;
           color: ${COLORS.primary};
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
         }
 
         .subject-count {
@@ -5447,6 +12908,15 @@ export default function CoursesPage() {
           color: ${COLORS.secondary};
         }
 
+        .teacher-name-cell {
+          font-weight: 600;
+          color: ${COLORS.primary};
+          font-size: 0.95rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
         .units-badge {
           display: inline-block;
           background: ${COLORS.light};
@@ -5457,22 +12927,57 @@ export default function CoursesPage() {
           font-size: 0.85rem;
         }
 
-        .delete-btn {
+        .duration-badge {
           display: inline-flex;
           align-items: center;
           gap: 0.35rem;
-          padding: 0.5rem 1rem;
-          background: #fee;
-          color: #c33;
-          border: 1px solid #fcc;
-          border-radius: 6px;
-          font-size: 0.85rem;
+          background: ${COLORS.lighter};
+          color: ${COLORS.primary};
+          padding: 0.35rem 0.75rem;
+          border-radius: 20px;
           font-weight: 600;
+          font-size: 0.85rem;
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 0.5rem;
+          justify-content: center;
+        }
+
+        .edit-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.5rem;
+          background: #e3f2fd;
+          color: #1976d2;
+          border: 1px solid #bbdefb;
+          border-radius: 6px;
           cursor: pointer;
           transition: all 0.3s ease;
         }
 
-        .delete-btn:hover {
+        .edit-btn:hover {
+          background: #bbdefb;
+          border-color: #90caf9;
+          transform: translateY(-1px);
+        }
+
+        .delete-btn-small {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.5rem;
+          background: #fee;
+          color: #c33;
+          border: 1px solid #fcc;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .delete-btn-small:hover {
           background: #fcc;
           border-color: #faa;
           transform: translateY(-1px);
@@ -5552,6 +13057,159 @@ export default function CoursesPage() {
 
         .confirm-modal {
           max-width: 400px;
+        }
+
+        .assign-teacher-modal {
+          max-width: 650px;
+        }
+
+        .checkbox-group {
+          max-height: 300px;
+          overflow-y: auto;
+          border: 2px solid ${COLORS.lightest};
+          border-radius: 8px;
+          padding: 0.75rem;
+          background: #f8f9fa;
+        }
+
+        .checkbox-label {
+          display: flex;
+          align-items: start;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          margin-bottom: 0.5rem;
+          background: white;
+          border: 2px solid ${COLORS.lightest};
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .checkbox-label:hover {
+          border-color: ${COLORS.lighter};
+          background: ${COLORS.lightest};
+        }
+
+        .checkbox-label:has(input:checked) {
+          border-color: ${COLORS.light};
+          background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          margin-top: 2px;
+          cursor: pointer;
+          accent-color: ${COLORS.light};
+        }
+
+        .checkbox-label input[type="checkbox"]:disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+
+        .checkbox-text {
+          flex: 1;
+          font-size: 0.9rem;
+          color: ${COLORS.secondary};
+        }
+
+        .checkbox-text strong {
+          color: ${COLORS.primary};
+        }
+
+        .selected-count {
+          margin-top: 0.5rem;
+          padding: 0.5rem 0.75rem;
+          background: ${COLORS.lightest};
+          border-radius: 6px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: ${COLORS.primary};
+          text-align: center;
+        }
+
+        .no-teachers-warning,
+        .no-subjects-warning {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background: #fff3cd;
+          border: 2px solid #ffc107;
+          border-radius: 8px;
+          color: #856404;
+          font-size: 0.9rem;
+        }
+
+        .time-preview {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+          border-radius: 8px;
+          color: ${COLORS.primary};
+          font-size: 0.9rem;
+          margin-top: 1rem;
+        }
+
+        .time-preview strong {
+          color: ${COLORS.primary};
+          font-weight: 700;
+        }
+
+        .teacher-assignments-section {
+          background: #f8f9fa;
+          border-radius: 8px;
+          padding: 1rem;
+          margin: 1rem 0;
+          border: 2px solid ${COLORS.lightest};
+        }
+
+        .assignments-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: ${COLORS.primary};
+          margin-bottom: 0.75rem;
+          font-size: 0.9rem;
+        }
+
+        .assignments-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          max-height: 200px;
+          overflow-y: auto;
+        }
+
+        .assignment-item {
+          background: white;
+          padding: 0.75rem;
+          border-radius: 6px;
+          border-left: 3px solid ${COLORS.light};
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .assignment-subject {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          color: ${COLORS.primary};
+          font-size: 0.9rem;
+        }
+
+        .assignment-time {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: ${COLORS.secondary};
+          font-size: 0.85rem;
+          opacity: 0.8;
         }
 
         @keyframes fadeIn {
@@ -5682,10 +13340,15 @@ export default function CoursesPage() {
           transition: all 0.3s ease;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
           background: ${COLORS.secondary};
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(3, 4, 94, 0.3);
+        }
+
+        .btn-primary:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
 
         .btn-secondary {
@@ -5773,6 +13436,22 @@ export default function CoursesPage() {
             padding: 0.75rem 0.5rem;
             font-size: 0.85rem;
           }
+
+          .checkbox-group {
+            max-height: 200px;
+          }
+
+          .checkbox-label {
+            padding: 0.5rem;
+          }
+
+          .checkbox-text {
+            font-size: 0.85rem;
+          }
+
+          .action-buttons {
+            flex-direction: column;
+          }
         }
 
         @media (max-width: 576px) {
@@ -5794,6 +13473,23 @@ export default function CoursesPage() {
 
           .selector-btn {
             width: 100%;
+          }
+
+          .header-actions-courses {
+            flex-direction: column;
+          }
+
+          .action-btn-courses {
+            width: 100%;
+            justify-content: center;
+          }
+
+          .modal-content {
+            width: 95%;
+          }
+
+          .assign-teacher-modal {
+            max-width: 95%;
           }
         }
       `}</style>
