@@ -15674,6 +15674,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Search, RefreshCw, Download, Calendar, Users, BookOpen, ChevronDown, ChevronUp, Filter, X, AlertCircle, CheckCircle, Award } from "lucide-react";
+import html2canvas from 'html2canvas';
 
 // ==================== CONSTANTS ====================
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
@@ -15768,7 +15769,7 @@ const isBTLEDCourse = (courseCode) => {
 // ==================== DOWNLOAD FUNCTIONALITY ====================
 const downloadAsImage = async (element, filename) => {
   try {
-    const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
+    // const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
     const clone = element.cloneNode(true);
     const actionButtons = clone.querySelectorAll('.edit-btn-small');
     actionButtons.forEach(btn => btn.remove());

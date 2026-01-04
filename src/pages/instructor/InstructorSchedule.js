@@ -3401,7 +3401,7 @@ import {
   Calendar, Clock, User, BookOpen, Building, RefreshCw,
   Download, Grid, List, CheckCircle, AlertCircle, Info, Award
 } from "lucide-react";
-
+import html2canvas from 'html2canvas';
 // ==================== CONSTANTS ====================
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
@@ -3759,7 +3759,7 @@ export default function InstructorSchedule() {
 
   const handleExport = async () => {
     try {
-      const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
+      // const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
       
       const scheduleElement = document.querySelector('.schedule-table') || document.querySelector('.schedule-cards');
       

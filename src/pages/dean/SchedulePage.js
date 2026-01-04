@@ -21125,6 +21125,7 @@ import {
   Calendar, Settings, CheckCircle, AlertTriangle, Clock, BookOpen,
   Loader, RefreshCw, Search, X, ChevronDown, ChevronUp, Award, Download, User
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -21645,7 +21646,7 @@ const SchedulePreview = ({ scheduleResult, conflicts, subjects, rooms, sectionCo
 
     setDownloadingSection(sectionIndex);
     try {
-      const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
+    //   const html2canvas = (await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm')).default;
       const canvas = await html2canvas(element, {
         backgroundColor: '#ffffff',
         scale: 2,
