@@ -1745,7 +1745,7 @@ const Topbar = React.memo(({
 
       <div className="topbar-right">
         {/* Search Bar */}
-        <div className={`search-container ${showSearch ? 'active' : ''}`}>
+        {/* <div className={`search-container ${showSearch ? 'active' : ''}`}>
           <button 
             className="search-toggle"
             onClick={() => setShowSearch(!showSearch)}
@@ -1762,7 +1762,7 @@ const Topbar = React.memo(({
               autoFocus
             />
           )}
-        </div>
+        </div> */}
 
         {/* Notifications
         <button className="icon-button notifications">
